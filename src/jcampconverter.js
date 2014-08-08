@@ -1,8 +1,10 @@
 // Define as an amd module
 define(['require'], function(require) {
 
+    console.log($);
+
     if( ! this.worker ) {
-        var url = require.toUrl('src/util/jcampconverter_worker.js');
+        var url = require.toUrl('../src/jcampconverter_worker.js');
         this.worker = new Worker( url );
         this.stamps = { };
 
