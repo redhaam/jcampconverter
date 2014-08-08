@@ -62,17 +62,6 @@ checkJcamp('data/compression/jcamp-packed.dx', "Compression packed", options);
 checkJcamp('data/compression/jcamp-squeezed.dx', "Compression squeezed", options);
 checkJcamp('data/compression/jcamp-difdup.dx', "Compression difdup", options);
 
-checkJcamp('data/indometacin/1h.jdx', "1H NMR Indometacin",
-    {
-        nbSpectra: 2,
-        xType: "1H",
-        observeFrequency: 400.112,
-        nbPoints: 16384,
-        firstX: 11.00659,
-        lastX: -1.009276326659311,
-        total: 10199322812.993612
-    }
-);
 
 checkJcamp('data/indometacin/1h.dx', "1H NMR Indometacin",
     {
