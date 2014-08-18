@@ -1,29 +1,53 @@
-// Define as an amd module
-define(['require'], function(require) {
 
-    console.log($);
+(function( global, factory ) {
 
-    if( ! this.worker ) {
-        var url = require.toUrl('../src/jcampconverter_worker.js');
-        this.worker = new Worker( url );
-        this.stamps = { };
-
-        var self = this;
-        worker.addEventListener('message', function( event ) {
+    if ( typeof module === "object" && typeof module.exports === "object" ) {
+        
+        module.exports = factory( global );
             
-            var stamp = event.data.stamp;
-            if( self.stamps[ stamp ] ) {
-                self.stamps[ stamp ].resolve( event.data.output );
-            }
+    } else {
 
+        factory( global );
+
+    }
+
+// Pass this if window is not defined yet
+} ( window, function( window ) {
+
+    "use strict";
+
+    var worker;
+    var stamps = { };
+
+    if( ! worker ) {
+        var url = require.toUrl('../src/jcampconverter_worker.js');
+        worker = new Worker( url );
+        worker.addEventListener('message', function( event ) {
+            var stamp = event.data.stamp;
+            if( stamps[ stamp ] ) {
+                stamps[ stamp ].resolve( event.data.output );
+            }
         });
     }
     
-    return function( input ) {
+    var JcampConverter = function( input ) {
 
         var stamp = Date.now( ) + Math.random( );
-        this.worker.postMessage( { stamp: stamp, input: input } );
-        this.stamps[ stamp ] = $.Deferred( );
-        return this.stamps[ stamp ];
+        worker.postMessage( { stamp: stamp, input: input } );
+        stamps[ stamp ] = $.Deferred( );
+        return stamps[ stamp ];
     }
+
+
+    if( typeof define === "function" && define.amd ) {
+        
+        define( function( ) {
+            return JcampConverter;
+        });
+
+    } else if( window ) {
+        
+        window.JcampConverter = JcampConverter;
+    }
+
 });
