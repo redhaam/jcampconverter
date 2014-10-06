@@ -522,7 +522,7 @@
 
 
 
-            function generateContourLines(zData) {
+            function generateContourLines(zData, options) {
                 //console.time("generateContourLines");
                 var noise=zData.noise;
                 var z=zData.z;
@@ -627,7 +627,14 @@
                     }
                 }
                 // console.timeEnd("generateContourLines");
-                return contourLevels;
+                return {
+                    minX: zData.minX,
+                    maxX: zData.maxX,
+                    minY: zData.minY,
+                    maxY: zData.maxY,
+                    segments: contourLevels
+                };
+                //return contourLevels;
             }
 
 
