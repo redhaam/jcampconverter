@@ -14,17 +14,17 @@ function checkJcamp(filename, label, data) {
                 Convert(jcamp).done(function (result) {
                     console.log(result);
                     QUnit.test(label, function( assert ) {
-                        assert.equal(result.spectra.length, data.nbSpectra, "Number of spectra present" );
                         assert.equal(result.xType, data.xType, "xAxis type" );
+                        if (result.spectra) {
+                            assert.equal(result.spectra.length, data.nbSpectra, "Number of spectra present" );
+                            var spectrum=result.spectra[0];
 
-                        var spectrum=result.spectra[0];
-
-                        assert.equal(spectrum.observeFrequency, data.observeFrequency, "Observed frequency" );
-                        assert.equal(spectrum.nbPoints, data.nbPoints, "Number of points" );
-                        assert.equal(spectrum.firstX, data.firstX, "First X" );
-                        assert.equal(spectrum.lastX, data.lastX, "Last X" );
-                        assert.equal(spectrum.data[0].reduce(function(a,b) {return a+b}), data.total , "Sum of points" );
-
+                            assert.equal(spectrum.observeFrequency, data.observeFrequency, "Observed frequency" );
+                            assert.equal(spectrum.nbPoints, data.nbPoints, "Number of points" );
+                            assert.equal(spectrum.firstX, data.firstX, "First X" );
+                            assert.equal(spectrum.lastX, data.lastX, "Last X" );
+                            assert.equal(spectrum.data[0].reduce(function(a,b) {return a+b}), data.total , "Sum of points" );
+                        }
                     });
                 });
             }
