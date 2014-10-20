@@ -1,11 +1,15 @@
 {
   "name": "jcampconverter",
   "version": "2.0.0",
-  "description": "",
+  "description": "Parse and convert JCAMP data",
   "main": "build/jcampconverter.js",
   "scripts": {
     "test": "grunt test"
   },
+  "keywords": [
+    "jcamp",
+    "converter"
+  ],
   "repository": "cheminfo/jcampconverter",
   "license": "MIT",
   "bugs": {
