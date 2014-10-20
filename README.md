@@ -25,7 +25,7 @@ __Arguments__
 
 * `jcamp` - String containing the JCAMP data
 * `options` - Object with options to pass to the converter
-* `useWorker` - Browser only: convert in a web worker (default: false). If this option is set to true, it will return a Promise.
+* `useWorker` - Browser only: convert in a web worker (default: false). If this option is set to true, it will return a [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
 ### Use as a module
 
