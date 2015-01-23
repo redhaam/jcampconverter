@@ -55,5 +55,5 @@ Testing and build
 ---------------
 ```
 npm install
-grunt
+npm run build
 ```
