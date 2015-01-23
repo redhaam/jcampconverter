@@ -187,10 +187,16 @@ function getConverter() {
                     result.yType = dataValue.split(/[, \t]+/)[0];
                 }
             } else if (dataLabel == 'PAGE') {
-                spectrum.page = dataValue.trim();
-                spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ""));
-                if (result.indirectFrequency) {
-                    spectrum.pageValue /= result.indirectFrequency;
+                spectrum.page=dataValue.trim();
+                spectrum.pageValue=parseFloat(dataValue.replace(/^.*=/,""));
+                spectrum.pageSymbol=spectrum.page.replace(/=.*/,"");
+                var pageSymbolIndex=ntuples.symbol.indexOf(spectrum.pageSymbol);
+                var unit="";
+                if (ntuples.units && ntuples.units[pageSymbolIndex]) {
+                    unit=ntuples.units[pageSymbolIndex];
+                }
+                if (result.indirectFrequency && unit!="PPM") {
+                    spectrum.pageValue/=result.indirectFrequency;
                 }
             } else if (dataLabel == 'RETENTIONTIME') {
                 spectrum.pageValue = parseFloat(dataValue);
