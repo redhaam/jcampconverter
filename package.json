@@ -4,7 +4,8 @@
   "description": "Parse and convert JCAMP data",
   "main": "build/jcampconverter.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "build": "grunt"
   },
   "keywords": [
     "jcamp",
