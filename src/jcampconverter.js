@@ -11,8 +11,9 @@ function getConverter() {
     var GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
 
     function convertToFloatArray(stringArray) {
-        var floatArray = [];
-        for (var i = 0, ii = stringArray.length; i < ii; i++) {
+        var l = stringArray.length;
+        var floatArray = new Array(l);
+        for (var i = 0; i < l; i++) {
             floatArray[i] = parseFloat(stringArray[i]);
         }
         return floatArray;
@@ -187,16 +188,16 @@ function getConverter() {
                     result.yType = dataValue.split(/[, \t]+/)[0];
                 }
             } else if (dataLabel == 'PAGE') {
-                spectrum.page=dataValue.trim();
-                spectrum.pageValue=parseFloat(dataValue.replace(/^.*=/,''));
-                spectrum.pageSymbol=spectrum.page.replace(/=.*/,'');
-                var pageSymbolIndex=ntuples.symbol.indexOf(spectrum.pageSymbol);
-                var unit='';
+                spectrum.page = dataValue.trim();
+                spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ''));
+                spectrum.pageSymbol = spectrum.page.replace(/=.*/, '');
+                var pageSymbolIndex = ntuples.symbol.indexOf(spectrum.pageSymbol);
+                var unit = '';
                 if (ntuples.units && ntuples.units[pageSymbolIndex]) {
-                    unit=ntuples.units[pageSymbolIndex];
+                    unit = ntuples.units[pageSymbolIndex];
                 }
-                if (result.indirectFrequency && unit!='PPM') {
-                    spectrum.pageValue/=result.indirectFrequency;
+                if (result.indirectFrequency && unit != 'PPM') {
+                    spectrum.pageValue /= result.indirectFrequency;
                 }
             } else if (dataLabel == 'RETENTIONTIME') {
                 spectrum.pageValue = parseFloat(dataValue);
@@ -229,7 +230,10 @@ function getConverter() {
 
         if (result.twoD) {
             add2D(result);
-            if (result.profiling) result.profiling.push({action: 'Finished countour plot calculation', time: new Date() - start});
+            if (result.profiling) result.profiling.push({
+                action: 'Finished countour plot calculation',
+                time: new Date() - start
+            });
             if (!options.keepSpectra) {
                 delete result.spectra;
             }
@@ -239,7 +243,10 @@ function getConverter() {
         // maybe it is a GC (HPLC) / MS. In this case we add a new format
         if (spectra.length > 1 && spectra[0].dataType.toLowerCase().match(/.*mass./)) {
             addGCMS(result);
-            if (result.profiling) result.profiling.push({action: 'Finished GCMS calculation', time: new Date() - start});
+            if (result.profiling) result.profiling.push({
+                action: 'Finished GCMS calculation',
+                time: new Date() - start
+            });
         }
 
         if (result.profiling) {
@@ -367,7 +374,7 @@ function getConverter() {
                 }
                 for (var j = 1, jj = values.length; j < jj; j++) {
                     if (j == 1 && (lastDif || lastDif == 0)) {
-                        lastDif = undefined; // at the beginning of each line there should be the full value X / Y so the diff is always undefined
+                        lastDif = null; // at the beginning of each line there should be the full value X / Y so the diff is always undefined
                         // we could check if we have the expected Y value
                         ascii = values[j].charCodeAt(0);
 
@@ -397,21 +404,21 @@ function getConverter() {
                             ascii = values[j].charCodeAt(0);
                             // + - . 0 1 2 3 4 5 6 7 8 9
                             if ((ascii == 43) || (ascii == 45) || (ascii == 46) || ((ascii > 47) && (ascii < 58))) {
-                                lastDif = undefined;
+                                lastDif = null;
                                 currentY = parseFloat(values[j]);
                                 addPoint(spectrum, currentX, currentY);
                                 currentX += spectrum.deltaX;
                             } else
                             // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
                             if ((ascii > 63) && (ascii < 74)) {
-                                lastDif = undefined;
+                                lastDif = null;
                                 currentY = parseFloat(String.fromCharCode(ascii - 16) + values[j].substring(1));
                                 addPoint(spectrum, currentX, currentY);
                                 currentX += spectrum.deltaX;
                             } else
                             // negative SQZ digits a b c d e f g h i (ascii 97-105)
                             if ((ascii > 96) && (ascii < 106)) {
-                                lastDif = undefined;
+                                lastDif = null;
                                 currentY = -parseFloat(String.fromCharCode(ascii - 48) + values[j].substring(1));
                                 addPoint(spectrum, currentX, currentY);
                                 currentX += spectrum.deltaX;
@@ -681,14 +688,14 @@ function postToWorker(input, options) {
     return new Promise(function (resolve) {
         var stamp = Date.now() + '' + Math.random();
         stamps[stamp] = resolve;
-        worker.postMessage({ stamp: stamp, input: input, options: options });
+        worker.postMessage({stamp: stamp, input: input, options: options});
     });
 }
 
 function createWorker() {
     var workerURL = URL.createObjectURL(new Blob([
-            'var getConverter =' + getConverter.toString() + ';var convert = getConverter(); onmessage = function (event) { postMessage({stamp: event.data.stamp, output: convert(event.data.input, event.data.options)}); };'
-    ], { type: 'application/javascript' }));
+        'var getConverter =' + getConverter.toString() + ';var convert = getConverter(); onmessage = function (event) { postMessage({stamp: event.data.stamp, output: convert(event.data.input, event.data.options)}); };'
+    ], {type: 'application/javascript'}));
     worker = new Worker(workerURL);
     URL.revokeObjectURL(workerURL);
     worker.addEventListener('message', function (event) {
