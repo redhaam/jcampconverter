@@ -320,13 +320,11 @@ function getConverter() {
 
     function parsePeakTable(spectrum, value, result) {
         var i, ii, j, jj, values;
-        spectrum.data = [];
-        spectrum.currentData = [];
-        spectrum.data.push(spectrum.currentData);
+        var currentData = [];
+        spectrum.data = [currentData];
 
         // counts for around 20% of the time
         var lines = value.split(/,? *,?[;\r\n]+ */);
-
 
         var k = 0;
         for (i = 1, ii = lines.length; i < ii; i++) {
@@ -334,14 +332,13 @@ function getConverter() {
             if (values.length % 2 == 0) {
                 for (j = 0, jj = values.length; j < jj; j = j + 2) {
                     // takes around 40% of the time to add and parse the 2 values nearly exclusively because of parseFloat
-                    spectrum.currentData[k++] = (parseFloat(values[j]) * spectrum.xFactor);
-                    spectrum.currentData[k++] = (parseFloat(values[j + 1]) * spectrum.yFactor);
+                    currentData[k++] = (parseFloat(values[j]) * spectrum.xFactor);
+                    currentData[k++] = (parseFloat(values[j + 1]) * spectrum.yFactor);
                 }
             } else {
                 result.logs.push('Format error: ' + values);
             }
         }
-        delete spectrum.currentData;
     }
 
     function parseXYData(spectrum, value, result) {
@@ -350,9 +347,9 @@ function getConverter() {
             spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
         }
 
-        spectrum.data = [];
-        spectrum.currentData = [];
-        spectrum.data.push(spectrum.currentData);
+        var currentData = [];
+        spectrum.data = [currentData];
+
         var currentX = spectrum.firstX;
         var currentY = spectrum.firstY;
         var lines = value.split(/[\r\n]+/);
@@ -406,21 +403,21 @@ function getConverter() {
                             if ((ascii == 43) || (ascii == 45) || (ascii == 46) || ((ascii > 47) && (ascii < 58))) {
                                 lastDif = null;
                                 currentY = parseFloat(values[j]);
-                                addPoint(spectrum, currentX, currentY);
+                                currentData.push(currentX, currentY * spectrum.yFactor);;
                                 currentX += spectrum.deltaX;
                             } else
                             // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
                             if ((ascii > 63) && (ascii < 74)) {
                                 lastDif = null;
                                 currentY = parseFloat(String.fromCharCode(ascii - 16) + values[j].substring(1));
-                                addPoint(spectrum, currentX, currentY);
+                                currentData.push(currentX, currentY * spectrum.yFactor);;
                                 currentX += spectrum.deltaX;
                             } else
                             // negative SQZ digits a b c d e f g h i (ascii 97-105)
                             if ((ascii > 96) && (ascii < 106)) {
                                 lastDif = null;
                                 currentY = -parseFloat(String.fromCharCode(ascii - 48) + values[j].substring(1));
-                                addPoint(spectrum, currentX, currentY);
+                                currentData.push(currentX, currentY * spectrum.yFactor);;
                                 currentX += spectrum.deltaX;
                             } else
 
@@ -436,7 +433,7 @@ function getConverter() {
                                     if (lastDif) {
                                         currentY = currentY + lastDif;
                                     }
-                                    addPoint(spectrum, currentX, currentY);
+                                    currentData.push(currentX, currentY * spectrum.yFactor);;
                                     currentX += spectrum.deltaX;
                                 }
                             } else
@@ -444,19 +441,19 @@ function getConverter() {
                             if (ascii == 37) {
                                 lastDif = parseFloat('0' + values[j].substring(1));
                                 currentY += lastDif;
-                                addPoint(spectrum, currentX, currentY);
+                                currentData.push(currentX, currentY * spectrum.yFactor);;
                                 currentX += spectrum.deltaX;
                             } else if ((ascii > 73) && (ascii < 83)) {
                                 lastDif = parseFloat(String.fromCharCode(ascii - 25) + values[j].substring(1));
                                 currentY += lastDif;
-                                addPoint(spectrum, currentX, currentY);
+                                currentData.push(currentX, currentY * spectrum.yFactor);;
                                 currentX += spectrum.deltaX;
                             } else
                             // negative DIF digits j k l m n o p q r (ascii 106-114)
                             if ((ascii > 105) && (ascii < 115)) {
                                 lastDif = -parseFloat(String.fromCharCode(ascii - 57) + values[j].substring(1));
                                 currentY += lastDif;
-                                addPoint(spectrum, currentX, currentY);
+                                currentData.push(currentX, currentY * spectrum.yFactor);;
                                 currentX += spectrum.deltaX;
                             }
                         }
@@ -465,12 +462,6 @@ function getConverter() {
             }
         }
 
-        function addPoint(spectrum, currentX, currentY) {
-            // if (aa++<10) console.log(currentX+' - '+currentY+' - '+currentX/spectrum.observeFrequency+' - '+currentY*spectrum.yFactor);
-            spectrum.currentData.push(currentX, currentY * spectrum.yFactor);
-        }
-
-        delete spectrum.currentData;
     }
 
     function convertTo3DZ(spectra) {
