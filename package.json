@@ -23,6 +23,7 @@
     "grunt-mocha-test": "^0.12.7",
     "grunt-urequire": "^0.7.1",
     "mocha": "^2.1.0",
-    "should": "^4.6.1"
+    "should": "^4.6.1",
+    "benchmark": "^1.0.0"
   }
 }
