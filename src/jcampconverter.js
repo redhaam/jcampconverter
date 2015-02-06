@@ -10,6 +10,31 @@ function getConverter() {
 
     var GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
 
+    var charTable = [];
+    var i;
+    // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
+    for (i = 64; i < 74; i++) {
+        charTable[i] = String.fromCharCode(i - 16);
+    }
+    // negative SQZ digits a b c d e f g h i (ascii 97-105)
+    for (i = 97; i < 106; i++) {
+        charTable[i] = String.fromCharCode(i - 48);
+    }
+    // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
+    for (i = 83; i < 91; i++) {
+        charTable[i] = String.fromCharCode(i - 34);
+    }
+    charTable[115] = String.fromCharCode(115 - 34);
+    // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
+    charTable[37] = '0';
+    for (i = 74; i < 83; i++) {
+        charTable[i] = String.fromCharCode(i - 25);
+    }
+    // negative DIF digits j k l m n o p q r (ascii 106-114)
+    for (i = 106; i < 115; i++) {
+        charTable[i] = String.fromCharCode(i - 57);
+    }
+
     function convertToFloatArray(stringArray) {
         var l = stringArray.length;
         var floatArray = new Array(l);
@@ -383,12 +408,12 @@ function getConverter() {
                             // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
                             if ((ascii > 63) && (ascii < 74)) {
                                 // we could use parseInt but parseFloat is faster at least in Chrome
-                                expectedY = parseFloat(String.fromCharCode(ascii - 16) + values[j].substring(1));
+                                expectedY = parseFloat(charTable[ascii] + values[j].substring(1));
                             } else
                             // negative SQZ digits a b c d e f g h i (ascii 97-105)
                             if ((ascii > 96) && (ascii < 106)) {
                                 // we could use parseInt but parseFloat is faster at least in Chrome
-                                expectedY = -parseFloat(String.fromCharCode(ascii - 48) + values[j].substring(1));
+                                expectedY = -parseFloat(charTable[ascii] + values[j].substring(1));
                             }
                             if (expectedY != currentY) {
                                 result.logs.push('Y value check error: Found: ' + expectedY + ' - Current: ' + currentY);
@@ -399,33 +424,27 @@ function getConverter() {
                     } else {
                         if (values[j].length > 0) {
                             ascii = values[j].charCodeAt(0);
-                            // + - . 0 1 2 3 4 5 6 7 8 9
                             if ((ascii == 43) || (ascii == 45) || (ascii == 46) || ((ascii > 47) && (ascii < 58))) {
+                                // + - . 0 1 2 3 4 5 6 7 8 9
                                 lastDif = null;
                                 currentY = parseFloat(values[j]);
-                                currentData.push(currentX, currentY * spectrum.yFactor);;
+                                currentData.push(currentX, currentY * spectrum.yFactor);
                                 currentX += spectrum.deltaX;
-                            } else
-                            // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
-                            if ((ascii > 63) && (ascii < 74)) {
+                            } else if ((ascii > 63) && (ascii < 74)) {
+                                // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
                                 lastDif = null;
-                                currentY = parseFloat(String.fromCharCode(ascii - 16) + values[j].substring(1));
-                                currentData.push(currentX, currentY * spectrum.yFactor);;
+                                currentY = parseFloat(charTable[ascii] + values[j].substring(1));
+                                currentData.push(currentX, currentY * spectrum.yFactor);
                                 currentX += spectrum.deltaX;
-                            } else
-                            // negative SQZ digits a b c d e f g h i (ascii 97-105)
-                            if ((ascii > 96) && (ascii < 106)) {
+                            } else if ((ascii > 96) && (ascii < 106)) {
+                                // negative SQZ digits a b c d e f g h i (ascii 97-105)
                                 lastDif = null;
-                                currentY = -parseFloat(String.fromCharCode(ascii - 48) + values[j].substring(1));
-                                currentData.push(currentX, currentY * spectrum.yFactor);;
+                                currentY = -parseFloat(charTable[ascii] + values[j].substring(1));
+                                currentData.push(currentX, currentY * spectrum.yFactor);
                                 currentX += spectrum.deltaX;
-                            } else
-
-
-
-                            // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
-                            if (((ascii > 82) && (ascii < 91)) || (ascii == 115)) {
-                                var dup = parseFloat(String.fromCharCode(ascii - 34) + values[j].substring(1)) - 1;
+                            } else if (((ascii > 82) && (ascii < 91)) || (ascii == 115)) {
+                                // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
+                                var dup = parseFloat(charTable[ascii] + values[j].substring(1)) - 1;
                                 if (ascii == 115) {
                                     dup = parseFloat('9' + values[j].substring(1)) - 1;
                                 }
@@ -433,27 +452,25 @@ function getConverter() {
                                     if (lastDif) {
                                         currentY = currentY + lastDif;
                                     }
-                                    currentData.push(currentX, currentY * spectrum.yFactor);;
+                                    currentData.push(currentX, currentY * spectrum.yFactor);
                                     currentX += spectrum.deltaX;
                                 }
-                            } else
-                            // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
-                            if (ascii == 37) {
+                            } else if (ascii == 37) {
+                                // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
                                 lastDif = parseFloat('0' + values[j].substring(1));
                                 currentY += lastDif;
-                                currentData.push(currentX, currentY * spectrum.yFactor);;
+                                currentData.push(currentX, currentY * spectrum.yFactor);
                                 currentX += spectrum.deltaX;
                             } else if ((ascii > 73) && (ascii < 83)) {
-                                lastDif = parseFloat(String.fromCharCode(ascii - 25) + values[j].substring(1));
+                                lastDif = parseFloat(charTable[ascii] + values[j].substring(1));
                                 currentY += lastDif;
-                                currentData.push(currentX, currentY * spectrum.yFactor);;
+                                currentData.push(currentX, currentY * spectrum.yFactor);
                                 currentX += spectrum.deltaX;
-                            } else
-                            // negative DIF digits j k l m n o p q r (ascii 106-114)
-                            if ((ascii > 105) && (ascii < 115)) {
-                                lastDif = -parseFloat(String.fromCharCode(ascii - 57) + values[j].substring(1));
+                            } else if ((ascii > 105) && (ascii < 115)) {
+                                // negative DIF digits j k l m n o p q r (ascii 106-114)
+                                lastDif = -parseFloat(charTable[ascii] + values[j].substring(1));
                                 currentY += lastDif;
-                                currentData.push(currentX, currentY * spectrum.yFactor);;
+                                currentData.push(currentX, currentY * spectrum.yFactor);
                                 currentX += spectrum.deltaX;
                             }
                         }
