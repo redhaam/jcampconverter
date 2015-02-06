@@ -1,8 +1,6 @@
-JCAMP converter
-===============
+# JCAMP converter
 
-Installation
----------------
+## Installation
 
 ### Node JS
 ```
@@ -14,8 +12,7 @@ npm install jcampconverter
 bower install jcampconverter
 ```
 
-Methods
----------------
+## Methods
 
 ### convert(jcamp, [options], [useWorker])
 
@@ -34,6 +31,7 @@ __Options__
 ### Use as a module
 
 ####Node JS
+
 ```javascript
 var converter = require('jcampconverter');
 var jcamp = require('fs').readFileSync('path/to/jcamp.dx').toString();
@@ -42,6 +40,7 @@ var result = converter.convert(jcamp);
 ```
 
 #### AMD
+
 ```javascript
 require(['jcampconverter'], function(JcampConverter) {
     // Use the worker
@@ -51,9 +50,15 @@ require(['jcampconverter'], function(JcampConverter) {
 });
 ```
 
-Testing and build
----------------
+## Testing and build
+
 ```
 npm install
 npm run build
+```
+
+## Benchmark
+
+```
+npm run benchmark
 ```
