@@ -8,7 +8,7 @@ function getConverter() {
     var peakTableSplitRegExp = /[,\t ]+/;
     var DEBUG = false;
 
-    var GC_MS_FIELDS = ["TIC", ".RIC", "SCANNUMBER"];
+    var GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
 
     function convertToFloatArray(stringArray) {
         var floatArray = [];
@@ -41,34 +41,34 @@ function getConverter() {
         result.info = {};
         var spectrum = {};
 
-        if (!(typeof jcamp == "string")) return result;
-        // console.time("start");
+        if (!(typeof jcamp == 'string')) return result;
+        // console.time('start');
 
-        if (result.profiling) result.profiling.push({action: "Before split to LDRS", time: new Date() - start});
+        if (result.profiling) result.profiling.push({action: 'Before split to LDRS', time: new Date() - start});
 
         ldrs = jcamp.split(/[\r\n]+##/);
 
-        if (result.profiling) result.profiling.push({action: "Split to LDRS", time: new Date() - start});
+        if (result.profiling) result.profiling.push({action: 'Split to LDRS', time: new Date() - start});
 
-        if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, "");
+        if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, '');
 
         for (i = 0, ii = ldrs.length; i < ii; i++) {
             ldr = ldrs[i];
             // This is a new LDR
-            position = ldr.indexOf("=");
+            position = ldr.indexOf('=');
             if (position > 0) {
                 dataLabel = ldr.substring(0, position);
                 dataValue = ldr.substring(position + 1).trim();
             } else {
                 dataLabel = ldr;
-                dataValue = "";
+                dataValue = '';
             }
             dataLabel = dataLabel.replace(/[_ -]/g, '').toUpperCase();
 
             if (dataLabel == 'DATATABLE') {
 
-                endLine = dataValue.indexOf("\n");
-                if (endLine == -1) endLine = dataValue.indexOf("\r");
+                endLine = dataValue.indexOf('\n');
+                if (endLine == -1) endLine = dataValue.indexOf('\r');
                 if (endLine > 0) {
                     var xIndex = -1;
                     var yIndex = -1;
@@ -77,9 +77,9 @@ function getConverter() {
 
                     infos = dataValue.substring(0, endLine).split(/[ ,;\t]+/);
 
-                    if (infos[0].indexOf("++") > 0) {
-                        var firstVariable = infos[0].replace(/.*\(([a-zA-Z0-9]+)\+\+.*/, "$1");
-                        var secondVariable = infos[0].replace(/.*\.\.([a-zA-Z0-9]+).*/, "$1");
+                    if (infos[0].indexOf('++') > 0) {
+                        var firstVariable = infos[0].replace(/.*\(([a-zA-Z0-9]+)\+\+.*/, '$1');
+                        var secondVariable = infos[0].replace(/.*\.\.([a-zA-Z0-9]+).*/, '$1');
                         xIndex = ntuples.symbol.indexOf(firstVariable);
                         yIndex = ntuples.symbol.indexOf(secondVariable);
                     }
@@ -107,10 +107,10 @@ function getConverter() {
                         if (ntuples.units.length > yIndex) spectrum.yUnit = ntuples.units[yIndex];
                     }
                     spectrum.datatable = infos[0];
-                    if (infos[1] && infos[1].indexOf("PEAKS") > -1) {
-                        dataLabel = "PEAKTABLE";
-                    } else if (infos[1] && (infos[1].indexOf("XYDATA") || infos[0].indexOf("++") > 0)) {
-                        dataLabel = "XYDATA";
+                    if (infos[1] && infos[1].indexOf('PEAKS') > -1) {
+                        dataLabel = 'PEAKTABLE';
+                    } else if (infos[1] && (infos[1].indexOf('XYDATA') || infos[0].indexOf('++') > 0)) {
+                        dataLabel = 'XYDATA';
                         spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
                     }
                 }
@@ -121,7 +121,7 @@ function getConverter() {
                 spectrum.title = dataValue;
             } else if (dataLabel == 'DATATYPE') {
                 spectrum.dataType = dataValue;
-                if (dataValue.indexOf("nD") > -1) {
+                if (dataValue.indexOf('nD') > -1) {
                     result.twoD = true;
                 }
             } else if (dataLabel == 'XUNITS') {
@@ -145,7 +145,7 @@ function getConverter() {
             } else if (dataLabel == '.OBSERVEFREQUENCY' || dataLabel == '$SFO1') {
                 if (!spectrum.observeFrequency) spectrum.observeFrequency = parseFloat(dataValue);
             } else if (dataLabel == '.OBSERVENUCLEUS') {
-                if (!spectrum.xType) result.xType = dataValue.replace(/[^a-zA-Z0-9]/g, "");
+                if (!spectrum.xType) result.xType = dataValue.replace(/[^a-zA-Z0-9]/g, '');
             } else if (dataLabel == '$SFO2') {
                 if (!result.indirectFrequency) result.indirectFrequency = parseFloat(dataValue);
 
@@ -188,21 +188,21 @@ function getConverter() {
                 }
             } else if (dataLabel == 'PAGE') {
                 spectrum.page=dataValue.trim();
-                spectrum.pageValue=parseFloat(dataValue.replace(/^.*=/,""));
-                spectrum.pageSymbol=spectrum.page.replace(/=.*/,"");
+                spectrum.pageValue=parseFloat(dataValue.replace(/^.*=/,''));
+                spectrum.pageSymbol=spectrum.page.replace(/=.*/,'');
                 var pageSymbolIndex=ntuples.symbol.indexOf(spectrum.pageSymbol);
-                var unit="";
+                var unit='';
                 if (ntuples.units && ntuples.units[pageSymbolIndex]) {
                     unit=ntuples.units[pageSymbolIndex];
                 }
-                if (result.indirectFrequency && unit!="PPM") {
+                if (result.indirectFrequency && unit!='PPM') {
                     spectrum.pageValue/=result.indirectFrequency;
                 }
             } else if (dataLabel == 'RETENTIONTIME') {
                 spectrum.pageValue = parseFloat(dataValue);
-            } else if (dataLabel == "XYDATA") {
+            } else if (dataLabel == 'XYDATA') {
                 prepareSpectrum(result, spectrum);
-                // well apparently we should still consider it is a PEAK TABLE if there are no "++" after
+                // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
                 if (dataValue.match(/.*\+\+.*/)) {
                     parseXYData(spectrum, dataValue, result);
                 } else {
@@ -210,7 +210,7 @@ function getConverter() {
                 }
                 spectra.push(spectrum);
                 spectrum = {};
-            } else if (dataLabel == "PEAKTABLE") {
+            } else if (dataLabel == 'PEAKTABLE') {
                 prepareSpectrum(result, spectrum);
                 parsePeakTable(spectrum, dataValue, result);
                 spectra.push(spectrum);
@@ -225,11 +225,11 @@ function getConverter() {
         // Currently disabled
         //    if (options && options.lowRes) addLowRes(spectra,options);
 
-        if (result.profiling) result.profiling.push({action: "Finished parsing", time: new Date() - start});
+        if (result.profiling) result.profiling.push({action: 'Finished parsing', time: new Date() - start});
 
         if (result.twoD) {
             add2D(result);
-            if (result.profiling) result.profiling.push({action: "Finished countour plot calculation", time: new Date() - start});
+            if (result.profiling) result.profiling.push({action: 'Finished countour plot calculation', time: new Date() - start});
             if (!options.keepSpectra) {
                 delete result.spectra;
             }
@@ -239,11 +239,11 @@ function getConverter() {
         // maybe it is a GC (HPLC) / MS. In this case we add a new format
         if (spectra.length > 1 && spectra[0].dataType.toLowerCase().match(/.*mass./)) {
             addGCMS(result);
-            if (result.profiling) result.profiling.push({action: "Finished GCMS calculation", time: new Date() - start});
+            if (result.profiling) result.profiling.push({action: 'Finished GCMS calculation', time: new Date() - start});
         }
 
         if (result.profiling) {
-            result.profiling.push({action: "Total time", time: new Date() - start});
+            result.profiling.push({action: 'Total time', time: new Date() - start});
         }
 
         //   console.log(result);
@@ -254,7 +254,7 @@ function getConverter() {
 
 
     function convertMSFieldToLabel(value) {
-        return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+        return value.toLowerCase().replace(/[^a-z0-9]/g, '');
     }
 
     function isMSField(dataLabel) {
@@ -323,7 +323,7 @@ function getConverter() {
 
         var k = 0;
         for (i = 1, ii = lines.length; i < ii; i++) {
-            values = lines[i].trim().replace(removeCommentRegExp, "").split(peakTableSplitRegExp);
+            values = lines[i].trim().replace(removeCommentRegExp, '').split(peakTableSplitRegExp);
             if (values.length % 2 == 0) {
                 for (j = 0, jj = values.length; j < jj; j = j + 2) {
                     // takes around 40% of the time to add and parse the 2 values nearly exclusively because of parseFloat
@@ -331,7 +331,7 @@ function getConverter() {
                     spectrum.currentData[k++] = (parseFloat(values[j + 1]) * spectrum.yFactor);
                 }
             } else {
-                result.logs.push("Format error: " + values);
+                result.logs.push('Format error: ' + values);
             }
         }
         delete spectrum.currentData;
@@ -353,7 +353,7 @@ function getConverter() {
         values = [];
         for (var i = 1, ii = lines.length; i < ii; i++) {
             //var previousValues=JSON.parse(JSON.stringify(values));
-            values = lines[i].trim().replace(removeCommentRegExp, "").split(xyDataSplitRegExp);
+            values = lines[i].trim().replace(removeCommentRegExp, '').split(xyDataSplitRegExp);
             if (values.length > 0) {
                 if (DEBUG) {
                     if (!spectrum.firstPoint) {
@@ -363,7 +363,7 @@ function getConverter() {
                     if ((lastDif || lastDif == 0)) {
                         expectedCurrentX += spectrum.deltaX;
                     }
-                    result.logs.push("Checking X value: currentX: " + currentX + " - expectedCurrentX: " + expectedCurrentX);
+                    result.logs.push('Checking X value: currentX: ' + currentX + ' - expectedCurrentX: ' + expectedCurrentX);
                 }
                 for (var j = 1, jj = values.length; j < jj; j++) {
                     if (j == 1 && (lastDif || lastDif == 0)) {
@@ -387,8 +387,8 @@ function getConverter() {
                                 expectedY = -parseFloat(String.fromCharCode(ascii - 48) + values[j].substring(1));
                             }
                             if (expectedY != currentY) {
-                                result.logs.push("Y value check error: Found: " + expectedY + " - Current: " + currentY);
-                                result.logs.push("Previous values: " + previousValues.length);
+                                result.logs.push('Y value check error: Found: ' + expectedY + ' - Current: ' + currentY);
+                                result.logs.push('Previous values: ' + previousValues.length);
                                 result.logs.push(previousValues);
                             }
                         }
@@ -423,7 +423,7 @@ function getConverter() {
                             if (((ascii > 82) && (ascii < 91)) || (ascii == 115)) {
                                 var dup = parseFloat(String.fromCharCode(ascii - 34) + values[j].substring(1)) - 1;
                                 if (ascii == 115) {
-                                    dup = parseFloat("9" + values[j].substring(1)) - 1;
+                                    dup = parseFloat('9' + values[j].substring(1)) - 1;
                                 }
                                 for (var l = 0; l < dup; l++) {
                                     if (lastDif) {
@@ -435,7 +435,7 @@ function getConverter() {
                             } else
                             // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
                             if (ascii == 37) {
-                                lastDif = parseFloat("0" + values[j].substring(1));
+                                lastDif = parseFloat('0' + values[j].substring(1));
                                 currentY += lastDif;
                                 addPoint(spectrum, currentX, currentY);
                                 currentX += spectrum.deltaX;
@@ -459,7 +459,7 @@ function getConverter() {
         }
 
         function addPoint(spectrum, currentX, currentY) {
-            // if (aa++<10) console.log(currentX+" - "+currentY+" - "+currentX/spectrum.observeFrequency+" - "+currentY*spectrum.yFactor);
+            // if (aa++<10) console.log(currentX+' - '+currentY+' - '+currentX/spectrum.observeFrequency+' - '+currentY*spectrum.yFactor);
             spectrum.currentData.push(currentX, currentY * spectrum.yFactor);
         }
 
@@ -467,7 +467,7 @@ function getConverter() {
     }
 
     function convertTo3DZ(spectra) {
-        //console.time("ConvertTo3DZ");
+        //console.time('ConvertTo3DZ');
         var z = [];
         var noise = 0;
         var minZ = spectra[0].data[0][0];
@@ -485,7 +485,7 @@ function getConverter() {
                 }
             }
         }
-        //console.timeEnd("ConvertTo3DZ");
+        //console.timeEnd('ConvertTo3DZ');
         return {
             z: z,
             minX: spectra[0].data[0][0],
@@ -508,7 +508,7 @@ function getConverter() {
 
 
     function generateContourLines(zData, options) {
-        //console.time("generateContourLines");
+        //console.time('generateContourLines');
         var noise = zData.noise;
         var z = zData.z;
         var contourLevels = [];
@@ -528,7 +528,7 @@ function getConverter() {
         var minZ = zData.minZ;
         var maxZ = zData.maxZ;
 
-        //System.out.prvarln("y0 "+y0+" yN "+yN);
+        //System.out.prvarln('y0 '+y0+' yN '+yN);
         // -------------------------
         // Povars attribution
         //
@@ -611,7 +611,7 @@ function getConverter() {
                 }
             }
         }
-        // console.timeEnd("generateContourLines");
+        // console.timeEnd('generateContourLines');
         return {
             minX: zData.minX,
             maxX: zData.maxX,
