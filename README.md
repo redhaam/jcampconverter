@@ -57,6 +57,7 @@ require(['jcampconverter'], function(JcampConverter) {
 
 ```
 npm install
+npm test
 npm run build
 ```
 
