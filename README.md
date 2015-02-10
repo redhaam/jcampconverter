@@ -1,16 +1,19 @@
 # JCAMP converter
 
+  [![NPM version][npm-image]][npm-url]
+  [![build status][travis-image]][travis-url]
+
+Parse and convert JCAMP data
+
 ## Installation
 
 ### Node JS
-```
-npm install jcampconverter
-```
+
+`npm install jcampconverter`
 
 ### Bower
-```
-bower install jcampconverter
-```
+
+`bower install jcampconverter`
 
 ## Methods
 
