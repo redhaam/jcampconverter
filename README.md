@@ -62,3 +62,12 @@ npm run build
 ```
 npm run benchmark
 ```
+
+## License
+
+  MIT
+
+[npm-image]: https://img.shields.io/npm/v/jcampconverter.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/jcampconverter
+[travis-image]: https://img.shields.io/travis/cheminfo/jcampconverter/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/cheminfo/jcampconverter

@@ -1,6 +1,6 @@
 'use strict';
 
-var Converter = require('../');
+var Converter = require('..');
 var fs = require('fs');
 
 function checkJcamp(filename, label, data) {
