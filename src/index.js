@@ -25,6 +25,10 @@ function getConverter() {
 
     function convert(jcamp, options) {
         options = options || {};
+
+        var keepRecordsRegExp=/^[A-Z]+$/;
+        if (options.keepRecordsRegExp) keepRecordsRegExp=options.keepRecordsRegExp;
+
         var start = new Date();
 
         var ntuples = {},
@@ -218,7 +222,7 @@ function getConverter() {
                 spectrum = {};
             } else if (isMSField(dataLabel)) {
                 spectrum[convertMSFieldToLabel(dataLabel)] = dataValue;
-            } else if (dataLabel.match(/^[A-Z].*/)) {
+            } else if (dataLabel.match(keepRecordsRegExp)) {
                 result.info[dataLabel] = dataValue.trim();
             }
         }

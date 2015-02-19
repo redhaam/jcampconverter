@@ -32,6 +32,7 @@ __Arguments__
 __Options__
 
 * keepSpectra - Generate array for 2D NMR spectra (default: false)
+* keepRecordsRegExp - regexp to select which records should be placed in the info field. By default: :/^[A-Za-z]+$/}
 
 ### Use as a module
 
