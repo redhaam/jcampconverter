@@ -6,9 +6,9 @@ var convert = require('../').convert;
 
 var datafolder = join(__dirname, '../test/data');
 
-module.exports = function (filename) {
+module.exports = function (filename, options) {
     var jcamp = fs.readFileSync(join(datafolder, filename), 'utf-8');
     return function () {
-        convert(jcamp);
+        convert(jcamp, options);
     }
 };
