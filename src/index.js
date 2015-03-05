@@ -21,6 +21,8 @@ function getConverter() {
 
     /*
      options.keepSpectra: keep the original spectra for a 2D
+     options.xy: true // create x / y array instead of a 1D array
+     options.keepRecordsRegExp: which fields do we keep
      */
 
     function convert(jcamp, options) {
@@ -251,6 +253,28 @@ function getConverter() {
                 action: 'Finished GCMS calculation',
                 time: new Date() - start
             });
+        }
+
+
+        if (options.xy) { // the spectraData should not be a oneD array but an object with x and y
+            if (spectra.length > 0) {
+                for (var i=0; i<spectra.length; i++) {
+                    var spectrum=spectra[i];
+                    if (spectrum.data.length>0) {
+                        for (var j=0; j<spectrum.data.length; j++) {
+                            var data=spectrum.data[j];
+                            var newData={x:Array(data.length/2), y:Array(data.length/2)};
+                            for (var k=0; k<data.length; k=k+2) {
+                                newData.x[k/2]=data[k];
+                                newData.y[k/2]=data[k+1];
+                            }
+                            spectrum.data[j]=newData;
+                        }
+
+                    }
+
+                }
+            }
         }
 
         if (result.profiling) {
