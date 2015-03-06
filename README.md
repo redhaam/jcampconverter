@@ -72,6 +72,10 @@ npm run build
 npm run benchmark
 ```
 
+## How to create the tests
+
+http://unitjs.com/guide/should-js.html
+
 ## License
 
   [MIT](./LICENSE)

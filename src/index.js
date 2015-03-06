@@ -347,6 +347,7 @@ function getConverter() {
     }
 
     function parsePeakTable(spectrum, value, result) {
+        spectrum.isPeaktable=true;
         var i, ii, j, jj, values;
         var currentData = [];
         spectrum.data = [currentData];
@@ -374,6 +375,8 @@ function getConverter() {
         if (!spectrum.deltaX) {
             spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
         }
+
+        spectrum.isXYdata=true;
 
         var currentData = [];
         spectrum.data = [currentData];

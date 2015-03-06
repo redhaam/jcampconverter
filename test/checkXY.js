@@ -20,5 +20,11 @@ describe('Test conversion option for jcamp', function () {
             y.length.should.eql(302);
         });
 
+        var type=result.spectra[0];
+        it('Check type is peak table', function () {
+            type.should.not.have.property("isXYdata");
+            type.isPeaktable.should.be.true;
+        });
+
     });
 });
