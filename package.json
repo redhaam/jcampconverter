@@ -41,7 +41,6 @@
     "mocha": "latest",
     "mocha-better-spec-reporter": "latest",
     "should": "latest",
-    "v8-profiler": "^5.2.3",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0"
   }
