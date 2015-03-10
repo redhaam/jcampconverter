@@ -59,6 +59,7 @@ function getConverter() {
 
         if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, '');
 
+
         for (i = 0, ii = ldrs.length; i < ii; i++) {
             ldr = ldrs[i];
             // This is a new LDR
@@ -73,7 +74,6 @@ function getConverter() {
             dataLabel = dataLabel.replace(/[_ -]/g, '').toUpperCase();
 
             if (dataLabel == 'DATATABLE') {
-
                 endLine = dataValue.indexOf('\n');
                 if (endLine == -1) endLine = dataValue.indexOf('\r');
                 if (endLine > 0) {
@@ -247,7 +247,7 @@ function getConverter() {
 
 
         // maybe it is a GC (HPLC) / MS. In this case we add a new format
-        if (spectra.length > 1 && spectra[0].dataType.toLowerCase().match(/.*mass./)) {
+        if (spectra.length > 1 && spectra[0].dataType && spectra[0].dataType.toLowerCase().match(/.*mass./)) {
             addGCMS(result);
             if (result.profiling) result.profiling.push({
                 action: 'Finished GCMS calculation',

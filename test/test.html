@@ -13,16 +13,18 @@
 
 
 <script>
-    function loadJcamp(filename) {
+    function loadJcamp(filename, options) {
         $.get(filename).done(
             function (jcamp) {
-                var result=convert(jcamp)
+                var result=convert(jcamp, options)
                 console.log(result);
             }
         )
     }
 
-    loadJcamp("data/ethylvinylether/1h.jdx");
+    loadJcamp("data/indometacin/cosy.dx", {
+        keepSpectra:true
+    });
     //loadJcamp("data/indometacin/cosy.dx");
    // loadJcamp("data/misc/cosyPPM.jdx");
 </script>
