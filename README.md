@@ -38,7 +38,7 @@ __Options__
 
 ### Use as a module
 
-####Node JS
+#### Node JS
 
 ```javascript
 var converter = require('jcampconverter');
