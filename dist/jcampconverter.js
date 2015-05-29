@@ -1,6 +1,6 @@
 /**
  * jcampconverter - Parse and convert JCAMP data
- * @version v2.0.8
+ * @version v2.0.9
  * @link https://github.com/cheminfo/jcampconverter
  * @license MIT
  */
@@ -88,7 +88,7 @@ function getConverter() {
                     // ##DATA TABLE= (X++(I..I)), XYDATA
                     // We need to find the variables
 
-                    infos = dataValue.substring(0, endLine).split(/[ ,;\t]{2,}/);
+                    infos = dataValue.substring(0, endLine).split(/[ ,;\t]+/);
                     if (infos[0].indexOf('++') > 0) {
                         var firstVariable = infos[0].replace(/.*\(([a-zA-Z0-9]+)\+\+.*/, '$1');
                         var secondVariable = infos[0].replace(/.*\.\.([a-zA-Z0-9]+).*/, '$1');
