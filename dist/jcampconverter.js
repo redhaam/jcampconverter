@@ -1,6 +1,6 @@
 /**
  * jcampconverter - Parse and convert JCAMP data
- * @version v2.0.9
+ * @version v2.1.0
  * @link https://github.com/cheminfo/jcampconverter
  * @license MIT
  */
@@ -55,7 +55,7 @@ function getConverter() {
         result.info = {};
         var spectrum = {};
 
-        if (!(typeof jcamp == 'string')) return result;
+        if (!(typeof jcamp === 'string')) return result;
         // console.time('start');
 
         if (result.profiling) result.profiling.push({action: 'Before split to LDRS', time: new Date() - start});
@@ -79,9 +79,9 @@ function getConverter() {
             }
             dataLabel = dataLabel.replace(/[_ -]/g, '').toUpperCase();
 
-            if (dataLabel == 'DATATABLE') {
+            if (dataLabel === 'DATATABLE') {
                 endLine = dataValue.indexOf('\n');
-                if (endLine == -1) endLine = dataValue.indexOf('\r');
+                if (endLine === -1) endLine = dataValue.indexOf('\r');
                 if (endLine > 0) {
                     var xIndex = -1;
                     var yIndex = -1;
@@ -96,8 +96,8 @@ function getConverter() {
                         yIndex = ntuples.symbol.indexOf(secondVariable);
                     }
 
-                    if (xIndex == -1) xIndex = 0;
-                    if (yIndex == -1) yIndex = 0;
+                    if (xIndex === -1) xIndex = 0;
+                    if (yIndex === -1) yIndex = 0;
 
                     if (ntuples.first) {
                         if (ntuples.first.length > xIndex) spectrum.firstX = ntuples.first[xIndex];
@@ -129,42 +129,42 @@ function getConverter() {
             }
 
 
-            if (dataLabel == 'TITLE') {
+            if (dataLabel === 'TITLE') {
                 spectrum.title = dataValue;
-            } else if (dataLabel == 'DATATYPE') {
+            } else if (dataLabel === 'DATATYPE') {
                 spectrum.dataType = dataValue;
                 if (dataValue.indexOf('nD') > -1) {
                     result.twoD = true;
                 }
-            } else if (dataLabel == 'XUNITS') {
+            } else if (dataLabel === 'XUNITS') {
                 spectrum.xUnit = dataValue;
-            } else if (dataLabel == 'YUNITS') {
+            } else if (dataLabel === 'YUNITS') {
                 spectrum.yUnit = dataValue;
-            } else if (dataLabel == 'FIRSTX') {
+            } else if (dataLabel === 'FIRSTX') {
                 spectrum.firstX = parseFloat(dataValue);
-            } else if (dataLabel == 'LASTX') {
+            } else if (dataLabel === 'LASTX') {
                 spectrum.lastX = parseFloat(dataValue);
-            } else if (dataLabel == 'FIRSTY') {
+            } else if (dataLabel === 'FIRSTY') {
                 spectrum.firstY = parseFloat(dataValue);
-            } else if (dataLabel == 'NPOINTS') {
+            } else if (dataLabel === 'NPOINTS') {
                 spectrum.nbPoints = parseFloat(dataValue);
-            } else if (dataLabel == 'XFACTOR') {
+            } else if (dataLabel === 'XFACTOR') {
                 spectrum.xFactor = parseFloat(dataValue);
-            } else if (dataLabel == 'YFACTOR') {
+            } else if (dataLabel === 'YFACTOR') {
                 spectrum.yFactor = parseFloat(dataValue);
-            } else if (dataLabel == 'DELTAX') {
+            } else if (dataLabel === 'DELTAX') {
                 spectrum.deltaX = parseFloat(dataValue);
-            } else if (dataLabel == '.OBSERVEFREQUENCY' || dataLabel == '$SFO1') {
+            } else if (dataLabel === '.OBSERVEFREQUENCY' || dataLabel === '$SFO1') {
                 if (!spectrum.observeFrequency) spectrum.observeFrequency = parseFloat(dataValue);
-            } else if (dataLabel == '.OBSERVENUCLEUS') {
+            } else if (dataLabel === '.OBSERVENUCLEUS') {
                 if (!spectrum.xType) result.xType = dataValue.replace(/[^a-zA-Z0-9]/g, '');
-            } else if (dataLabel == '$SFO2') {
+            } else if (dataLabel === '$SFO2') {
                 if (!result.indirectFrequency) result.indirectFrequency = parseFloat(dataValue);
 
-            } else if (dataLabel == '$OFFSET') {   // OFFSET for Bruker spectra
+            } else if (dataLabel === '$OFFSET') {   // OFFSET for Bruker spectra
                 result.shiftOffsetNum = 0;
                 if (!result.shiftOffsetVal)  result.shiftOffsetVal = parseFloat(dataValue);
-            } else if (dataLabel == '$REFERENCEPOINT') {   // OFFSET for Varian spectra
+            } else if (dataLabel === '$REFERENCEPOINT') {   // OFFSET for Varian spectra
 
 
                 // if we activate this part it does not work for ACD specmanager
@@ -172,33 +172,33 @@ function getConverter() {
                 //                 var parts = dataValue.split(/ *, */);
                 //                 result.shiftOffsetNum = parseInt(parts[2].trim());
                 //                 result.shiftOffsetVal = parseFloat(parts[3].trim());
-            } else if (dataLabel == 'VARNAME') {
+            } else if (dataLabel === 'VARNAME') {
                 ntuples.varname = dataValue.split(/[, \t]{2,}/);
-            } else if (dataLabel == 'SYMBOL') {
+            } else if (dataLabel === 'SYMBOL') {
                 ntuples.symbol = dataValue.split(/[, \t]{2,}/);
-            } else if (dataLabel == 'VARTYPE') {
+            } else if (dataLabel === 'VARTYPE') {
                 ntuples.vartype = dataValue.split(/[, \t]{2,}/);
-            } else if (dataLabel == 'VARFORM') {
+            } else if (dataLabel === 'VARFORM') {
                 ntuples.varform = dataValue.split(/[, \t]{2,}/);
-            } else if (dataLabel == 'VARDIM') {
+            } else if (dataLabel === 'VARDIM') {
                 ntuples.vardim = convertToFloatArray(dataValue.split(/[, \t]{2,}/));
-            } else if (dataLabel == 'UNITS') {
+            } else if (dataLabel === 'UNITS') {
                 ntuples.units = dataValue.split(/[, \t]{2,}/);
-            } else if (dataLabel == 'FACTOR') {
+            } else if (dataLabel === 'FACTOR') {
                 ntuples.factor = convertToFloatArray(dataValue.split(/[, \t]{2,}/));
-            } else if (dataLabel == 'FIRST') {
+            } else if (dataLabel === 'FIRST') {
                 ntuples.first = convertToFloatArray(dataValue.split(/[, \t]{2,}/));
-            } else if (dataLabel == 'LAST') {
+            } else if (dataLabel === 'LAST') {
                 ntuples.last = convertToFloatArray(dataValue.split(/[, \t]{2,}/));
-            } else if (dataLabel == 'MIN') {
+            } else if (dataLabel === 'MIN') {
                 ntuples.min = convertToFloatArray(dataValue.split(/[, \t]{2,}/));
-            } else if (dataLabel == 'MAX') {
+            } else if (dataLabel === 'MAX') {
                 ntuples.max = convertToFloatArray(dataValue.split(/[, \t]{2,}/));
-            } else if (dataLabel == '.NUCLEUS') {
+            } else if (dataLabel === '.NUCLEUS') {
                 if (result.twoD) {
                     result.yType = dataValue.split(/[, \t]{2,}/)[0];
                 }
-            } else if (dataLabel == 'PAGE') {
+            } else if (dataLabel === 'PAGE') {
                 spectrum.page = dataValue.trim();
                 spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ''));
                 spectrum.pageSymbol = spectrum.page.replace(/=.*/, '');
@@ -207,12 +207,12 @@ function getConverter() {
                 if (ntuples.units && ntuples.units[pageSymbolIndex]) {
                     unit = ntuples.units[pageSymbolIndex];
                 }
-                if (result.indirectFrequency && unit != 'PPM') {
+                if (result.indirectFrequency && unit !== 'PPM') {
                     spectrum.pageValue /= result.indirectFrequency;
                 }
-            } else if (dataLabel == 'RETENTIONTIME') {
+            } else if (dataLabel === 'RETENTIONTIME') {
                 spectrum.pageValue = parseFloat(dataValue);
-            } else if (dataLabel == 'XYDATA') {
+            } else if (dataLabel === 'XYDATA') {
                 prepareSpectrum(result, spectrum);
                 // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
                 if (dataValue.match(/.*\+\+.*/)) {
@@ -222,7 +222,7 @@ function getConverter() {
                 }
                 spectra.push(spectrum);
                 spectrum = {};
-            } else if (dataLabel == 'PEAKTABLE') {
+            } else if (dataLabel === 'PEAKTABLE') {
                 prepareSpectrum(result, spectrum);
                 parsePeakTable(spectrum, dataValue, result);
                 spectra.push(spectrum);
@@ -266,7 +266,7 @@ function getConverter() {
 
 
         // maybe it is a GC (HPLC) / MS. In this case we add a new format
-        if (spectra.length > 1 && spectra[0].dataType && spectra[0].dataType.toLowerCase().match(/.*mass./)) {
+        if (spectra.length > 1 && (! spectra[0].dataType || spectra[0].dataType.toLowerCase().match(/.*mass./))) {
             addGCMS(result);
             if (result.profiling) result.profiling.push({
                 action: 'Finished GCMS calculation',
@@ -313,7 +313,7 @@ function getConverter() {
 
     function isMSField(dataLabel) {
         for (var i = 0; i < GC_MS_FIELDS.length; i++) {
-            if (dataLabel == GC_MS_FIELDS[i]) return true;
+            if (dataLabel === GC_MS_FIELDS[i]) return true;
         }
         return false;
     }
@@ -328,6 +328,7 @@ function getConverter() {
                 existingGCMSFields.push(label);
             }
         }
+        if (existingGCMSFields.length===0) return;
         var gcms = {};
         gcms.gc = {};
         gcms.ms = [];
@@ -340,7 +341,7 @@ function getConverter() {
                 gcms.gc[existingGCMSFields[j]].push(spectrum.pageValue);
                 gcms.gc[existingGCMSFields[j]].push(parseFloat(spectrum[existingGCMSFields[j]]));
             }
-            if (spectrum.data) gcms.ms[i] = spectrum.data[0];
+          if (spectrum.data) gcms.ms[i] = spectrum.data[0];
 
         }
         result.gcms = gcms;
@@ -350,7 +351,7 @@ function getConverter() {
         if (!spectrum.xFactor) spectrum.xFactor = 1;
         if (!spectrum.yFactor) spectrum.yFactor = 1;
         if (spectrum.observeFrequency) {
-            if (spectrum.xUnit && spectrum.xUnit.toUpperCase() == 'HZ') {
+            if (spectrum.xUnit && spectrum.xUnit.toUpperCase() === 'HZ') {
                 spectrum.xUnit = 'PPM';
                 spectrum.xFactor = spectrum.xFactor / spectrum.observeFrequency;
                 spectrum.firstX = spectrum.firstX / spectrum.observeFrequency;
@@ -377,7 +378,7 @@ function getConverter() {
         var k = 0;
         for (i = 1, ii = lines.length; i < ii; i++) {
             values = lines[i].trim().replace(removeCommentRegExp, '').split(peakTableSplitRegExp);
-            if (values.length % 2 == 0) {
+            if (values.length % 2 === 0) {
                 for (j = 0, jj = values.length; j < jj; j = j + 2) {
                     // takes around 40% of the time to add and parse the 2 values nearly exclusively because of parseFloat
                     currentData[k++] = (parseFloat(values[j]) * spectrum.xFactor);
@@ -414,20 +415,20 @@ function getConverter() {
                         spectrum.firstPoint = parseFloat(values[0]);
                     }
                     var expectedCurrentX = parseFloat(values[0] - spectrum.firstPoint) * spectrum.xFactor + spectrum.firstX;
-                    if ((lastDif || lastDif == 0)) {
+                    if ((lastDif || lastDif === 0)) {
                         expectedCurrentX += spectrum.deltaX;
                     }
                     result.logs.push('Checking X value: currentX: ' + currentX + ' - expectedCurrentX: ' + expectedCurrentX);
                 }
                 for (var j = 1, jj = values.length; j < jj; j++) {
-                    if (j == 1 && (lastDif || lastDif == 0)) {
+                    if (j === 1 && (lastDif || lastDif === 0)) {
                         lastDif = null; // at the beginning of each line there should be the full value X / Y so the diff is always undefined
                         // we could check if we have the expected Y value
                         ascii = values[j].charCodeAt(0);
 
                         if (false) { // this code is just to check the jcamp DIFDUP and the next line repeat of Y value
                             // + - . 0 1 2 3 4 5 6 7 8 9
-                            if ((ascii == 43) || (ascii == 45) || (ascii == 46) || ((ascii > 47) && (ascii < 58))) {
+                            if ((ascii === 43) || (ascii === 45) || (ascii === 46) || ((ascii > 47) && (ascii < 58))) {
                                 expectedY = parseFloat(values[j]);
                             } else
                             // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
@@ -440,7 +441,7 @@ function getConverter() {
                                 // we could use parseInt but parseFloat is faster at least in Chrome
                                 expectedY = -parseFloat(String.fromCharCode(ascii - 48) + values[j].substring(1));
                             }
-                            if (expectedY != currentY) {
+                            if (expectedY !== currentY) {
                                 result.logs.push('Y value check error: Found: ' + expectedY + ' - Current: ' + currentY);
                                 result.logs.push('Previous values: ' + previousValues.length);
                                 result.logs.push(previousValues);
@@ -450,7 +451,7 @@ function getConverter() {
                         if (values[j].length > 0) {
                             ascii = values[j].charCodeAt(0);
                             // + - . 0 1 2 3 4 5 6 7 8 9
-                            if ((ascii == 43) || (ascii == 45) || (ascii == 46) || ((ascii > 47) && (ascii < 58))) {
+                            if ((ascii === 43) || (ascii === 45) || (ascii === 46) || ((ascii > 47) && (ascii < 58))) {
                                 lastDif = null;
                                 currentY = parseFloat(values[j]);
                                 currentData.push(currentX, currentY * spectrum.yFactor);;
@@ -474,9 +475,9 @@ function getConverter() {
 
 
                             // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
-                            if (((ascii > 82) && (ascii < 91)) || (ascii == 115)) {
+                            if (((ascii > 82) && (ascii < 91)) || (ascii === 115)) {
                                 var dup = parseFloat(String.fromCharCode(ascii - 34) + values[j].substring(1)) - 1;
-                                if (ascii == 115) {
+                                if (ascii === 115) {
                                     dup = parseFloat('9' + values[j].substring(1)) - 1;
                                 }
                                 for (var l = 0; l < dup; l++) {
@@ -488,7 +489,7 @@ function getConverter() {
                                 }
                             } else
                             // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
-                            if (ascii == 37) {
+                            if (ascii === 37) {
                                 lastDif = parseFloat('0' + values[j].substring(1));
                                 currentY += lastDif;
                                 currentData.push(currentX, currentY * spectrum.yFactor);;
@@ -527,7 +528,7 @@ function getConverter() {
                 z[i][j] = spectra[i].data[0][j * 2 + 1];
                 if (z[i][j] < minZ) minZ = spectra[i].data[0][j * 2 + 1];
                 if (z[i][j] > maxZ) maxZ = spectra[i].data[0][j * 2 + 1];
-                if (i != 0 && j != 0) {
+                if (i !== 0 && j !== 0) {
                     noise += Math.abs(z[i][j] - z[i][j - 1]) + Math.abs(z[i][j] - z[i - 1][j]);
                 }
             }
@@ -590,7 +591,7 @@ function getConverter() {
             var contourLevel = {};
             contourLevels.push(contourLevel);
             var side = level % 2;
-            if (side == 0) {
+            if (side === 0) {
                 lineZValue = (maxZ - 5 * noise) * Math.exp(level / 2 - nbLevels) + 5 * noise;
             } else {
                 lineZValue = -(maxZ - 5 * noise) * Math.exp(level / 2 - nbLevels) - 5 * noise;
@@ -615,14 +616,14 @@ function getConverter() {
                     // Example povar0 is over the plane and povar1 and
                     // povar2 are below, we find the varersections and add
                     // the segment
-                    if (isOver[0] != isOver[1] && isOver[0] != isOver[2]) {
+                    if (isOver[0] !== isOver[1] && isOver[0] !== isOver[2]) {
                         pAx = povar + (lineZValue - povarHeight[0]) / (povarHeight[1] - povarHeight[0]);
                         pAy = iSubSpectra;
                         pBx = povar;
                         pBy = iSubSpectra + (lineZValue - povarHeight[0]) / (povarHeight[2] - povarHeight[0]);
                         lines.push(pAx * dx + x0, pAy * dy + y0, pBx * dx + x0, pBy * dy + y0);
                     }
-                    if (isOver[3] != isOver[1] && isOver[3] != isOver[2]) {
+                    if (isOver[3] !== isOver[1] && isOver[3] !== isOver[2]) {
                         pAx = povar + 1;
                         pAy = iSubSpectra + 1 - (lineZValue - povarHeight[3]) / (povarHeight[1] - povarHeight[3]);
                         pBx = povar + 1 - (lineZValue - povarHeight[3]) / (povarHeight[2] - povarHeight[3]);
@@ -630,25 +631,25 @@ function getConverter() {
                         lines.push(pAx * dx + x0, pAy * dy + y0, pBx * dx + x0, pBy * dy + y0);
                     }
                     // test around the diagonal
-                    if (isOver[1] != isOver[2]) {
+                    if (isOver[1] !== isOver[2]) {
                         pAx = povar + 1 - (lineZValue - povarHeight[1]) / (povarHeight[2] - povarHeight[1]);
                         pAy = iSubSpectra + (lineZValue - povarHeight[1]) / (povarHeight[2] - povarHeight[1]);
-                        if (isOver[1] != isOver[0]) {
+                        if (isOver[1] !== isOver[0]) {
                             pBx = povar + 1 - (lineZValue - povarHeight[1]) / (povarHeight[0] - povarHeight[1]);
                             pBy = iSubSpectra;
                             lines.push(pAx * dx + x0, pAy * dy + y0, pBx * dx + x0, pBy * dy + y0);
                         }
-                        if (isOver[2] != isOver[0]) {
+                        if (isOver[2] !== isOver[0]) {
                             pBx = povar;
                             pBy = iSubSpectra + 1 - (lineZValue - povarHeight[2]) / (povarHeight[0] - povarHeight[2]);
                             lines.push(pAx * dx + x0, pAy * dy + y0, pBx * dx + x0, pBy * dy + y0);
                         }
-                        if (isOver[1] != isOver[3]) {
+                        if (isOver[1] !== isOver[3]) {
                             pBx = povar + 1;
                             pBy = iSubSpectra + (lineZValue - povarHeight[1]) / (povarHeight[3] - povarHeight[1]);
                             lines.push(pAx * dx + x0, pAy * dy + y0, pBx * dx + x0, pBy * dy + y0);
                         }
-                        if (isOver[2] != isOver[3]) {
+                        if (isOver[2] !== isOver[3]) {
                             pBx = povar + (lineZValue - povarHeight[2]) / (povarHeight[3] - povarHeight[2]);
                             pBy = iSubSpectra + 1;
                             lines.push(pAx * dx + x0, pAy * dy + y0, pBx * dx + x0, pBy * dy + y0);
@@ -690,7 +691,7 @@ function getConverter() {
                 var lowResData = [];
                 var modulo = Math.ceil(highResData.length / (targetNbPoints * 2));
                 for (i = 0, ii = highResData.length; i < ii; i = i + 2) {
-                    if (i % modulo == 0) {
+                    if (i % modulo === 0) {
                         lowResData.push(highResData[i], highResData[i + 1])
                     }
                 }
