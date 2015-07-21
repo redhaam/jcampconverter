@@ -5,7 +5,7 @@ var fs = require('fs');
 
 
 
-describe.only('Test JCAMP converter of GCMS', function () {
+describe('Test JCAMP converter of GCMS', function () {
 
     var result = Converter.convert(fs.readFileSync(__dirname + '/data/misc/gcms.jdx').toString());
     var gcms=result.gcms;
