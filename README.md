@@ -81,7 +81,7 @@ http://unitjs.com/guide/should-js.html
 
 [npm-image]: https://img.shields.io/npm/v/jcampconverter.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/jcampconverter
-[travis-image]: https://img.shields.io/travis/cheminfo/jcampconverter/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/cheminfo/jcampconverter
+[travis-image]: https://img.shields.io/travis/cheminfo-js/jcampconverter/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/cheminfo-js/jcampconverter
 [download-image]: https://img.shields.io/npm/dm/jcampconverter.svg?style=flat-square
 [download-url]: https://www.npmjs.com/package/jcampconverter
