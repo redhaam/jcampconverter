@@ -12,7 +12,7 @@ describe('Test JCAMP options', function () {
         );
 
         it('info length', function () {
-            Object.keys(result.info).length.should.eql(366);
+            Object.keys(result.info).length.should.eql(386);
         });
 
         it('info solvent', function () {
