@@ -262,7 +262,7 @@ function getConverter() {
 
 
         // maybe it is a GC (HPLC) / MS. In this case we add a new format
-        if (spectra.length > 1 && (! spectra[0].dataType || spectra[0].dataType.toLowerCase().match(/.*mass.*/))) {
+        if (spectra.length > 1 && (! spectra[0].dataType || spectra[0].dataType.match(/.*mass.*/i))) {
             addGCMS(result);
             if (result.profiling) result.profiling.push({
                 action: 'Finished GCMS calculation',
