@@ -195,6 +195,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                spectrum.lastX = parseFloat(dataValue);
 	            } else if (dataLabel === 'FIRSTY') {
 	                spectrum.firstY = parseFloat(dataValue);
+	            } else if (dataLabel === 'LASTY') {
+	                spectrum.lastY = parseFloat(dataValue);
 	            } else if (dataLabel === 'NPOINTS') {
 	                spectrum.nbPoints = parseFloat(dataValue);
 	            } else if (dataLabel === 'XFACTOR') {
@@ -316,7 +318,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	        // maybe it is a GC (HPLC) / MS. In this case we add a new format
-	        if (spectra.length > 1 && (! spectra[0].dataType || spectra[0].dataType.toLowerCase().match(/.*mass./))) {
+	        if (spectra.length > 1 && (! spectra[0].dataType || spectra[0].dataType.match(/.*mass.*/i))) {
 	            addGCMS(result);
 	            if (result.profiling) result.profiling.push({
 	                action: 'Finished GCMS calculation',
@@ -799,6 +801,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = {
 	    convert: JcampConverter
 	};
+
 
 /***/ }
 /******/ ])
