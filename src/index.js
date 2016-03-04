@@ -139,6 +139,8 @@ function getConverter() {
                 spectrum.lastX = parseFloat(dataValue);
             } else if (dataLabel === 'FIRSTY') {
                 spectrum.firstY = parseFloat(dataValue);
+            } else if (dataLabel === 'LASTY') {
+                spectrum.lastY = parseFloat(dataValue);
             } else if (dataLabel === 'NPOINTS') {
                 spectrum.nbPoints = parseFloat(dataValue);
             } else if (dataLabel === 'XFACTOR') {
