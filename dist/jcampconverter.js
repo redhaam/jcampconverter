@@ -62,6 +62,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var xyDataSplitRegExp = /[,\t \+-]*(?=[^\d,\t \.])|[ \t]+(?=[\d+\.-])/;
 	    var removeCommentRegExp = /\$\$.*/;
 	    var peakTableSplitRegExp = /[,\t ]+/;
+	    var ntuplesSeparator = /[, \t]{1,}/;
 	    var DEBUG = false;
 
 	    var GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
@@ -185,6 +186,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                if (dataValue.indexOf('nD') > -1) {
 	                    result.twoD = true;
 	                }
+	            } else if (dataLabel === 'NTUPLES') {
+	                if (dataValue.indexOf('nD') > -1) {
+	                    result.twoD = true;
+	                }
 	            } else if (dataLabel === 'XUNITS') {
 	                spectrum.xUnit = dataValue;
 	            } else if (dataLabel === 'YUNITS') {
@@ -224,30 +229,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	                //                 result.shiftOffsetNum = parseInt(parts[2].trim());
 	                //                 result.shiftOffsetVal = parseFloat(parts[3].trim());
 	            } else if (dataLabel === 'VARNAME') {
-	                ntuples.varname = dataValue.split(/[, \t]{2,}/);
+	                ntuples.varname = dataValue.split(ntuplesSeparator);
 	            } else if (dataLabel === 'SYMBOL') {
-	                ntuples.symbol = dataValue.split(/[, \t]{2,}/);
+	                ntuples.symbol = dataValue.split(ntuplesSeparator);
 	            } else if (dataLabel === 'VARTYPE') {
-	                ntuples.vartype = dataValue.split(/[, \t]{2,}/);
+	                ntuples.vartype = dataValue.split(ntuplesSeparator);
 	            } else if (dataLabel === 'VARFORM') {
-	                ntuples.varform = dataValue.split(/[, \t]{2,}/);
+	                ntuples.varform = dataValue.split(ntuplesSeparator);
 	            } else if (dataLabel === 'VARDIM') {
-	                ntuples.vardim = convertToFloatArray(dataValue.split(/[, \t]{2,}/));
+	                ntuples.vardim = convertToFloatArray(dataValue.split(ntuplesSeparator));
 	            } else if (dataLabel === 'UNITS') {
-	                ntuples.units = dataValue.split(/[, \t]{2,}/);
+	                ntuples.units = dataValue.split(ntuplesSeparator);
 	            } else if (dataLabel === 'FACTOR') {
-	                ntuples.factor = convertToFloatArray(dataValue.split(/[, \t]{2,}/));
+	                ntuples.factor = convertToFloatArray(dataValue.split(ntuplesSeparator));
 	            } else if (dataLabel === 'FIRST') {
-	                ntuples.first = convertToFloatArray(dataValue.split(/[, \t]{2,}/));
+	                ntuples.first = convertToFloatArray(dataValue.split(ntuplesSeparator));
 	            } else if (dataLabel === 'LAST') {
-	                ntuples.last = convertToFloatArray(dataValue.split(/[, \t]{2,}/));
+	                ntuples.last = convertToFloatArray(dataValue.split(ntuplesSeparator));
 	            } else if (dataLabel === 'MIN') {
-	                ntuples.min = convertToFloatArray(dataValue.split(/[, \t]{2,}/));
+	                ntuples.min = convertToFloatArray(dataValue.split(ntuplesSeparator));
 	            } else if (dataLabel === 'MAX') {
-	                ntuples.max = convertToFloatArray(dataValue.split(/[, \t]{2,}/));
+	                ntuples.max = convertToFloatArray(dataValue.split(ntuplesSeparator));
 	            } else if (dataLabel === '.NUCLEUS') {
 	                if (result.twoD) {
-	                    result.yType = dataValue.split(/[, \t]{2,}/)[0];
+	                    result.yType = dataValue.split(ntuplesSeparator)[0];
 	                }
 	            } else if (dataLabel === 'PAGE') {
 	                spectrum.page = dataValue.trim();

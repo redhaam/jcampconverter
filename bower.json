@@ -1,6 +1,6 @@
 {
   "name": "jcampconverter",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "main": [
     "dist/jcampconverter.js",
     "dist/jcampconverter.min.js"
