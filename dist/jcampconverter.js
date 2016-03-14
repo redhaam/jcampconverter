@@ -321,16 +321,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 
-
-	        // maybe it is a GC (HPLC) / MS. In this case we add a new format
-	        if (spectra.length > 1 && (! spectra[0].dataType || spectra[0].dataType.match(/.*mass.*/i))) {
-	            addGCMS(result);
-	            if (result.profiling) result.profiling.push({
-	                action: 'Finished GCMS calculation',
-	                time: new Date() - start
-	            });
+	        var isGCMS = (spectra.length > 1 && (! spectra[0].dataType || spectra[0].dataType.match(/.*mass.*/i)));
+	        if (isGCMS && options.newGCMS) {
+	            options.xy = true;
 	        }
-
 
 	        if (options.xy) { // the spectraData should not be a oneD array but an object with x and y
 	            if (spectra.length > 0) {
@@ -339,7 +333,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    if (spectrum.data.length>0) {
 	                        for (var j=0; j<spectrum.data.length; j++) {
 	                            var data=spectrum.data[j];
-	                            var newData={x:Array(data.length/2), y:Array(data.length/2)};
+	                            var newData={x: new Array(data.length/2), y:new Array(data.length/2)};
 	                            for (var k=0; k<data.length; k=k+2) {
 	                                newData.x[k/2]=data[k];
 	                                newData.y[k/2]=data[k+1];
@@ -353,14 +347,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 
+	        // maybe it is a GC (HPLC) / MS. In this case we add a new format
+	        if (isGCMS) {
+	            if (options.newGCMS) {
+	                addNewGCMS(result);
+	            } else {
+	                addGCMS(result);
+	            }
+	            if (result.profiling) result.profiling.push({
+	                action: 'Finished GCMS calculation',
+	                time: new Date() - start
+	            });
+	        }
+
 	        if (result.profiling) {
 	            result.profiling.push({action: 'Total time', time: new Date() - start});
 	        }
 
-	        //   console.log(result);
-	        //    console.log(JSON.stringify(spectra));
 	        return result;
-
 	    }
 
 
@@ -369,10 +373,47 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function isMSField(dataLabel) {
-	        for (var i = 0; i < GC_MS_FIELDS.length; i++) {
-	            if (dataLabel === GC_MS_FIELDS[i]) return true;
+	        return GC_MS_FIELDS.indexOf(dataLabel) !== -1;
+	    }
+
+	    function addNewGCMS(result) {
+	        var spectra = result.spectra;
+	        var length  = spectra.length;
+	        var gcms = {
+	            times: new Array(length),
+	            series: [{
+	                name: 'ms',
+	                dimension: 2,
+	                data: new Array(length)
+	            }]
+	        };
+
+	        var i;
+	        var existingGCMSFields = [];
+	        for (i = 0; i < GC_MS_FIELDS.length; i++) {
+	            var label = convertMSFieldToLabel(GC_MS_FIELDS[i]);
+	            if (spectra[0][label]) {
+	                existingGCMSFields.push(label);
+	                gcms.series.push({
+	                    name: label,
+	                    dimension: 1,
+	                    data: new Array(length)
+	                });
+	            }
 	        }
-	        return false;
+
+	        for (i = 0; i < length; i++) {
+	            var spectrum = spectra[i];
+	            gcms.times[i] = spectrum.pageValue;
+	            for (var j = 0; j < existingGCMSFields.length; j++) {
+	                gcms.series[j + 1].data[i] = parseFloat(spectrum[existingGCMSFields[j]]);
+	            }
+	            if (spectrum.data) {
+	                gcms.series[0].data[i] = [spectrum.data[0].x, spectrum.data[0].y];
+	            }
+
+	        }
+	        result.gcms = gcms;
 	    }
 
 	    function addGCMS(result) {
