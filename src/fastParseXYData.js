@@ -4,6 +4,8 @@ var DEBUG=true;
 
 
 module.exports=function(spectrum, value, result) {
+    // TODO need to deal with result
+    console.log(value);
     // we check if deltaX is defined otherwise we calculate it
     if (!spectrum.deltaX) {
         spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
@@ -33,84 +35,104 @@ module.exports=function(spectrum, value, result) {
     // we proceed taking the i after the first line
     var newLine = true;
     var isDifference=false;
-    var lastDifference=0;
+    var lastDifference=null;
     var isDuplicate=false;
     var inComment = false;
     var currentValue = 0;
     var isNegative = false;
+    var inValue=false;
     var decimalPosition = 0;
-    for (; i < value.length; i++) {
+    for (; i <= value.length; i++) {
         var ascii = value.charCodeAt(i);
-
         if (inComment) {
-
+            // we should ignore the text if we are after $$
         } else {
             // when is it a new value ?
             // when it is not a digit, -, +, . or comma
-            if (ascii < 43 && ascii > 57 && ascii !== 47) {
-                // need to process the previous value
-                if (newLine) {
-                    newLine = false;
-                } else {
-                    // need to deal with duplicate and differences
-                    if (isDifference) {
-                        lastDifference=isNegative ? -currentValue : currentValue;
-                        isDifference=false;
-                    }
-                    var duplicate=isDuplicate ? 1 : currentValue+1;
-                    for (var j=0; j<duplicate; j++) {
-                        if (lastDifference!==null) {
-                            currentY += lastDifference;
-                        } else {
-                            currentY = isNegative ? -currentValue : currentValue;
+            if (((ascii < 43 || ascii > 57) && ascii !== 47) || isNaN(ascii)) {
+                if (inValue) {
+                    console.log("Separator",isNegative ? -currentValue : currentValue, isDifference, isDuplicate);
+                    // need to process the previous value
+                    if (newLine) {
+                        newLine = false;
+                    } else {
+                        // need to deal with duplicate and differences
+                        if (isDifference) {
+                            lastDifference=isNegative ? -currentValue : currentValue;
+                            isDifference=false;
                         }
-                        currentData.push(currentX, currentY * spectrum.yFactor);
-                        currentX += spectrum.deltaX;
+                        var duplicate=isDuplicate ? currentValue+1 : 1;
+                        for (var j=0; j<duplicate; j++) {
+                            if (lastDifference!==null) {
+                                currentY += lastDifference;
+                            } else {
+                                currentY = isNegative ? -currentValue : currentValue;
+                            }
+                            currentData[currentPosition++]=currentX;
+                            currentData[currentPosition++]=currentY * spectrum.yFactor;
+                            currentX += spectrum.deltaX;
+                        }
                     }
+                    isNegative=false;
+                    currentValue=0;
+                    decimalPosition=0;
+                    inValue=false;
                 }
+
+
+
                 // and now analyse the details ... space or tabulation
                 if (ascii === 32 || ascii === 9 || ascii === 43) {
 
                 } else
                 // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
                 if ((ascii > 63) && (ascii < 74)) {
+                    inValue=true;
                     currentValue=ascii-64;
                 } else
                 // negative SQZ digits a b c d e f g h i (ascii 97-105)
                 if ((ascii > 96) && (ascii < 106)) {
+                    inValue=true;
                     currentValue=ascii-96;
                     isNegative=true;
                 } else
                 // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
                 if (ascii===115) {
-                    var isDuplicate=true;
+                    inValue=true;
+                    isDuplicate=true;
                     currentValue=9;
                 } else if ((ascii > 82) && (ascii < 91)) {
-                    var isDuplicate=true;
+                    inValue=true;
+                    isDuplicate=true;
                     currentValue=ascii-82;
                 } else
                 // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
                 if (ascii === 37) {
+                    inValue=true;
                     isDifference=true;
                     currentValue=0;
                     isNegative=true;
                 } else if ((ascii > 73) && (ascii < 83)) {
+                    inValue=true;
                     isDifference=true;
                     currentValue=ascii-73;
                 } else
                 // negative DIF digits j k l m n o p q r (ascii 106-114)
                 if ((ascii > 105) && (ascii < 115)) {
+                    inValue=true;
                     isDifference=true;
                     currentValue=ascii-105;
                     isNegative=true;
                 } else
                 // $ sign, we need to check the next one
                 if (ascii === 36 && value.charCodeAt(i + 1) === 36) {
+                    inValue=true;
                     inComment = true;
                 }
 
             } else { // it is a number that is either new or we continue
                 if (ascii >= 48 && ascii <= 57) { // a number
+                    inValue=true;
                     if (decimalPosition > 0) {
                         currentValue += (ascii - 48) / Math.pow(10, decimalPosition++);
                     } else {
@@ -118,8 +140,14 @@ module.exports=function(spectrum, value, result) {
                         currentValue += ascii - 48;
                     }
                 } else if (ascii === 45) { // a "-"
-                    isNegative = true;
+                    // check if after there is a number, decimal or comma
+                    let ascii2=value.charCodeAt(i+1);
+                    if ((ascii2 >= 48 && ascii2 <= 57) || ascii2 === 44 || ascii2 === 46) {
+                        inValue=true;
+                        isNegative = true;
+                    }
                 } else if (ascii === 44 || ascii === 46) { // a "," or "."
+                    inValue=true;
                     decimalPosition++;
                 } // if "+" we just don't care
             }
@@ -131,5 +159,7 @@ module.exports=function(spectrum, value, result) {
             inComment = false;
         }
     }
+
+    currentData.length=currentPosition;
 }
 

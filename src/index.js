@@ -1,6 +1,7 @@
 'use strict';
 
 var parseXYData=require('./parseXYData.js');
+var fastParseXYData=require('./fastParseXYData.js');
 var parsePeakTable=require('./parsePeakTable.js');
 
 
@@ -216,7 +217,11 @@ function getConverter() {
                 prepareSpectrum(result, spectrum);
                 // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
                 if (dataValue.match(/.*\+\+.*/)) {
-                    parseXYData(spectrum, dataValue, result);
+                    if (options.fastParse) {
+                        fastParseXYData(spectrum, dataValue, result);
+                    } else {
+                        parseXYData(spectrum, dataValue, result);
+                    }
                 } else {
                     parsePeakTable(spectrum, dataValue, result);
                 }
