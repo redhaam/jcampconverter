@@ -57,7 +57,7 @@ suite
         var counter=0;
         for (var i=0; i<10000; i++) {
             array[counter++]=i*2;
-            array[counter++]=i*3;k
+            array[counter++]=i*3;
             array[counter++]=i*4;
             array[counter++]=i*5;
         }

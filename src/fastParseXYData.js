@@ -35,7 +35,8 @@ module.exports=function(spectrum, value, result) {
     // we proceed taking the i after the first line
     var newLine = true;
     var isDifference=false;
-    var lastDifference=null;
+    var isLastDifference=false;
+    var lastDifference=0;
     var isDuplicate=false;
     var inComment = false;
     var currentValue = 0;
@@ -51,7 +52,7 @@ module.exports=function(spectrum, value, result) {
             // when is it a new value ?
             // when it is not a digit, . or comma
             // it is a number that is either new or we continue
-            if (ascii >= 48 && ascii <= 57) { // a number
+            if ( ascii <= 57 && ascii >= 48) { // a number
                 inValue=true;
                 if (decimalPosition > 0) {
                     currentValue += (ascii - 48) / Math.pow(10, decimalPosition++);
@@ -70,7 +71,7 @@ module.exports=function(spectrum, value, result) {
                        // console.log("NEW LINE",isDifference, lastDifference);
                         // if new line and lastDifference, the first value is just a check !
                         // that we don't check ...
-                        if (lastDifference) skipFirstValue=true;
+                        if (isLastDifference) skipFirstValue=true;
                     } else {
                         // need to deal with duplicate and differences
                         if (skipFirstValue) {
@@ -78,11 +79,12 @@ module.exports=function(spectrum, value, result) {
                         } else {
                             if (isDifference) {
                                 lastDifference=isNegative ? -currentValue : currentValue;
+                                isLastDifference=true;
                                 isDifference=false;
                             }
                             var duplicate=isDuplicate ? currentValue - 1 : 1;
                             for (var j=0; j<duplicate; j++) {
-                                if (lastDifference!==null) {
+                                if (isLastDifference) {
                                     currentY += lastDifference;
                                 } else {
                                     currentY = isNegative ? -currentValue : currentValue;
@@ -108,15 +110,15 @@ module.exports=function(spectrum, value, result) {
                 }
 
                 // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
-                if ((ascii > 63) && (ascii < 74)) {
+                if ((ascii < 74) && (ascii > 63)) {
                     inValue=true;
-                    lastDifference=null;
+                    isLastDifference=false;
                     currentValue=ascii-64;
                 } else
                 // negative SQZ digits a b c d e f g h i (ascii 97-105)
                 if ((ascii > 96) && (ascii < 106)) {
                     inValue=true;
-                    lastDifference=null;
+                    isLastDifference=false;
                     currentValue=ascii-96;
                     isNegative=true;
                 } else
@@ -131,12 +133,7 @@ module.exports=function(spectrum, value, result) {
                     currentValue=ascii-82;
                 } else
                 // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
-                if (ascii === 37) {
-                    inValue=true;
-                    isDifference=true;
-                    currentValue=0;
-                    isNegative=true;
-                } else if ((ascii > 73) && (ascii < 83)) {
+                if ((ascii > 73) && (ascii < 83)) {
                     inValue=true;
                     isDifference=true;
                     currentValue=ascii-73;
@@ -152,12 +149,20 @@ module.exports=function(spectrum, value, result) {
                 if (ascii === 36 && value.charCodeAt(i + 1) === 36) {
                     inValue=true;
                     inComment = true;
-                } else if (ascii === 45) { // a "-"
+                } else
+                // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
+                if (ascii === 37) {
+                    inValue=true;
+                    isDifference=true;
+                    currentValue=0;
+                    isNegative=false;
+                } else
+                if (ascii === 45) { // a "-"
                     // check if after there is a number, decimal or comma
                     let ascii2=value.charCodeAt(i+1);
                     if ((ascii2 >= 48 && ascii2 <= 57) || ascii2 === 44 || ascii2 === 46) {
                         inValue=true;
-                        lastDifference=null;
+                        isLastDifference=false;
                         isNegative = true;
                     }
                 } else if (ascii === 13 || ascii === 10) {
