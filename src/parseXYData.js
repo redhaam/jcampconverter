@@ -14,6 +14,7 @@ module.exports=function(spectrum, value, result) {
     spectrum.isXYdata=true;
 
     var currentData = [];
+    var currentPosition=0;
     spectrum.data = [currentData];
 
     var currentX = spectrum.firstX;
@@ -71,7 +72,9 @@ module.exports=function(spectrum, value, result) {
                         if ((ascii === 43) || (ascii === 45) || (ascii === 46) || ((ascii > 47) && (ascii < 58))) {
                             lastDif = null;
                             currentY = parseFloat(values[j]);
-                            currentData.push(currentX, currentY * spectrum.yFactor);;
+                            // currentData.push(currentX, currentY * spectrum.yFactor);
+                            currentData[currentPosition++]=currentX;
+                            currentData[currentPosition++]=currentY * spectrum.yFactor;
                             currentX += spectrum.deltaX;
                         } else
                         // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
@@ -79,7 +82,9 @@ module.exports=function(spectrum, value, result) {
                             lastDif = null;
                             // we can multiply the string by 1 because if may not contain decimal (is this correct ????)
                             currentY = (String.fromCharCode(ascii - 16) + values[j].substring(1))*1;
-                            currentData.push(currentX, currentY * spectrum.yFactor);;
+                            // currentData.push(currentX, currentY * spectrum.yFactor);
+                            currentData[currentPosition++]=currentX;
+                            currentData[currentPosition++]=currentY * spectrum.yFactor;
                             currentX += spectrum.deltaX;
                         } else
                         // negative SQZ digits a b c d e f g h i (ascii 97-105)
@@ -87,7 +92,9 @@ module.exports=function(spectrum, value, result) {
                             lastDif = null;
                             // we can multiply the string by 1 because if may not contain decimal (is this correct ????)
                             currentY = -(String.fromCharCode(ascii - 48) + values[j].substring(1))*1;
-                            currentData.push(currentX, currentY * spectrum.yFactor);;
+                            //currentData.push(currentX, currentY * spectrum.yFactor);
+                            currentData[currentPosition++]=currentX;
+                            currentData[currentPosition++]=currentY * spectrum.yFactor;
                             currentX += spectrum.deltaX;
                         } else
 
@@ -103,7 +110,9 @@ module.exports=function(spectrum, value, result) {
                                 if (lastDif) {
                                     currentY = currentY + lastDif;
                                 }
-                                currentData.push(currentX, currentY * spectrum.yFactor);;
+                                // currentData.push(currentX, currentY * spectrum.yFactor);
+                                currentData[currentPosition++]=currentX;
+                                currentData[currentPosition++]=currentY * spectrum.yFactor;
                                 currentX += spectrum.deltaX;
                             }
                         } else
@@ -111,19 +120,25 @@ module.exports=function(spectrum, value, result) {
                         if (ascii === 37) {
                             lastDif = ('0' + values[j].substring(1))*1;
                             currentY += lastDif;
-                            currentData.push(currentX, currentY * spectrum.yFactor);;
+                            // currentData.push(currentX, currentY * spectrum.yFactor);
+                            currentData[currentPosition++]=currentX;
+                            currentData[currentPosition++]=currentY * spectrum.yFactor;
                             currentX += spectrum.deltaX;
                         } else if ((ascii > 73) && (ascii < 83)) {
                             lastDif = (String.fromCharCode(ascii - 25) + values[j].substring(1))*1;
                             currentY += lastDif;
-                            currentData.push(currentX, currentY * spectrum.yFactor);;
+                            // currentData.push(currentX, currentY * spectrum.yFactor);
+                            currentData[currentPosition++]=currentX;
+                            currentData[currentPosition++]=currentY * spectrum.yFactor;
                             currentX += spectrum.deltaX;
                         } else
                         // negative DIF digits j k l m n o p q r (ascii 106-114)
                         if ((ascii > 105) && (ascii < 115)) {
                             lastDif = -(String.fromCharCode(ascii - 57) + values[j].substring(1))*1;
                             currentY += lastDif;
-                            currentData.push(currentX, currentY * spectrum.yFactor);;
+                            // currentData.push(currentX, currentY * spectrum.yFactor);
+                            currentData[currentPosition++]=currentX;
+                            currentData[currentPosition++]=currentY * spectrum.yFactor;
                             currentX += spectrum.deltaX;
                         }
                     }

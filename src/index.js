@@ -489,7 +489,7 @@ function getConverter() {
         var lineZValue;
         for (var level = 0; level < nbLevels * 2; level++) { // multiply by 2 for positif and negatif
             var contourLevel = {};
-            contourLevels.push(contourLevel);
+            contourLevels[level]=contourLevel;
             var side = level % 2;
             if (side === 0) {
                 lineZValue = (maxZ - 5 * noise) * Math.exp(level / 2 - nbLevels) + 5 * noise;
@@ -523,6 +523,7 @@ function getConverter() {
                         pBy = iSubSpectra + (lineZValue - povarHeight[0]) / (povarHeight[2] - povarHeight[0]);
                         lines.push(pAx * dx + x0, pAy * dy + y0, pBx * dx + x0, pBy * dy + y0);
                     }
+                    // remove push does not help !!!!
                     if (isOver[3] !== isOver[1] && isOver[3] !== isOver[2]) {
                         pAx = povar + 1;
                         pAy = iSubSpectra + 1 - (lineZValue - povarHeight[3]) / (povarHeight[1] - povarHeight[3]);
