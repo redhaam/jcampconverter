@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/cheminfo-js/jcampconverter",
   "devDependencies": {
-    "benchmark": "^1.0.0",
+    "benchmark": "^2.1.0",
     "cheminfo-tools": "^1.0.2",
     "mocha": "^2.2.5",
     "mocha-better-spec-reporter": "^2.1.1",
