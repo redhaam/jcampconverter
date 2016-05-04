@@ -10,7 +10,8 @@
   "scripts": {
     "test": "mocha --require should --reporter mocha-better-spec-reporter --recursive",
     "build": "cheminfo build --root JcampConverter",
-    "benchmark": "node benchmark/benchmark.js"
+    "benchmark": "node benchmark/benchmark.js",
+    "deopt": "node --trace-opt --trace-deopt --code-comments debug/deoptimize.js > deopt.log"
   },
   "repository": {
     "type": "git",
