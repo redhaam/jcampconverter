@@ -602,7 +602,7 @@ function getConverter() {
         }
     }
 
-    function fastParseXYData(spectrum, value, result) {
+    function fastParseXYData(spectrum, value) {
         // TODO need to deal with result
         //  console.log(value);
         // we check if deltaX is defined otherwise we calculate it
@@ -683,7 +683,8 @@ function getConverter() {
                                 skipFirstValue=false;
                             } else {
                                 if (isDifference) {
-                                    lastDifference=isNegative ? -currentValue : currentValue;
+                                    if (currentValue===0) lastDifference=0;
+                                    else lastDifference=isNegative ? -currentValue : currentValue;
                                     isLastDifference=true;
                                     isDifference=false;
                                 }
@@ -692,7 +693,8 @@ function getConverter() {
                                     if (isLastDifference) {
                                         currentY += lastDifference;
                                     } else {
-                                        currentY = isNegative ? -currentValue : currentValue;
+                                        if (currentValue===0) currentY=0;
+                                        else currentY = isNegative ? -currentValue : currentValue;
                                     }
 
                                     //  console.log("Separator",isNegative ?
