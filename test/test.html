@@ -17,7 +17,7 @@
         $.get(filename).done(
             function (jcamp) {
                 var result=JcampConverter.convert(jcamp, options)
-                console.log(result);
+                console.log(result.profiling[3].time-result.profiling[2].time);
             }
         )
     }
