@@ -455,13 +455,13 @@ function getConverter() {
 
 
     function generateContourLines(zData, options) {
-        //console.time('generateContourLines');
+        // console.time('generateContourLines');
         var noise = zData.noise;
         var z = zData.z;
         var contourLevels = [];
         var nbLevels = 7;
-        var povarHeight = new Float32Array(4);
-        var isOver = [];
+        var povarHeight0, povarHeight1, povarHeight2, povarHeight3;
+        var isOver0, isOver1, isOver2, isOver3;
         var nbSubSpectra = z.length;
         var nbPovars = z[0].length;
         var pAx, pAy, pBx, pBy;
@@ -504,54 +504,57 @@ function getConverter() {
 
             for (var iSubSpectra = 0; iSubSpectra < nbSubSpectra - 1; iSubSpectra++) {
                 for (var povar = 0; povar < nbPovars - 1; povar++) {
-                    povarHeight[0] = z[iSubSpectra][povar];
-                    povarHeight[1] = z[iSubSpectra][povar + 1];
-                    povarHeight[2] = z[(iSubSpectra + 1)][povar];
-                    povarHeight[3] = z[(iSubSpectra + 1)][(povar + 1)];
+                    povarHeight0 = z[iSubSpectra][povar];
+                    povarHeight1 = z[iSubSpectra][povar + 1];
+                    povarHeight2 = z[(iSubSpectra + 1)][povar];
+                    povarHeight3 = z[(iSubSpectra + 1)][(povar + 1)];
 
-                    for (var i = 0; i < 4; i++) {
-                        isOver[i] = (povarHeight[i] > lineZValue);
-                    }
 
+                    isOver0 = (povarHeight0 > lineZValue);
+                    isOver1 = (povarHeight1 > lineZValue);
+                    isOver2 = (povarHeight2 > lineZValue);
+                    isOver3 = (povarHeight3 > lineZValue);
+
+                    
                     // Example povar0 is over the plane and povar1 and
                     // povar2 are below, we find the varersections and add
                     // the segment
-                    if (isOver[0] !== isOver[1] && isOver[0] !== isOver[2]) {
-                        pAx = povar + (lineZValue - povarHeight[0]) / (povarHeight[1] - povarHeight[0]);
+                    if (isOver0 !== isOver1 && isOver0 !== isOver2) {
+                        pAx = povar + (lineZValue - povarHeight0) / (povarHeight1 - povarHeight0);
                         pAy = iSubSpectra;
                         pBx = povar;
-                        pBy = iSubSpectra + (lineZValue - povarHeight[0]) / (povarHeight[2] - povarHeight[0]);
+                        pBy = iSubSpectra + (lineZValue - povarHeight0) / (povarHeight2 - povarHeight0);
                         lines.push(pAx * dx + x0); lines.push(pAy * dy + y0); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
                     }
                     // remove push does not help !!!!
-                    if (isOver[3] !== isOver[1] && isOver[3] !== isOver[2]) {
+                    if (isOver3 !== isOver1 && isOver3 !== isOver2) {
                         pAx = povar + 1;
-                        pAy = iSubSpectra + 1 - (lineZValue - povarHeight[3]) / (povarHeight[1] - povarHeight[3]);
-                        pBx = povar + 1 - (lineZValue - povarHeight[3]) / (povarHeight[2] - povarHeight[3]);
+                        pAy = iSubSpectra + 1 - (lineZValue - povarHeight3) / (povarHeight1 - povarHeight3);
+                        pBx = povar + 1 - (lineZValue - povarHeight3) / (povarHeight2 - povarHeight3);
                         pBy = iSubSpectra + 1;
                         lines.push(pAx * dx + x0); lines.push(pAy * dy + y0); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
                     }
                     // test around the diagonal
-                    if (isOver[1] !== isOver[2]) {
-                        pAx = (povar + 1 - (lineZValue - povarHeight[1]) / (povarHeight[2] - povarHeight[1])) * dx + x0;
-                        pAy = (iSubSpectra + (lineZValue - povarHeight[1]) / (povarHeight[2] - povarHeight[1])) * dy + y0;
-                        if (isOver[1] !== isOver[0]) {
-                            pBx = povar + 1 - (lineZValue - povarHeight[1]) / (povarHeight[0] - povarHeight[1]);
+                    if (isOver1 !== isOver2) {
+                        pAx = (povar + 1 - (lineZValue - povarHeight1) / (povarHeight2 - povarHeight1)) * dx + x0;
+                        pAy = (iSubSpectra + (lineZValue - povarHeight1) / (povarHeight2 - povarHeight1)) * dy + y0;
+                        if (isOver1 !== isOver0) {
+                            pBx = povar + 1 - (lineZValue - povarHeight1) / (povarHeight0 - povarHeight1);
                             pBy = iSubSpectra;
                             lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
                         }
-                        if (isOver[2] !== isOver[0]) {
+                        if (isOver2 !== isOver0) {
                             pBx = povar;
-                            pBy = iSubSpectra + 1 - (lineZValue - povarHeight[2]) / (povarHeight[0] - povarHeight[2]);
+                            pBy = iSubSpectra + 1 - (lineZValue - povarHeight2) / (povarHeight0 - povarHeight2);
                             lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
                         }
-                        if (isOver[1] !== isOver[3]) {
+                        if (isOver1 !== isOver3) {
                             pBx = povar + 1;
-                            pBy = iSubSpectra + (lineZValue - povarHeight[1]) / (povarHeight[3] - povarHeight[1]);
+                            pBy = iSubSpectra + (lineZValue - povarHeight1) / (povarHeight3 - povarHeight1);
                             lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
                         }
-                        if (isOver[2] !== isOver[3]) {
-                            pBx = povar + (lineZValue - povarHeight[2]) / (povarHeight[3] - povarHeight[2]);
+                        if (isOver2 !== isOver3) {
+                            pBx = povar + (lineZValue - povarHeight2) / (povarHeight3 - povarHeight2);
                             pBy = iSubSpectra + 1;
                             lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
                         }
