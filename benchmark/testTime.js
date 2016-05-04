@@ -15,7 +15,7 @@ function checkJcamp(filename, label, options) {
 
 
 var options = {
-    fastParse: false
+    fastParse: true
 };
 
 
@@ -23,8 +23,8 @@ var options = {
 //checkJcamp('/data/compression/jcamp-packed.dx', "Compression packed", options);
 //checkJcamp('/data/compression/jcamp-squeezed.dx', "Compression squeezed", options);
 //checkJcamp('/data/compression/jcamp-difdup.dx', "Compression difdup", options);
-for (var i=0; i<5; i++) {
+//for (var i=0; i<5; i++) {
     checkJcamp('/data/indometacin/hmbc.dx', "HMBC", options);
-}
+//}
 
 

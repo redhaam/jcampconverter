@@ -847,20 +847,21 @@ function postToWorker(input, options) {
     return new Promise(function (resolve) {
         var stamp = Date.now() + '' + Math.random();
         stamps[stamp] = resolve;
-        worker.postMessage({stamp: stamp, input: input, options: options});
+        worker.postMessage(JSON.stringify({stamp: stamp, input: input, options: options}));
     });
 }
 
 function createWorker() {
     var workerURL = URL.createObjectURL(new Blob([
-        'var getConverter =' + getConverter.toString() + ';var convert = getConverter(); onmessage = function (event) { postMessage({stamp: event.data.stamp, output: convert(event.data.input, event.data.options)}); };'
+        'var getConverter =' + getConverter.toString() + ';var convert = getConverter(); onmessage = function (event) { var data = JSON.parse(event.data); postMessage(JSON.stringify({stamp: event.data.stamp, output: convert(data.input, data.options)})); };'
     ], {type: 'application/javascript'}));
     worker = new Worker(workerURL);
     URL.revokeObjectURL(workerURL);
     worker.addEventListener('message', function (event) {
-        var stamp = event.data.stamp;
+        var data = JSON.parse(event.data);
+        var stamp = data.stamp;
         if (stamps[stamp]) {
-            stamps[stamp](event.data.output);
+            stamps[stamp](data.output);
         }
     });
 }

@@ -16,10 +16,23 @@
     function loadJcamp(filename, options) {
         $.get(filename).done(
             function (jcamp) {
-                for (var i=0; i<10; i++) {
-                    var result=JcampConverter.convert(jcamp, options)
-                    console.log(result.profiling[3].time-result.profiling[0].time);
-                }
+
+               // for (var i=0; i<10; i++) {
+                JcampConverter.convert(jcamp, options)
+                console.time('normal')
+                JcampConverter.convert(jcamp, options)
+                console.timeEnd('normal')
+
+
+                JcampConverter.convert(jcamp, options, true).then(function(result){
+                    console.time('worker')
+                    JcampConverter.convert(jcamp, options, true).then(function(result){
+
+                    console.timeEnd('worker')
+                    });
+                });
+                   // console.log(result.profiling[3].time-result.profiling[0].time);
+              //  }
             }
         )
     }
