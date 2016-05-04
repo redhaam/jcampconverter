@@ -218,6 +218,9 @@ function getConverter() {
                     if (options.fastParse===false) {
                         parseXYDataRegExp(spectrum, dataValue, result);
                     } else {
+                        if (!spectrum.deltaX) {
+                            spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
+                        }
                         fastParseXYData(spectrum, dataValue, result);
                     }
                 } else {
@@ -606,9 +609,11 @@ function getConverter() {
         // TODO need to deal with result
         //  console.log(value);
         // we check if deltaX is defined otherwise we calculate it
-        if (!spectrum.deltaX) {
-            spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
-        }
+
+        var yFactor = spectrum.yFactor;
+        var deltaX = spectrum.deltaX;
+        
+
         spectrum.isXYdata = true;
         // TODO to be improved using 2 array {x:[], y:[]}
         var currentData = [];
@@ -704,8 +709,8 @@ function getConverter() {
 
                                     // push is slightly slower ... (we loose 10%)
                                     currentData[currentPosition++]=currentX;
-                                    currentData[currentPosition++]=currentY * spectrum.yFactor;
-                                    currentX += spectrum.deltaX;
+                                    currentData[currentPosition++]=currentY * yFactor;
+                                    currentX += deltaX;
                                 }
                             }
                         }
