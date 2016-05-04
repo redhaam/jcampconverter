@@ -762,7 +762,7 @@ function getConverter() {
                     } else
                     if (ascii === 45) { // a "-"
                         // check if after there is a number, decimal or comma
-                        let ascii2=value.charCodeAt(i+1);
+                        var ascii2=value.charCodeAt(i+1);
                         if ((ascii2 >= 48 && ascii2 <= 57) || ascii2 === 44 || ascii2 === 46) {
                             inValue=true;
                             isLastDifference=false;
