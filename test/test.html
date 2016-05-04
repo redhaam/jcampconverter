@@ -7,7 +7,7 @@
     <script>
         module={};
     </script>
-    <script  src="../src/index.js" type="text/javascript"></script>
+    <script  src="../dist/jcampconverter.js" type="text/javascript"></script>
 
 </head>
 
@@ -16,7 +16,7 @@
     function loadJcamp(filename, options) {
         $.get(filename).done(
             function (jcamp) {
-                var result=convert(jcamp, options)
+                var result=JcampConverter.convert(jcamp, options)
                 console.log(result);
             }
         )
