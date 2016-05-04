@@ -52,18 +52,17 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+
+	var parseXYDataRegExp=__webpack_require__(1);
+
 
 	function getConverter() {
 
 	    // the following RegExp can only be used for XYdata, some peakTables have values with a "E-5" ...
-	    var xyDataSplitRegExp = /[,\t \+-]*(?=[^\d,\t \.])|[ \t]+(?=[\d+\.-])/;
-	    var removeCommentRegExp = /\$\$.*/;
-	    var peakTableSplitRegExp = /[,\t ]+/;
 	    var ntuplesSeparator = /[, \t]{1,}/;
-	    var DEBUG = false;
 
 	    var GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
 
@@ -272,7 +271,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                prepareSpectrum(result, spectrum);
 	                // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
 	                if (dataValue.match(/.*\+\+.*/)) {
-	                    parseXYData(spectrum, dataValue, result);
+	                    if (options.fastParse===false) {
+	                        parseXYDataRegExp(spectrum, dataValue, result);
+	                    } else {
+	                        fastParseXYData(spectrum, dataValue, result);
+	                    }
 	                } else {
 	                    parsePeakTable(spectrum, dataValue, result);
 	                }
@@ -464,154 +467,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    function parsePeakTable(spectrum, value, result) {
-	        spectrum.isPeaktable=true;
-	        var i, ii, j, jj, values;
-	        var currentData = [];
-	        spectrum.data = [currentData];
 
-	        // counts for around 20% of the time
-	        var lines = value.split(/,? *,?[;\r\n]+ */);
-
-	        var k = 0;
-	        for (i = 1, ii = lines.length; i < ii; i++) {
-	            values = lines[i].trim().replace(removeCommentRegExp, '').split(peakTableSplitRegExp);
-	            if (values.length % 2 === 0) {
-	                for (j = 0, jj = values.length; j < jj; j = j + 2) {
-	                    // takes around 40% of the time to add and parse the 2 values nearly exclusively because of parseFloat
-	                    currentData[k++] = (parseFloat(values[j]) * spectrum.xFactor);
-	                    currentData[k++] = (parseFloat(values[j + 1]) * spectrum.yFactor);
-	                }
-	            } else {
-	                result.logs.push('Format error: ' + values);
-	            }
-	        }
-	    }
-
-	    function parseXYData(spectrum, value, result) {
-	        // we check if deltaX is defined otherwise we calculate it
-	        if (!spectrum.deltaX) {
-	            spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
-	        }
-
-	        spectrum.isXYdata=true;
-
-	        var currentData = [];
-	        spectrum.data = [currentData];
-
-	        var currentX = spectrum.firstX;
-	        var currentY = spectrum.firstY;
-	        var lines = value.split(/[\r\n]+/);
-	        var lastDif, values, ascii, expectedY;
-	        values = [];
-	        for (var i = 1, ii = lines.length; i < ii; i++) {
-	            //var previousValues=JSON.parse(JSON.stringify(values));
-	            values = lines[i].trim().replace(removeCommentRegExp, '').split(xyDataSplitRegExp);
-	            if (values.length > 0) {
-	                if (DEBUG) {
-	                    if (!spectrum.firstPoint) {
-	                        spectrum.firstPoint = parseFloat(values[0]);
-	                    }
-	                    var expectedCurrentX = parseFloat(values[0] - spectrum.firstPoint) * spectrum.xFactor + spectrum.firstX;
-	                    if ((lastDif || lastDif === 0)) {
-	                        expectedCurrentX += spectrum.deltaX;
-	                    }
-	                    result.logs.push('Checking X value: currentX: ' + currentX + ' - expectedCurrentX: ' + expectedCurrentX);
-	                }
-	                for (var j = 1, jj = values.length; j < jj; j++) {
-	                    if (j === 1 && (lastDif || lastDif === 0)) {
-	                        lastDif = null; // at the beginning of each line there should be the full value X / Y so the diff is always undefined
-	                        // we could check if we have the expected Y value
-	                        ascii = values[j].charCodeAt(0);
-
-	                        if (false) { // this code is just to check the jcamp DIFDUP and the next line repeat of Y value
-	                            // + - . 0 1 2 3 4 5 6 7 8 9
-	                            if ((ascii === 43) || (ascii === 45) || (ascii === 46) || ((ascii > 47) && (ascii < 58))) {
-	                                expectedY = parseFloat(values[j]);
-	                            } else
-	                            // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
-	                            if ((ascii > 63) && (ascii < 74)) {
-	                                // we could use parseInt but parseFloat is faster at least in Chrome
-	                                expectedY = parseFloat(String.fromCharCode(ascii - 16) + values[j].substring(1));
-	                            } else
-	                            // negative SQZ digits a b c d e f g h i (ascii 97-105)
-	                            if ((ascii > 96) && (ascii < 106)) {
-	                                // we could use parseInt but parseFloat is faster at least in Chrome
-	                                expectedY = -parseFloat(String.fromCharCode(ascii - 48) + values[j].substring(1));
-	                            }
-	                            if (expectedY !== currentY) {
-	                                result.logs.push('Y value check error: Found: ' + expectedY + ' - Current: ' + currentY);
-	                                result.logs.push('Previous values: ' + previousValues.length);
-	                                result.logs.push(previousValues);
-	                            }
-	                        }
-	                    } else {
-	                        if (values[j].length > 0) {
-	                            ascii = values[j].charCodeAt(0);
-	                            // + - . 0 1 2 3 4 5 6 7 8 9
-	                            if ((ascii === 43) || (ascii === 45) || (ascii === 46) || ((ascii > 47) && (ascii < 58))) {
-	                                lastDif = null;
-	                                currentY = parseFloat(values[j]);
-	                                currentData.push(currentX, currentY * spectrum.yFactor);;
-	                                currentX += spectrum.deltaX;
-	                            } else
-	                            // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
-	                            if ((ascii > 63) && (ascii < 74)) {
-	                                lastDif = null;
-	                                currentY = parseFloat(String.fromCharCode(ascii - 16) + values[j].substring(1));
-	                                currentData.push(currentX, currentY * spectrum.yFactor);;
-	                                currentX += spectrum.deltaX;
-	                            } else
-	                            // negative SQZ digits a b c d e f g h i (ascii 97-105)
-	                            if ((ascii > 96) && (ascii < 106)) {
-	                                lastDif = null;
-	                                currentY = -parseFloat(String.fromCharCode(ascii - 48) + values[j].substring(1));
-	                                currentData.push(currentX, currentY * spectrum.yFactor);;
-	                                currentX += spectrum.deltaX;
-	                            } else
-
-
-
-	                            // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
-	                            if (((ascii > 82) && (ascii < 91)) || (ascii === 115)) {
-	                                var dup = parseFloat(String.fromCharCode(ascii - 34) + values[j].substring(1)) - 1;
-	                                if (ascii === 115) {
-	                                    dup = parseFloat('9' + values[j].substring(1)) - 1;
-	                                }
-	                                for (var l = 0; l < dup; l++) {
-	                                    if (lastDif) {
-	                                        currentY = currentY + lastDif;
-	                                    }
-	                                    currentData.push(currentX, currentY * spectrum.yFactor);;
-	                                    currentX += spectrum.deltaX;
-	                                }
-	                            } else
-	                            // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
-	                            if (ascii === 37) {
-	                                lastDif = parseFloat('0' + values[j].substring(1));
-	                                currentY += lastDif;
-	                                currentData.push(currentX, currentY * spectrum.yFactor);;
-	                                currentX += spectrum.deltaX;
-	                            } else if ((ascii > 73) && (ascii < 83)) {
-	                                lastDif = parseFloat(String.fromCharCode(ascii - 25) + values[j].substring(1));
-	                                currentY += lastDif;
-	                                currentData.push(currentX, currentY * spectrum.yFactor);;
-	                                currentX += spectrum.deltaX;
-	                            } else
-	                            // negative DIF digits j k l m n o p q r (ascii 106-114)
-	                            if ((ascii > 105) && (ascii < 115)) {
-	                                lastDif = -parseFloat(String.fromCharCode(ascii - 57) + values[j].substring(1));
-	                                currentY += lastDif;
-	                                currentData.push(currentX, currentY * spectrum.yFactor);;
-	                                currentX += spectrum.deltaX;
-	                            }
-	                        }
-	                    }
-	                }
-	            }
-	        }
-
-	    }
 
 	    function convertTo3DZ(spectra) {
 	        var noise = 0;
@@ -653,13 +509,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	    function generateContourLines(zData, options) {
-	        //console.time('generateContourLines');
+	        // console.time('generateContourLines');
 	        var noise = zData.noise;
 	        var z = zData.z;
 	        var contourLevels = [];
 	        var nbLevels = 7;
-	        var povarHeight = new Float32Array(4);
-	        var isOver = [];
+	        var povarHeight0, povarHeight1, povarHeight2, povarHeight3;
+	        var isOver0, isOver1, isOver2, isOver3;
 	        var nbSubSpectra = z.length;
 	        var nbPovars = z[0].length;
 	        var pAx, pAy, pBx, pBy;
@@ -687,7 +543,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var lineZValue;
 	        for (var level = 0; level < nbLevels * 2; level++) { // multiply by 2 for positif and negatif
 	            var contourLevel = {};
-	            contourLevels.push(contourLevel);
+	            contourLevels[level]=contourLevel;
 	            var side = level % 2;
 	            if (side === 0) {
 	                lineZValue = (maxZ - 5 * noise) * Math.exp(level / 2 - nbLevels) + 5 * noise;
@@ -702,55 +558,59 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            for (var iSubSpectra = 0; iSubSpectra < nbSubSpectra - 1; iSubSpectra++) {
 	                for (var povar = 0; povar < nbPovars - 1; povar++) {
-	                    povarHeight[0] = z[iSubSpectra][povar];
-	                    povarHeight[1] = z[iSubSpectra][povar + 1];
-	                    povarHeight[2] = z[(iSubSpectra + 1)][povar];
-	                    povarHeight[3] = z[(iSubSpectra + 1)][(povar + 1)];
+	                    povarHeight0 = z[iSubSpectra][povar];
+	                    povarHeight1 = z[iSubSpectra][povar + 1];
+	                    povarHeight2 = z[(iSubSpectra + 1)][povar];
+	                    povarHeight3 = z[(iSubSpectra + 1)][(povar + 1)];
 
-	                    for (var i = 0; i < 4; i++) {
-	                        isOver[i] = (povarHeight[i] > lineZValue);
-	                    }
 
+	                    isOver0 = (povarHeight0 > lineZValue);
+	                    isOver1 = (povarHeight1 > lineZValue);
+	                    isOver2 = (povarHeight2 > lineZValue);
+	                    isOver3 = (povarHeight3 > lineZValue);
+
+	                    
 	                    // Example povar0 is over the plane and povar1 and
 	                    // povar2 are below, we find the varersections and add
 	                    // the segment
-	                    if (isOver[0] !== isOver[1] && isOver[0] !== isOver[2]) {
-	                        pAx = povar + (lineZValue - povarHeight[0]) / (povarHeight[1] - povarHeight[0]);
+	                    if (isOver0 !== isOver1 && isOver0 !== isOver2) {
+	                        pAx = povar + (lineZValue - povarHeight0) / (povarHeight1 - povarHeight0);
 	                        pAy = iSubSpectra;
 	                        pBx = povar;
-	                        pBy = iSubSpectra + (lineZValue - povarHeight[0]) / (povarHeight[2] - povarHeight[0]);
-	                        lines.push(pAx * dx + x0, pAy * dy + y0, pBx * dx + x0, pBy * dy + y0);
+	                        pBy = iSubSpectra + (lineZValue - povarHeight0) / (povarHeight2 - povarHeight0);
+	                        lines.push(pAx * dx + x0); lines.push(pAy * dy + y0); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
 	                    }
-	                    if (isOver[3] !== isOver[1] && isOver[3] !== isOver[2]) {
+	                    // remove push does not help !!!!
+	                    if (isOver3 !== isOver1 && isOver3 !== isOver2) {
 	                        pAx = povar + 1;
-	                        pAy = iSubSpectra + 1 - (lineZValue - povarHeight[3]) / (povarHeight[1] - povarHeight[3]);
-	                        pBx = povar + 1 - (lineZValue - povarHeight[3]) / (povarHeight[2] - povarHeight[3]);
+	                        pAy = iSubSpectra + 1 - (lineZValue - povarHeight3) / (povarHeight1 - povarHeight3);
+	                        pBx = povar + 1 - (lineZValue - povarHeight3) / (povarHeight2 - povarHeight3);
 	                        pBy = iSubSpectra + 1;
-	                        lines.push(pAx * dx + x0, pAy * dy + y0, pBx * dx + x0, pBy * dy + y0);
+	                        lines.push(pAx * dx + x0); lines.push(pAy * dy + y0); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
 	                    }
 	                    // test around the diagonal
-	                    if (isOver[1] !== isOver[2]) {
-	                        pAx = povar + 1 - (lineZValue - povarHeight[1]) / (povarHeight[2] - povarHeight[1]);
-	                        pAy = iSubSpectra + (lineZValue - povarHeight[1]) / (povarHeight[2] - povarHeight[1]);
-	                        if (isOver[1] !== isOver[0]) {
-	                            pBx = povar + 1 - (lineZValue - povarHeight[1]) / (povarHeight[0] - povarHeight[1]);
+	                    if (isOver1 !== isOver2) {
+	                        pAx = (povar + 1 - (lineZValue - povarHeight1) / (povarHeight2 - povarHeight1)) * dx + x0;
+	                        pAy = (iSubSpectra + (lineZValue - povarHeight1) / (povarHeight2 - povarHeight1)) * dy + y0;
+	                        if (isOver1 !== isOver0) {
+	                            pBx = povar + 1 - (lineZValue - povarHeight1) / (povarHeight0 - povarHeight1);
 	                            pBy = iSubSpectra;
-	                            lines.push(pAx * dx + x0, pAy * dy + y0, pBx * dx + x0, pBy * dy + y0);
+	                            lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
 	                        }
-	                        if (isOver[2] !== isOver[0]) {
+	                        if (isOver2 !== isOver0) {
 	                            pBx = povar;
-	                            pBy = iSubSpectra + 1 - (lineZValue - povarHeight[2]) / (povarHeight[0] - povarHeight[2]);
-	                            lines.push(pAx * dx + x0, pAy * dy + y0, pBx * dx + x0, pBy * dy + y0);
+	                            pBy = iSubSpectra + 1 - (lineZValue - povarHeight2) / (povarHeight0 - povarHeight2);
+	                            lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
 	                        }
-	                        if (isOver[1] !== isOver[3]) {
+	                        if (isOver1 !== isOver3) {
 	                            pBx = povar + 1;
-	                            pBy = iSubSpectra + (lineZValue - povarHeight[1]) / (povarHeight[3] - povarHeight[1]);
-	                            lines.push(pAx * dx + x0, pAy * dy + y0, pBx * dx + x0, pBy * dy + y0);
+	                            pBy = iSubSpectra + (lineZValue - povarHeight1) / (povarHeight3 - povarHeight1);
+	                            lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
 	                        }
-	                        if (isOver[2] !== isOver[3]) {
-	                            pBx = povar + (lineZValue - povarHeight[2]) / (povarHeight[3] - povarHeight[2]);
+	                        if (isOver2 !== isOver3) {
+	                            pBx = povar + (lineZValue - povarHeight2) / (povarHeight3 - povarHeight2);
 	                            pBy = iSubSpectra + 1;
-	                            lines.push(pAx * dx + x0, pAy * dy + y0, pBx * dx + x0, pBy * dy + y0);
+	                            lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
 	                        }
 	                    }
 	                }
@@ -797,6 +657,212 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    }
+
+	    function fastParseXYData(spectrum, value, result) {
+	        // TODO need to deal with result
+	        //  console.log(value);
+	        // we check if deltaX is defined otherwise we calculate it
+	        if (!spectrum.deltaX) {
+	            spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
+	        }
+	        spectrum.isXYdata = true;
+	        // TODO to be improved using 2 array {x:[], y:[]}
+	        var currentData = [];
+	        var currentPosition = 0;
+	        spectrum.data = [currentData];
+
+
+	        var currentX = spectrum.firstX;
+	        var currentY = spectrum.firstY;
+
+	        // we skip the first line
+	        //
+	        var endLine = false;
+	        for (var i = 0; i < value.length; i++) {
+	            var ascii = value.charCodeAt(i);
+	            if (ascii === 13 || ascii === 10) {
+	                endLine = true;
+	            } else {
+	                if (endLine) break;
+	            }
+	        }
+
+	        // we proceed taking the i after the first line
+	        var newLine = true;
+	        var isDifference=false;
+	        var isLastDifference=false;
+	        var lastDifference=0;
+	        var isDuplicate=false;
+	        var inComment = false;
+	        var currentValue = 0;
+	        var isNegative = false;
+	        var inValue=false;
+	        var skipFirstValue=false;
+	        var decimalPosition = 0;
+	        for (; i <= value.length; i++) {
+	            var ascii = value.charCodeAt(i);
+	            if (inComment) {
+	                // we should ignore the text if we are after $$
+	                if (ascii === 13 || ascii === 10) {
+	                    newLine = true;
+	                    inComment = false;
+	                }
+	            } else {
+	                // when is it a new value ?
+	                // when it is not a digit, . or comma
+	                // it is a number that is either new or we continue
+	                if ( ascii <= 57 && ascii >= 48) { // a number
+	                    inValue=true;
+	                    if (decimalPosition > 0) {
+	                        currentValue += (ascii - 48) / Math.pow(10, decimalPosition++);
+	                    } else {
+	                        currentValue *= 10;
+	                        currentValue += ascii - 48;
+	                    }
+	                } else if (ascii === 44 || ascii === 46) { // a "," or "."
+	                    inValue=true;
+	                    decimalPosition++;
+	                } else {
+	                    if (inValue) {
+	                        // need to process the previous value
+	                        if (newLine) {
+	                            newLine = false; // we don't check the X value
+	                            // console.log("NEW LINE",isDifference, lastDifference);
+	                            // if new line and lastDifference, the first value is just a check !
+	                            // that we don't check ...
+	                            if (isLastDifference) skipFirstValue=true;
+	                        } else {
+	                            // need to deal with duplicate and differences
+	                            if (skipFirstValue) {
+	                                skipFirstValue=false;
+	                            } else {
+	                                if (isDifference) {
+	                                    lastDifference=isNegative ? -currentValue : currentValue;
+	                                    isLastDifference=true;
+	                                    isDifference=false;
+	                                }
+	                                var duplicate=isDuplicate ? currentValue - 1 : 1;
+	                                for (var j=0; j<duplicate; j++) {
+	                                    if (isLastDifference) {
+	                                        currentY += lastDifference;
+	                                    } else {
+	                                        currentY = isNegative ? -currentValue : currentValue;
+	                                    }
+
+	                                    //  console.log("Separator",isNegative ?
+	                                    //          -currentValue : currentValue,
+	                                    //      "isDiff", isDifference, "isDup", isDuplicate,
+	                                    //      "lastDif", lastDifference, "dup:", duplicate, "y", currentY);
+
+	                                    // push is slightly slower ... (we loose 10%)
+	                                    currentData[currentPosition++]=currentX;
+	                                    currentData[currentPosition++]=currentY * spectrum.yFactor;
+	                                    currentX += spectrum.deltaX;
+	                                }
+	                            }
+	                        }
+	                        isNegative=false;
+	                        currentValue=0;
+	                        decimalPosition=0;
+	                        inValue=false;
+	                        isDuplicate=false;
+	                    }
+
+	                    // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
+	                    if ((ascii < 74) && (ascii > 63)) {
+	                        inValue=true;
+	                        isLastDifference=false;
+	                        currentValue=ascii-64;
+	                    } else
+	                    // negative SQZ digits a b c d e f g h i (ascii 97-105)
+	                    if ((ascii > 96) && (ascii < 106)) {
+	                        inValue=true;
+	                        isLastDifference=false;
+	                        currentValue=ascii-96;
+	                        isNegative=true;
+	                    } else
+	                    // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
+	                    if (ascii===115) {
+	                        inValue=true;
+	                        isDuplicate=true;
+	                        currentValue=9;
+	                    } else if ((ascii > 82) && (ascii < 91)) {
+	                        inValue=true;
+	                        isDuplicate=true;
+	                        currentValue=ascii-82;
+	                    } else
+	                    // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
+	                    if ((ascii > 73) && (ascii < 83)) {
+	                        inValue=true;
+	                        isDifference=true;
+	                        currentValue=ascii-73;
+	                    } else
+	                    // negative DIF digits j k l m n o p q r (ascii 106-114)
+	                    if ((ascii > 105) && (ascii < 115)) {
+	                        inValue=true;
+	                        isDifference=true;
+	                        currentValue=ascii-105;
+	                        isNegative=true;
+	                    } else
+	                    // $ sign, we need to check the next one
+	                    if (ascii === 36 && value.charCodeAt(i + 1) === 36) {
+	                        inValue=true;
+	                        inComment = true;
+	                    } else
+	                    // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
+	                    if (ascii === 37) {
+	                        inValue=true;
+	                        isDifference=true;
+	                        currentValue=0;
+	                        isNegative=false;
+	                    } else
+	                    if (ascii === 45) { // a "-"
+	                        // check if after there is a number, decimal or comma
+	                        var ascii2=value.charCodeAt(i+1);
+	                        if ((ascii2 >= 48 && ascii2 <= 57) || ascii2 === 44 || ascii2 === 46) {
+	                            inValue=true;
+	                            isLastDifference=false;
+	                            isNegative = true;
+	                        }
+	                    } else if (ascii === 13 || ascii === 10) {
+	                        newLine = true;
+	                        inComment = false;
+	                    }
+	                    // and now analyse the details ... space or tabulation
+	                    // if "+" we just don't care
+	                }
+	            }
+	        }
+	    }
+
+	    function parsePeakTable(spectrum, value, result) {
+	        var removeCommentRegExp = /\$\$.*/;
+	        var peakTableSplitRegExp = /[,\t ]+/;
+	        
+	        spectrum.isPeaktable=true;
+	        var i, ii, j, jj, values;
+	        var currentData = [];
+	        spectrum.data = [currentData];
+
+	        // counts for around 20% of the time
+	        var lines = value.split(/,? *,?[;\r\n]+ */);
+
+	        var k = 0;
+	        for (i = 1, ii = lines.length; i < ii; i++) {
+	            values = lines[i].trim().replace(removeCommentRegExp, '').split(peakTableSplitRegExp);
+	            if (values.length % 2 === 0) {
+	                for (j = 0, jj = values.length; j < jj; j = j + 2) {
+	                    // takes around 40% of the time to add and parse the 2 values nearly exclusively because of parseFloat
+	                    currentData[k++] = (parseFloat(values[j]) * spectrum.xFactor);
+	                    currentData[k++] = (parseFloat(values[j + 1]) * spectrum.yFactor);
+	                }
+	            } else {
+	                result.logs.push('Format error: ' + values);
+	            }
+	        }
+	    }
+
+
 
 	    return convert;
 
@@ -847,6 +913,156 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = {
 	    convert: JcampConverter
 	};
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+
+	var xyDataSplitRegExp = /[,\t \+-]*(?=[^\d,\t \.])|[ \t]+(?=[\d+\.-])/;
+	var removeCommentRegExp = /\$\$.*/;
+	var DEBUG=false;
+
+	module.exports=function(spectrum, value, result) {
+	    // we check if deltaX is defined otherwise we calculate it
+	    if (!spectrum.deltaX) {
+	        spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
+	    }
+
+	    spectrum.isXYdata=true;
+
+	    var currentData = [];
+	    var currentPosition=0;
+	    spectrum.data = [currentData];
+
+	    var currentX = spectrum.firstX;
+	    var currentY = spectrum.firstY;
+	    var lines = value.split(/[\r\n]+/);
+	    var lastDif, values, ascii, expectedY;
+	    values = [];
+	    for (var i = 1, ii = lines.length; i < ii; i++) {
+	        //var previousValues=JSON.parse(JSON.stringify(values));
+	        values = lines[i].trim().replace(removeCommentRegExp, '').split(xyDataSplitRegExp);
+	        if (values.length > 0) {
+	            if (DEBUG) {
+	                if (!spectrum.firstPoint) {
+	                    spectrum.firstPoint = +values[0];
+	                }
+	                var expectedCurrentX = (values[0] - spectrum.firstPoint) * spectrum.xFactor + spectrum.firstX;
+	                if ((lastDif || lastDif === 0)) {
+	                    expectedCurrentX += spectrum.deltaX;
+	                }
+	                result.logs.push('Checking X value: currentX: ' + currentX + ' - expectedCurrentX: ' + expectedCurrentX);
+	            }
+	            for (var j = 1, jj = values.length; j < jj; j++) {
+	                if (j === 1 && (lastDif || lastDif === 0)) {
+	                    lastDif = null; // at the beginning of each line there should be the full value X / Y so the diff is always undefined
+	                    // we could check if we have the expected Y value
+	                    ascii = values[j].charCodeAt(0);
+
+	                    if (false) { // this code is just to check the jcamp DIFDUP and the next line repeat of Y value
+	                        // + - . 0 1 2 3 4 5 6 7 8 9
+	                        if ((ascii === 43) || (ascii === 45) || (ascii === 46) || ((ascii > 47) && (ascii < 58))) {
+	                            expectedY = +values[j];
+	                        } else
+	                        // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
+	                        if ((ascii > 63) && (ascii < 74)) {
+	                            expectedY = +(String.fromCharCode(ascii - 16) + values[j].substring(1));
+	                        } else
+	                        // negative SQZ digits a b c d e f g h i (ascii 97-105)
+	                        if ((ascii > 96) && (ascii < 106)) {
+	                            expectedY = -(String.fromCharCode(ascii - 48) + values[j].substring(1));
+	                        }
+	                        if (expectedY !== currentY) {
+	                            result.logs.push('Y value check error: Found: ' + expectedY + ' - Current: ' + currentY);
+	                            result.logs.push('Previous values: ' + previousValues.length);
+	                            result.logs.push(previousValues);
+	                        }
+	                    }
+	                } else {
+	                    if (values[j].length > 0) {
+	                        ascii = values[j].charCodeAt(0);
+	                        // + - . 0 1 2 3 4 5 6 7 8 9
+	                        if ((ascii === 43) || (ascii === 45) || (ascii === 46) || ((ascii > 47) && (ascii < 58))) {
+	                            lastDif = null;
+	                            currentY = +values[j];
+	                            // currentData.push(currentX, currentY * spectrum.yFactor);
+	                            currentData[currentPosition++]=currentX;
+	                            currentData[currentPosition++]=currentY * spectrum.yFactor;
+	                            currentX += spectrum.deltaX;
+	                        } else
+	                        // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
+	                        if ((ascii > 63) && (ascii < 74)) {
+	                            lastDif = null;
+	                            currentY = +(String.fromCharCode(ascii - 16) + values[j].substring(1));
+	                            // currentData.push(currentX, currentY * spectrum.yFactor);
+	                            currentData[currentPosition++] = currentX;
+	                            currentData[currentPosition++] = currentY * spectrum.yFactor;
+	                            currentX += spectrum.deltaX;
+	                        } else
+	                        // negative SQZ digits a b c d e f g h i (ascii 97-105)
+	                        if ((ascii > 96) && (ascii < 106)) {
+	                            lastDif = null;
+	                            // we can multiply the string by 1 because if may not contain decimal (is this correct ????)
+	                            currentY = -(String.fromCharCode(ascii - 48) + values[j].substring(1))*1;
+	                            //currentData.push(currentX, currentY * spectrum.yFactor);
+	                            currentData[currentPosition++]=currentX;
+	                            currentData[currentPosition++]=currentY * spectrum.yFactor;
+	                            currentX += spectrum.deltaX;
+	                        } else
+
+
+
+	                        // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
+	                        if (((ascii > 82) && (ascii < 91)) || (ascii === 115)) {
+	                            var dup = (String.fromCharCode(ascii - 34) + values[j].substring(1)) - 1;
+	                            if (ascii === 115) {
+	                                dup = ('9' + values[j].substring(1)) - 1;
+	                            }
+	                            for (var l = 0; l < dup; l++) {
+	                                if (lastDif) {
+	                                    currentY = currentY + lastDif;
+	                                }
+	                                // currentData.push(currentX, currentY * spectrum.yFactor);
+	                                currentData[currentPosition++]=currentX;
+	                                currentData[currentPosition++]=currentY * spectrum.yFactor;
+	                                currentX += spectrum.deltaX;
+	                            }
+	                        } else
+	                        // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
+	                        if (ascii === 37) {
+	                            lastDif = +('0' + values[j].substring(1));
+	                            currentY += lastDif;
+	                            // currentData.push(currentX, currentY * spectrum.yFactor);
+	                            currentData[currentPosition++]=currentX;
+	                            currentData[currentPosition++]=currentY * spectrum.yFactor;
+	                            currentX += spectrum.deltaX;
+	                        } else if ((ascii > 73) && (ascii < 83)) {
+	                            lastDif = (String.fromCharCode(ascii - 25) + values[j].substring(1))*1;
+	                            currentY += lastDif;
+	                            // currentData.push(currentX, currentY * spectrum.yFactor);
+	                            currentData[currentPosition++]=currentX;
+	                            currentData[currentPosition++]=currentY * spectrum.yFactor;
+	                            currentX += spectrum.deltaX;
+	                        } else
+	                        // negative DIF digits j k l m n o p q r (ascii 106-114)
+	                        if ((ascii > 105) && (ascii < 115)) {
+	                            lastDif = -(String.fromCharCode(ascii - 57) + values[j].substring(1))*1;
+	                            currentY += lastDif;
+	                            // currentData.push(currentX, currentY * spectrum.yFactor);
+	                            currentData[currentPosition++]=currentX;
+	                            currentData[currentPosition++]=currentY * spectrum.yFactor;
+	                            currentX += spectrum.deltaX;
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    }
+	}
 
 
 /***/ }
