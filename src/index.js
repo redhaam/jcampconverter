@@ -425,19 +425,21 @@ function getConverter() {
         var z = new Array(ySize);
         for (var i = 0; i < ySize; i++) {
             z[i] = new Array(xSize);
+            var xVector=spectra[i].data[0];
             for (var j = 0; j < xSize; j++) {
-                z[i][j] = spectra[i].data[0][j * 2 + 1];
-                if (z[i][j] < minZ) minZ = spectra[i].data[0][j * 2 + 1];
-                if (z[i][j] > maxZ) maxZ = spectra[i].data[0][j * 2 + 1];
+                var value = xVector[j * 2 + 1];
+                z[i][j] = value;
+                if (value < minZ) minZ = value;
+                if (value > maxZ) maxZ = value;
                 if (i !== 0 && j !== 0) {
-                    noise += Math.abs(z[i][j] - z[i][j - 1]) + Math.abs(z[i][j] - z[i - 1][j]);
+                    noise += Math.abs(value - z[i][j - 1]) + Math.abs(value - z[i - 1][j]);
                 }
             }
         }
         return {
             z: z,
             minX: spectra[0].data[0][0],
-            maxX: spectra[0].data[0][spectra[0].data[0].length - 2],
+            maxX: spectra[0].data[0][spectra[0].data[0].length - 2], // has to be -2 because it is a 1D array [x,y,x,y,...]
             minY: spectra[0].pageValue,
             maxY: spectra[ySize - 1].pageValue,
             minZ: minZ,
