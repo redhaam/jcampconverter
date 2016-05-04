@@ -87,7 +87,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var keepRecordsRegExp=/^$/;
 	        if (options.keepRecordsRegExp) keepRecordsRegExp=options.keepRecordsRegExp;
 
-	        var start = new Date();
+	        var start = Date.now();
 
 	        var ntuples = {},
 	            ldr,
@@ -107,11 +107,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!(typeof jcamp === 'string')) return result;
 	        // console.time('start');
 
-	        if (result.profiling) result.profiling.push({action: 'Before split to LDRS', time: new Date() - start});
+	        if (result.profiling) result.profiling.push({action: 'Before split to LDRS', time: Date.now() - start});
 
 	        ldrs = jcamp.split(/[\r\n]+##/);
 
-	        if (result.profiling) result.profiling.push({action: 'Split to LDRS', time: new Date() - start});
+	        if (result.profiling) result.profiling.push({action: 'Split to LDRS', time: Date.now() - start});
 
 	        if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, '');
 
@@ -274,6 +274,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    if (options.fastParse===false) {
 	                        parseXYDataRegExp(spectrum, dataValue, result);
 	                    } else {
+	                        if (!spectrum.deltaX) {
+	                            spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
+	                        }
 	                        fastParseXYData(spectrum, dataValue, result);
 	                    }
 	                } else {
@@ -297,7 +300,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Currently disabled
 	        //    if (options && options.lowRes) addLowRes(spectra,options);
 
-	        if (result.profiling) result.profiling.push({action: 'Finished parsing', time: new Date() - start});
+	        if (result.profiling) result.profiling.push({action: 'Finished parsing', time: Date.now() - start});
 
 	        if (Object.keys(ntuples).length>0) {
 	            var newNtuples=[];
@@ -317,7 +320,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            add2D(result);
 	            if (result.profiling) result.profiling.push({
 	                action: 'Finished countour plot calculation',
-	                time: new Date() - start
+	                time: Date.now() - start
 	            });
 	            if (!options.keepSpectra) {
 	                delete result.spectra;
@@ -359,12 +362,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            if (result.profiling) result.profiling.push({
 	                action: 'Finished GCMS calculation',
-	                time: new Date() - start
+	                time: Date.now() - start
 	            });
 	        }
 
 	        if (result.profiling) {
-	            result.profiling.push({action: 'Total time', time: new Date() - start});
+	            result.profiling.push({action: 'Total time', time: Date.now() - start});
 	        }
 
 	        return result;
@@ -478,19 +481,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var z = new Array(ySize);
 	        for (var i = 0; i < ySize; i++) {
 	            z[i] = new Array(xSize);
+	            var xVector=spectra[i].data[0];
 	            for (var j = 0; j < xSize; j++) {
-	                z[i][j] = spectra[i].data[0][j * 2 + 1];
-	                if (z[i][j] < minZ) minZ = spectra[i].data[0][j * 2 + 1];
-	                if (z[i][j] > maxZ) maxZ = spectra[i].data[0][j * 2 + 1];
+	                var value = xVector[j * 2 + 1];
+	                z[i][j] = value;
+	                if (value < minZ) minZ = value;
+	                if (value > maxZ) maxZ = value;
 	                if (i !== 0 && j !== 0) {
-	                    noise += Math.abs(z[i][j] - z[i][j - 1]) + Math.abs(z[i][j] - z[i - 1][j]);
+	                    noise += Math.abs(value - z[i][j - 1]) + Math.abs(value - z[i - 1][j]);
 	                }
 	            }
 	        }
 	        return {
 	            z: z,
 	            minX: spectra[0].data[0][0],
-	            maxX: spectra[0].data[0][spectra[0].data[0].length - 2],
+	            maxX: spectra[0].data[0][spectra[0].data[0].length - 2], // has to be -2 because it is a 1D array [x,y,x,y,...]
 	            minY: spectra[0].pageValue,
 	            maxY: spectra[ySize - 1].pageValue,
 	            minZ: minZ,
@@ -557,18 +562,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (lineZValue <= minZ || lineZValue >= maxZ) continue;
 
 	            for (var iSubSpectra = 0; iSubSpectra < nbSubSpectra - 1; iSubSpectra++) {
+	                var subSpectra = z[iSubSpectra];
+	                var subSpectraAfter = z[iSubSpectra + 1];
 	                for (var povar = 0; povar < nbPovars - 1; povar++) {
-	                    povarHeight0 = z[iSubSpectra][povar];
-	                    povarHeight1 = z[iSubSpectra][povar + 1];
-	                    povarHeight2 = z[(iSubSpectra + 1)][povar];
-	                    povarHeight3 = z[(iSubSpectra + 1)][(povar + 1)];
-
-
+	                    povarHeight0 = subSpectra[povar];
+	                    povarHeight1 = subSpectra[povar + 1];
+	                    povarHeight2 = subSpectraAfter[povar];
+	                    povarHeight3 = subSpectraAfter[povar + 1];
+	                    
 	                    isOver0 = (povarHeight0 > lineZValue);
 	                    isOver1 = (povarHeight1 > lineZValue);
 	                    isOver2 = (povarHeight2 > lineZValue);
 	                    isOver3 = (povarHeight3 > lineZValue);
-
 	                    
 	                    // Example povar0 is over the plane and povar1 and
 	                    // povar2 are below, we find the varersections and add
@@ -658,13 +663,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    function fastParseXYData(spectrum, value, result) {
+	    function fastParseXYData(spectrum, value) {
 	        // TODO need to deal with result
 	        //  console.log(value);
 	        // we check if deltaX is defined otherwise we calculate it
-	        if (!spectrum.deltaX) {
-	            spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
-	        }
+
+	        var yFactor = spectrum.yFactor;
+	        var deltaX = spectrum.deltaX;
+	        
+
 	        spectrum.isXYdata = true;
 	        // TODO to be improved using 2 array {x:[], y:[]}
 	        var currentData = [];
@@ -739,7 +746,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                skipFirstValue=false;
 	                            } else {
 	                                if (isDifference) {
-	                                    lastDifference=isNegative ? -currentValue : currentValue;
+	                                    if (currentValue===0) lastDifference=0;
+	                                    else lastDifference=isNegative ? -currentValue : currentValue;
 	                                    isLastDifference=true;
 	                                    isDifference=false;
 	                                }
@@ -748,7 +756,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                    if (isLastDifference) {
 	                                        currentY += lastDifference;
 	                                    } else {
-	                                        currentY = isNegative ? -currentValue : currentValue;
+	                                        if (currentValue===0) currentY=0;
+	                                        else currentY = isNegative ? -currentValue : currentValue;
 	                                    }
 
 	                                    //  console.log("Separator",isNegative ?
@@ -758,8 +767,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                                    // push is slightly slower ... (we loose 10%)
 	                                    currentData[currentPosition++]=currentX;
-	                                    currentData[currentPosition++]=currentY * spectrum.yFactor;
-	                                    currentX += spectrum.deltaX;
+	                                    currentData[currentPosition++]=currentY * yFactor;
+	                                    currentX += deltaX;
 	                                }
 	                            }
 	                        }
