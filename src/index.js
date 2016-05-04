@@ -31,7 +31,7 @@ function getConverter() {
         var keepRecordsRegExp=/^$/;
         if (options.keepRecordsRegExp) keepRecordsRegExp=options.keepRecordsRegExp;
 
-        var start = new Date();
+        var start = Date.now();
 
         var ntuples = {},
             ldr,
@@ -51,11 +51,11 @@ function getConverter() {
         if (!(typeof jcamp === 'string')) return result;
         // console.time('start');
 
-        if (result.profiling) result.profiling.push({action: 'Before split to LDRS', time: new Date() - start});
+        if (result.profiling) result.profiling.push({action: 'Before split to LDRS', time: Date.now() - start});
 
         ldrs = jcamp.split(/[\r\n]+##/);
 
-        if (result.profiling) result.profiling.push({action: 'Split to LDRS', time: new Date() - start});
+        if (result.profiling) result.profiling.push({action: 'Split to LDRS', time: Date.now() - start});
 
         if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, '');
 
@@ -244,7 +244,7 @@ function getConverter() {
         // Currently disabled
         //    if (options && options.lowRes) addLowRes(spectra,options);
 
-        if (result.profiling) result.profiling.push({action: 'Finished parsing', time: new Date() - start});
+        if (result.profiling) result.profiling.push({action: 'Finished parsing', time: Date.now() - start});
 
         if (Object.keys(ntuples).length>0) {
             var newNtuples=[];
@@ -264,7 +264,7 @@ function getConverter() {
             add2D(result);
             if (result.profiling) result.profiling.push({
                 action: 'Finished countour plot calculation',
-                time: new Date() - start
+                time: Date.now() - start
             });
             if (!options.keepSpectra) {
                 delete result.spectra;
@@ -306,12 +306,12 @@ function getConverter() {
             }
             if (result.profiling) result.profiling.push({
                 action: 'Finished GCMS calculation',
-                time: new Date() - start
+                time: Date.now() - start
             });
         }
 
         if (result.profiling) {
-            result.profiling.push({action: 'Total time', time: new Date() - start});
+            result.profiling.push({action: 'Total time', time: Date.now() - start});
         }
 
         return result;
@@ -506,18 +506,18 @@ function getConverter() {
             if (lineZValue <= minZ || lineZValue >= maxZ) continue;
 
             for (var iSubSpectra = 0; iSubSpectra < nbSubSpectra - 1; iSubSpectra++) {
+                var subSpectra = z[iSubSpectra];
+                var subSpectraAfter = z[iSubSpectra + 1];
                 for (var povar = 0; povar < nbPovars - 1; povar++) {
-                    povarHeight0 = z[iSubSpectra][povar];
-                    povarHeight1 = z[iSubSpectra][povar + 1];
-                    povarHeight2 = z[(iSubSpectra + 1)][povar];
-                    povarHeight3 = z[(iSubSpectra + 1)][(povar + 1)];
-
-
+                    povarHeight0 = subSpectra[povar];
+                    povarHeight1 = subSpectra[povar + 1];
+                    povarHeight2 = subSpectraAfter[povar];
+                    povarHeight3 = subSpectraAfter[povar + 1];
+                    
                     isOver0 = (povarHeight0 > lineZValue);
                     isOver1 = (povarHeight1 > lineZValue);
                     isOver2 = (povarHeight2 > lineZValue);
                     isOver3 = (povarHeight3 > lineZValue);
-
                     
                     // Example povar0 is over the plane and povar1 and
                     // povar2 are below, we find the varersections and add
