@@ -533,27 +533,27 @@ function getConverter() {
                     }
                     // test around the diagonal
                     if (isOver[1] !== isOver[2]) {
-                        pAx = povar + 1 - (lineZValue - povarHeight[1]) / (povarHeight[2] - povarHeight[1]);
-                        pAy = iSubSpectra + (lineZValue - povarHeight[1]) / (povarHeight[2] - povarHeight[1]);
+                        pAx = (povar + 1 - (lineZValue - povarHeight[1]) / (povarHeight[2] - povarHeight[1])) * dx + x0;
+                        pAy = (iSubSpectra + (lineZValue - povarHeight[1]) / (povarHeight[2] - povarHeight[1])) * dy + y0;
                         if (isOver[1] !== isOver[0]) {
                             pBx = povar + 1 - (lineZValue - povarHeight[1]) / (povarHeight[0] - povarHeight[1]);
                             pBy = iSubSpectra;
-                            lines.push(pAx * dx + x0); lines.push(pAy * dy + y0); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
+                            lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
                         }
                         if (isOver[2] !== isOver[0]) {
                             pBx = povar;
                             pBy = iSubSpectra + 1 - (lineZValue - povarHeight[2]) / (povarHeight[0] - povarHeight[2]);
-                            lines.push(pAx * dx + x0); lines.push(pAy * dy + y0); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
+                            lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
                         }
                         if (isOver[1] !== isOver[3]) {
                             pBx = povar + 1;
                             pBy = iSubSpectra + (lineZValue - povarHeight[1]) / (povarHeight[3] - povarHeight[1]);
-                            lines.push(pAx * dx + x0); lines.push(pAy * dy + y0); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
+                            lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
                         }
                         if (isOver[2] !== isOver[3]) {
                             pBx = povar + (lineZValue - povarHeight[2]) / (povarHeight[3] - povarHeight[2]);
                             pBy = iSubSpectra + 1;
-                            lines.push(pAx * dx + x0); lines.push(pAy * dy + y0); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
+                            lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
                         }
                     }
                 }
