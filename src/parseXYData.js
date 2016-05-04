@@ -28,9 +28,9 @@ module.exports=function(spectrum, value, result) {
         if (values.length > 0) {
             if (DEBUG) {
                 if (!spectrum.firstPoint) {
-                    spectrum.firstPoint = parseFloat(values[0]);
+                    spectrum.firstPoint = +values[0];
                 }
-                var expectedCurrentX = parseFloat(values[0] - spectrum.firstPoint) * spectrum.xFactor + spectrum.firstX;
+                var expectedCurrentX = (values[0] - spectrum.firstPoint) * spectrum.xFactor + spectrum.firstX;
                 if ((lastDif || lastDif === 0)) {
                     expectedCurrentX += spectrum.deltaX;
                 }
@@ -45,19 +45,15 @@ module.exports=function(spectrum, value, result) {
                     if (false) { // this code is just to check the jcamp DIFDUP and the next line repeat of Y value
                         // + - . 0 1 2 3 4 5 6 7 8 9
                         if ((ascii === 43) || (ascii === 45) || (ascii === 46) || ((ascii > 47) && (ascii < 58))) {
-                            expectedY = parseFloat(values[j]);
+                            expectedY = +values[j];
                         } else
                         // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
                         if ((ascii > 63) && (ascii < 74)) {
-                            // we could use parseInt but parseFloat is faster at least in Chrome
-                            // we can multiply the string by 1 because if may not contain decimal (is this correct ????)
-                            expectedY = (String.fromCharCode(ascii - 16) + values[j].substring(1))*1;
+                            expectedY = +(String.fromCharCode(ascii - 16) + values[j].substring(1));
                         } else
                         // negative SQZ digits a b c d e f g h i (ascii 97-105)
                         if ((ascii > 96) && (ascii < 106)) {
-                            // we could use parseInt but parseFloat is faster at least in Chrome
-                            // we can multiply the string by 1 because if may not contain decimal (is this correct ????)
-                            expectedY = -(String.fromCharCode(ascii - 48) + values[j].substring(1))*1;
+                            expectedY = -(String.fromCharCode(ascii - 48) + values[j].substring(1));
                         }
                         if (expectedY !== currentY) {
                             result.logs.push('Y value check error: Found: ' + expectedY + ' - Current: ' + currentY);
@@ -71,7 +67,7 @@ module.exports=function(spectrum, value, result) {
                         // + - . 0 1 2 3 4 5 6 7 8 9
                         if ((ascii === 43) || (ascii === 45) || (ascii === 46) || ((ascii > 47) && (ascii < 58))) {
                             lastDif = null;
-                            currentY = parseFloat(values[j]);
+                            currentY = +values[j];
                             // currentData.push(currentX, currentY * spectrum.yFactor);
                             currentData[currentPosition++]=currentX;
                             currentData[currentPosition++]=currentY * spectrum.yFactor;
@@ -80,11 +76,10 @@ module.exports=function(spectrum, value, result) {
                         // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
                         if ((ascii > 63) && (ascii < 74)) {
                             lastDif = null;
-                            // we can multiply the string by 1 because if may not contain decimal (is this correct ????)
-                            currentY = (String.fromCharCode(ascii - 16) + values[j].substring(1))*1;
+                            currentY = +(String.fromCharCode(ascii - 16) + values[j].substring(1));
                             // currentData.push(currentX, currentY * spectrum.yFactor);
-                            currentData[currentPosition++]=currentX;
-                            currentData[currentPosition++]=currentY * spectrum.yFactor;
+                            currentData[currentPosition++] = currentX;
+                            currentData[currentPosition++] = currentY * spectrum.yFactor;
                             currentX += spectrum.deltaX;
                         } else
                         // negative SQZ digits a b c d e f g h i (ascii 97-105)
@@ -102,9 +97,9 @@ module.exports=function(spectrum, value, result) {
 
                         // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
                         if (((ascii > 82) && (ascii < 91)) || (ascii === 115)) {
-                            var dup = (String.fromCharCode(ascii - 34) + values[j].substring(1))*1 - 1;
+                            var dup = (String.fromCharCode(ascii - 34) + values[j].substring(1)) - 1;
                             if (ascii === 115) {
-                                dup = ('9' + values[j].substring(1))*1 - 1;
+                                dup = ('9' + values[j].substring(1)) - 1;
                             }
                             for (var l = 0; l < dup; l++) {
                                 if (lastDif) {
@@ -118,7 +113,7 @@ module.exports=function(spectrum, value, result) {
                         } else
                         // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
                         if (ascii === 37) {
-                            lastDif = ('0' + values[j].substring(1))*1;
+                            lastDif = +('0' + values[j].substring(1));
                             currentY += lastDif;
                             // currentData.push(currentX, currentY * spectrum.yFactor);
                             currentData[currentPosition++]=currentX;
