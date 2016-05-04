@@ -643,8 +643,10 @@ function getConverter() {
         var inValue=false;
         var skipFirstValue=false;
         var decimalPosition = 0;
+        var ascii;
         for (; i <= value.length; i++) {
-            var ascii = value.charCodeAt(i);
+            if (i===value.length) ascii=13;
+            else ascii = value.charCodeAt(i);
             if (inComment) {
                 // we should ignore the text if we are after $$
                 if (ascii === 13 || ascii === 10) {
