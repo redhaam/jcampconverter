@@ -16,8 +16,10 @@
     function loadJcamp(filename, options) {
         $.get(filename).done(
             function (jcamp) {
-                var result=JcampConverter.convert(jcamp, options)
-                console.log(result.profiling[3].time-result.profiling[2].time);
+                for (var i=0; i<10; i++) {
+                    var result=JcampConverter.convert(jcamp, options)
+                    console.log(result.profiling[3].time-result.profiling[2].time);
+                }
             }
         )
     }
