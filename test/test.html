@@ -18,13 +18,13 @@
             function (jcamp) {
                 for (var i=0; i<10; i++) {
                     var result=JcampConverter.convert(jcamp, options)
-                    console.log(result.profiling[3].time-result.profiling[2].time);
+                    console.log(result.profiling[3].time-result.profiling[0].time);
                 }
             }
         )
     }
 
-    loadJcamp("data/indometacin/cosy.dx", {});
+    loadJcamp("data/indometacin/cosy.dx", {fastParse: true});
     //loadJcamp("data/indometacin/cosy.dx");
    // loadJcamp("data/misc/cosyPPM.jdx");
 </script>

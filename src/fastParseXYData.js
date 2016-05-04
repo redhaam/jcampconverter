@@ -48,6 +48,10 @@ module.exports=function(spectrum, value, result) {
         var ascii = value.charCodeAt(i);
         if (inComment) {
             // we should ignore the text if we are after $$
+            if (ascii === 13 || ascii === 10) {
+                newLine = true;
+                inComment = false;
+            }
         } else {
             // when is it a new value ?
             // when it is not a digit, . or comma
