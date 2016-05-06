@@ -56,7 +56,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var parseXYDataRegExp=__webpack_require__(1);
+	var parseXYDataRegExp = __webpack_require__(1);
 
 
 	function getConverter() {
@@ -74,6 +74,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        return floatArray;
 	    }
+	    
+	    function Spectrum() {
+	        
+	    }
 
 	    /*
 	     options.keepSpectra: keep the original spectra for a 2D
@@ -84,8 +88,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function convert(jcamp, options) {
 	        options = options || {};
 
-	        var keepRecordsRegExp=/^$/;
-	        if (options.keepRecordsRegExp) keepRecordsRegExp=options.keepRecordsRegExp;
+	        var keepRecordsRegExp = /^$/;
+	        if (options.keepRecordsRegExp) keepRecordsRegExp = options.keepRecordsRegExp;
 
 	        var start = Date.now();
 
@@ -102,16 +106,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var spectra = [];
 	        result.spectra = spectra;
 	        result.info = {};
-	        var spectrum = {};
+	        var spectrum = new Spectrum();
 
 	        if (!(typeof jcamp === 'string')) return result;
 	        // console.time('start');
 
-	        if (result.profiling) result.profiling.push({action: 'Before split to LDRS', time: Date.now() - start});
+	        if (result.profiling) result.profiling.push({
+	            action: 'Before split to LDRS',
+	            time: Date.now() - start
+	        });
 
 	        ldrs = jcamp.split(/[\r\n]+##/);
 
-	        if (result.profiling) result.profiling.push({action: 'Split to LDRS', time: Date.now() - start});
+	        if (result.profiling) result.profiling.push({
+	            action: 'Split to LDRS',
+	            time: Date.now() - start
+	        });
 
 	        if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, '');
 
@@ -271,7 +281,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                prepareSpectrum(result, spectrum);
 	                // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
 	                if (dataValue.match(/.*\+\+.*/)) {
-	                    if (options.fastParse===false) {
+	                    if (options.fastParse === false) {
 	                        parseXYDataRegExp(spectrum, dataValue, result);
 	                    } else {
 	                        if (!spectrum.deltaX) {
@@ -283,12 +293,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    parsePeakTable(spectrum, dataValue, result);
 	                }
 	                spectra.push(spectrum);
-	                spectrum = {};
+	                spectrum = new Spectrum();
 	            } else if (dataLabel === 'PEAKTABLE') {
 	                prepareSpectrum(result, spectrum);
 	                parsePeakTable(spectrum, dataValue, result);
 	                spectra.push(spectrum);
-	                spectrum = {};
+	                spectrum = new Spectrum();
 	            } else if (isMSField(dataLabel)) {
 	                spectrum[convertMSFieldToLabel(dataLabel)] = dataValue;
 	            }
@@ -297,27 +307,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 
-	        // Currently disabled
-	        //    if (options && options.lowRes) addLowRes(spectra,options);
+	        if (result.profiling) result.profiling.push({
+	            action: 'Finished parsing',
+	            time: Date.now() - start
+	        });
 
-	        if (result.profiling) result.profiling.push({action: 'Finished parsing', time: Date.now() - start});
-
-	        if (Object.keys(ntuples).length>0) {
-	            var newNtuples=[];
-	            var keys=Object.keys(ntuples);
-	            for (var i=0; i<keys.length; i++) {
-	                var key=keys[i];
-	                var values=ntuples[key];
-	                for (var j=0; j<values.length; j++) {
-	                    if (! newNtuples[j]) newNtuples[j]={};
-	                    newNtuples[j][key]=values[j];
+	        if (Object.keys(ntuples).length > 0) {
+	            var newNtuples = [];
+	            var keys = Object.keys(ntuples);
+	            for (var i = 0; i < keys.length; i++) {
+	                var key = keys[i];
+	                var values = ntuples[key];
+	                for (var j = 0; j < values.length; j++) {
+	                    if (!newNtuples[j]) newNtuples[j] = {};
+	                    newNtuples[j][key] = values[j];
 	                }
 	            }
-	            result.ntuples=newNtuples;
+	            result.ntuples = newNtuples;
 	        }
 
 	        if (result.twoD) {
-	            add2D(result);
+	            add2D(result, options);
 	            if (result.profiling) result.profiling.push({
 	                action: 'Finished countour plot calculation',
 	                time: Date.now() - start
@@ -327,24 +337,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 
-	        var isGCMS = (spectra.length > 1 && (! spectra[0].dataType || spectra[0].dataType.match(/.*mass.*/i)));
+	        var isGCMS = (spectra.length > 1 && (!spectra[0].dataType || spectra[0].dataType.match(/.*mass.*/i)));
 	        if (isGCMS && options.newGCMS) {
 	            options.xy = true;
 	        }
 
 	        if (options.xy) { // the spectraData should not be a oneD array but an object with x and y
 	            if (spectra.length > 0) {
-	                for (var i=0; i<spectra.length; i++) {
-	                    var spectrum=spectra[i];
-	                    if (spectrum.data.length>0) {
-	                        for (var j=0; j<spectrum.data.length; j++) {
-	                            var data=spectrum.data[j];
-	                            var newData={x: new Array(data.length/2), y:new Array(data.length/2)};
-	                            for (var k=0; k<data.length; k=k+2) {
-	                                newData.x[k/2]=data[k];
-	                                newData.y[k/2]=data[k+1];
+	                for (var i = 0; i < spectra.length; i++) {
+	                    var spectrum = spectra[i];
+	                    if (spectrum.data.length > 0) {
+	                        for (var j = 0; j < spectrum.data.length; j++) {
+	                            var data = spectrum.data[j];
+	                            var newData = {
+	                                x: new Array(data.length / 2),
+	                                y: new Array(data.length / 2)
+	                            };
+	                            for (var k = 0; k < data.length; k = k + 2) {
+	                                newData.x[k / 2] = data[k];
+	                                newData.y[k / 2] = data[k + 1];
 	                            }
-	                            spectrum.data[j]=newData;
+	                            spectrum.data[j] = newData;
 	                        }
 
 	                    }
@@ -367,7 +380,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        if (result.profiling) {
-	            result.profiling.push({action: 'Total time', time: Date.now() - start});
+	            result.profiling.push({
+	                action: 'Total time',
+	                time: Date.now() - start
+	            });
 	        }
 
 	        return result;
@@ -384,7 +400,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    function addNewGCMS(result) {
 	        var spectra = result.spectra;
-	        var length  = spectra.length;
+	        var length = spectra.length;
 	        var gcms = {
 	            times: new Array(length),
 	            series: [{
@@ -432,7 +448,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                existingGCMSFields.push(label);
 	            }
 	        }
-	        if (existingGCMSFields.length===0) return;
+	        if (existingGCMSFields.length === 0) return;
 	        var gcms = {};
 	        gcms.gc = {};
 	        gcms.ms = [];
@@ -445,7 +461,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gcms.gc[existingGCMSFields[j]].push(spectrum.pageValue);
 	                gcms.gc[existingGCMSFields[j]].push(parseFloat(spectrum[existingGCMSFields[j]]));
 	            }
-	          if (spectrum.data) gcms.ms[i] = spectrum.data[0];
+	            if (spectrum.data) gcms.ms[i] = spectrum.data[0];
 
 	        }
 	        result.gcms = gcms;
@@ -471,7 +487,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 
-
 	    function convertTo3DZ(spectra) {
 	        var noise = 0;
 	        var minZ = spectra[0].data[0][0];
@@ -481,7 +496,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var z = new Array(ySize);
 	        for (var i = 0; i < ySize; i++) {
 	            z[i] = new Array(xSize);
-	            var xVector=spectra[i].data[0];
+	            var xVector = spectra[i].data[0];
 	            for (var j = 0; j < xSize; j++) {
 	                var value = xVector[j * 2 + 1];
 	                z[i][j] = value;
@@ -505,20 +520,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    }
 
-	    function add2D(result) {
+	    function add2D(result, options) {
 	        var zData = convertTo3DZ(result.spectra);
-	        result.contourLines = generateContourLines(zData);
+	        result.contourLines = generateContourLines(zData, options);
 	        delete zData.z;
 	        result.minMax = zData;
 	    }
 
 
 	    function generateContourLines(zData, options) {
-	        // console.time('generateContourLines');
 	        var noise = zData.noise;
 	        var z = zData.z;
 	        var contourLevels = [];
-	        var nbLevels = 7;
+	        var nbLevels = options.nbContourLevels || 7;
+	        var noiseMultiplier = options.noiseMultiplier === undefined ? 5 : options.noiseMultiplier;
 	        var povarHeight0, povarHeight1, povarHeight2, povarHeight3;
 	        var isOver0, isOver1, isOver2, isOver3;
 	        var nbSubSpectra = z.length;
@@ -548,12 +563,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var lineZValue;
 	        for (var level = 0; level < nbLevels * 2; level++) { // multiply by 2 for positif and negatif
 	            var contourLevel = {};
-	            contourLevels[level]=contourLevel;
+	            contourLevels[level] = contourLevel;
 	            var side = level % 2;
+	            var factor = (maxZ - noiseMultiplier * noise) * Math.exp(level >> 1 - nbLevels);
 	            if (side === 0) {
-	                lineZValue = (maxZ - 5 * noise) * Math.exp(level / 2 - nbLevels) + 5 * noise;
+	                lineZValue = factor + noiseMultiplier * noise;
 	            } else {
-	                lineZValue = -(maxZ - 5 * noise) * Math.exp(level / 2 - nbLevels) - 5 * noise;
+	                lineZValue = -factor - noiseMultiplier * noise;
 	            }
 	            var lines = [];
 	            contourLevel.zValue = lineZValue;
@@ -569,12 +585,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    povarHeight1 = subSpectra[povar + 1];
 	                    povarHeight2 = subSpectraAfter[povar];
 	                    povarHeight3 = subSpectraAfter[povar + 1];
-	                    
+
 	                    isOver0 = (povarHeight0 > lineZValue);
 	                    isOver1 = (povarHeight1 > lineZValue);
 	                    isOver2 = (povarHeight2 > lineZValue);
 	                    isOver3 = (povarHeight3 > lineZValue);
-	                    
+
 	                    // Example povar0 is over the plane and povar1 and
 	                    // povar2 are below, we find the varersections and add
 	                    // the segment
@@ -583,7 +599,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        pAy = iSubSpectra;
 	                        pBx = povar;
 	                        pBy = iSubSpectra + (lineZValue - povarHeight0) / (povarHeight2 - povarHeight0);
-	                        lines.push(pAx * dx + x0); lines.push(pAy * dy + y0); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
+	                        lines.push(pAx * dx + x0);
+	                        lines.push(pAy * dy + y0);
+	                        lines.push(pBx * dx + x0);
+	                        lines.push(pBy * dy + y0);
 	                    }
 	                    // remove push does not help !!!!
 	                    if (isOver3 !== isOver1 && isOver3 !== isOver2) {
@@ -591,7 +610,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        pAy = iSubSpectra + 1 - (lineZValue - povarHeight3) / (povarHeight1 - povarHeight3);
 	                        pBx = povar + 1 - (lineZValue - povarHeight3) / (povarHeight2 - povarHeight3);
 	                        pBy = iSubSpectra + 1;
-	                        lines.push(pAx * dx + x0); lines.push(pAy * dy + y0); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
+	                        lines.push(pAx * dx + x0);
+	                        lines.push(pAy * dy + y0);
+	                        lines.push(pBx * dx + x0);
+	                        lines.push(pBy * dy + y0);
 	                    }
 	                    // test around the diagonal
 	                    if (isOver1 !== isOver2) {
@@ -600,28 +622,40 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        if (isOver1 !== isOver0) {
 	                            pBx = povar + 1 - (lineZValue - povarHeight1) / (povarHeight0 - povarHeight1);
 	                            pBy = iSubSpectra;
-	                            lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
+	                            lines.push(pAx);
+	                            lines.push(pAy);
+	                            lines.push(pBx * dx + x0);
+	                            lines.push(pBy * dy + y0);
 	                        }
 	                        if (isOver2 !== isOver0) {
 	                            pBx = povar;
 	                            pBy = iSubSpectra + 1 - (lineZValue - povarHeight2) / (povarHeight0 - povarHeight2);
-	                            lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
+	                            lines.push(pAx);
+	                            lines.push(pAy);
+	                            lines.push(pBx * dx + x0);
+	                            lines.push(pBy * dy + y0);
 	                        }
 	                        if (isOver1 !== isOver3) {
 	                            pBx = povar + 1;
 	                            pBy = iSubSpectra + (lineZValue - povarHeight1) / (povarHeight3 - povarHeight1);
-	                            lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
+	                            lines.push(pAx);
+	                            lines.push(pAy);
+	                            lines.push(pBx * dx + x0);
+	                            lines.push(pBy * dy + y0);
 	                        }
 	                        if (isOver2 !== isOver3) {
 	                            pBx = povar + (lineZValue - povarHeight2) / (povarHeight3 - povarHeight2);
 	                            pBy = iSubSpectra + 1;
-	                            lines.push(pAx); lines.push(pAy); lines.push(pBx * dx + x0); lines.push(pBy * dy + y0);
+	                            lines.push(pAx);
+	                            lines.push(pAy);
+	                            lines.push(pBx * dx + x0);
+	                            lines.push(pBy * dy + y0);
 	                        }
 	                    }
 	                }
 	            }
 	        }
-	        // console.timeEnd('generateContourLines');
+
 	        return {
 	            minX: zData.minX,
 	            maxX: zData.maxX,
@@ -629,38 +663,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            maxY: zData.maxY,
 	            segments: contourLevels
 	        };
-	        //return contourLevels;
-	    }
-
-
-	    function addLowRes(spectra, options) {
-	        var spectrum;
-	        var averageX, averageY;
-	        var targetNbPoints = options.lowRes;
-	        var highResData;
-	        for (var i = 0; i < spectra.length; i++) {
-	            spectrum = spectra[i];
-	            // we need to find the current higher resolution
-	            if (spectrum.data.length > 0) {
-	                highResData = spectrum.data[0];
-	                for (var j = 1; j < spectrum.data.length; j++) {
-	                    if (spectrum.data[j].length > highResData.length) {
-	                        highResData = spectrum.data[j];
-	                    }
-	                }
-
-	                if (targetNbPoints > (highResData.length / 2)) return;
-	                var i, ii;
-	                var lowResData = [];
-	                var modulo = Math.ceil(highResData.length / (targetNbPoints * 2));
-	                for (i = 0, ii = highResData.length; i < ii; i = i + 2) {
-	                    if (i % modulo === 0) {
-	                        lowResData.push(highResData[i], highResData[i + 1])
-	                    }
-	                }
-	                spectrum.data.push(lowResData);
-	            }
-	        }
 	    }
 
 	    function fastParseXYData(spectrum, value) {
@@ -670,7 +672,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var yFactor = spectrum.yFactor;
 	        var deltaX = spectrum.deltaX;
-	        
+
 
 	        spectrum.isXYdata = true;
 	        // TODO to be improved using 2 array {x:[], y:[]}
@@ -696,19 +698,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // we proceed taking the i after the first line
 	        var newLine = true;
-	        var isDifference=false;
-	        var isLastDifference=false;
-	        var lastDifference=0;
-	        var isDuplicate=false;
+	        var isDifference = false;
+	        var isLastDifference = false;
+	        var lastDifference = 0;
+	        var isDuplicate = false;
 	        var inComment = false;
 	        var currentValue = 0;
 	        var isNegative = false;
-	        var inValue=false;
-	        var skipFirstValue=false;
+	        var inValue = false;
+	        var skipFirstValue = false;
 	        var decimalPosition = 0;
 	        var ascii;
 	        for (; i <= value.length; i++) {
-	            if (i===value.length) ascii=13;
+	            if (i === value.length) ascii = 13;
 	            else ascii = value.charCodeAt(i);
 	            if (inComment) {
 	                // we should ignore the text if we are after $$
@@ -720,8 +722,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // when is it a new value ?
 	                // when it is not a digit, . or comma
 	                // it is a number that is either new or we continue
-	                if ( ascii <= 57 && ascii >= 48) { // a number
-	                    inValue=true;
+	                if (ascii <= 57 && ascii >= 48) { // a number
+	                    inValue = true;
 	                    if (decimalPosition > 0) {
 	                        currentValue += (ascii - 48) / Math.pow(10, decimalPosition++);
 	                    } else {
@@ -729,7 +731,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        currentValue += ascii - 48;
 	                    }
 	                } else if (ascii === 44 || ascii === 46) { // a "," or "."
-	                    inValue=true;
+	                    inValue = true;
 	                    decimalPosition++;
 	                } else {
 	                    if (inValue) {
@@ -739,24 +741,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            // console.log("NEW LINE",isDifference, lastDifference);
 	                            // if new line and lastDifference, the first value is just a check !
 	                            // that we don't check ...
-	                            if (isLastDifference) skipFirstValue=true;
+	                            if (isLastDifference) skipFirstValue = true;
 	                        } else {
 	                            // need to deal with duplicate and differences
 	                            if (skipFirstValue) {
-	                                skipFirstValue=false;
+	                                skipFirstValue = false;
 	                            } else {
 	                                if (isDifference) {
-	                                    if (currentValue===0) lastDifference=0;
-	                                    else lastDifference=isNegative ? -currentValue : currentValue;
-	                                    isLastDifference=true;
-	                                    isDifference=false;
+	                                    if (currentValue === 0) lastDifference = 0;
+	                                    else lastDifference = isNegative ? -currentValue : currentValue;
+	                                    isLastDifference = true;
+	                                    isDifference = false;
 	                                }
-	                                var duplicate=isDuplicate ? currentValue - 1 : 1;
-	                                for (var j=0; j<duplicate; j++) {
+	                                var duplicate = isDuplicate ? currentValue - 1 : 1;
+	                                for (var j = 0; j < duplicate; j++) {
 	                                    if (isLastDifference) {
 	                                        currentY += lastDifference;
 	                                    } else {
-	                                        if (currentValue===0) currentY=0;
+	                                        if (currentValue === 0) currentY = 0;
 	                                        else currentY = isNegative ? -currentValue : currentValue;
 	                                    }
 
@@ -766,73 +768,72 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                    //      "lastDif", lastDifference, "dup:", duplicate, "y", currentY);
 
 	                                    // push is slightly slower ... (we loose 10%)
-	                                    currentData[currentPosition++]=currentX;
-	                                    currentData[currentPosition++]=currentY * yFactor;
+	                                    currentData[currentPosition++] = currentX;
+	                                    currentData[currentPosition++] = currentY * yFactor;
 	                                    currentX += deltaX;
 	                                }
 	                            }
 	                        }
-	                        isNegative=false;
-	                        currentValue=0;
-	                        decimalPosition=0;
-	                        inValue=false;
-	                        isDuplicate=false;
+	                        isNegative = false;
+	                        currentValue = 0;
+	                        decimalPosition = 0;
+	                        inValue = false;
+	                        isDuplicate = false;
 	                    }
 
 	                    // positive SQZ digits @ A B C D E F G H I (ascii 64-73)
 	                    if ((ascii < 74) && (ascii > 63)) {
-	                        inValue=true;
-	                        isLastDifference=false;
-	                        currentValue=ascii-64;
+	                        inValue = true;
+	                        isLastDifference = false;
+	                        currentValue = ascii - 64;
 	                    } else
 	                    // negative SQZ digits a b c d e f g h i (ascii 97-105)
 	                    if ((ascii > 96) && (ascii < 106)) {
-	                        inValue=true;
-	                        isLastDifference=false;
-	                        currentValue=ascii-96;
-	                        isNegative=true;
+	                        inValue = true;
+	                        isLastDifference = false;
+	                        currentValue = ascii - 96;
+	                        isNegative = true;
 	                    } else
 	                    // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
-	                    if (ascii===115) {
-	                        inValue=true;
-	                        isDuplicate=true;
-	                        currentValue=9;
+	                    if (ascii === 115) {
+	                        inValue = true;
+	                        isDuplicate = true;
+	                        currentValue = 9;
 	                    } else if ((ascii > 82) && (ascii < 91)) {
-	                        inValue=true;
-	                        isDuplicate=true;
-	                        currentValue=ascii-82;
+	                        inValue = true;
+	                        isDuplicate = true;
+	                        currentValue = ascii - 82;
 	                    } else
 	                    // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
 	                    if ((ascii > 73) && (ascii < 83)) {
-	                        inValue=true;
-	                        isDifference=true;
-	                        currentValue=ascii-73;
+	                        inValue = true;
+	                        isDifference = true;
+	                        currentValue = ascii - 73;
 	                    } else
 	                    // negative DIF digits j k l m n o p q r (ascii 106-114)
 	                    if ((ascii > 105) && (ascii < 115)) {
-	                        inValue=true;
-	                        isDifference=true;
-	                        currentValue=ascii-105;
-	                        isNegative=true;
+	                        inValue = true;
+	                        isDifference = true;
+	                        currentValue = ascii - 105;
+	                        isNegative = true;
 	                    } else
 	                    // $ sign, we need to check the next one
 	                    if (ascii === 36 && value.charCodeAt(i + 1) === 36) {
-	                        inValue=true;
+	                        inValue = true;
 	                        inComment = true;
 	                    } else
 	                    // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
 	                    if (ascii === 37) {
-	                        inValue=true;
-	                        isDifference=true;
-	                        currentValue=0;
-	                        isNegative=false;
-	                    } else
-	                    if (ascii === 45) { // a "-"
+	                        inValue = true;
+	                        isDifference = true;
+	                        currentValue = 0;
+	                        isNegative = false;
+	                    } else if (ascii === 45) { // a "-"
 	                        // check if after there is a number, decimal or comma
-	                        var ascii2=value.charCodeAt(i+1);
+	                        var ascii2 = value.charCodeAt(i + 1);
 	                        if ((ascii2 >= 48 && ascii2 <= 57) || ascii2 === 44 || ascii2 === 46) {
-	                            inValue=true;
-	                            isLastDifference=false;
+	                            inValue = true;
+	                            isLastDifference = false;
 	                            isNegative = true;
 	                        }
 	                    } else if (ascii === 13 || ascii === 10) {
@@ -849,8 +850,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function parsePeakTable(spectrum, value, result) {
 	        var removeCommentRegExp = /\$\$.*/;
 	        var peakTableSplitRegExp = /[,\t ]+/;
-	        
-	        spectrum.isPeaktable=true;
+
+	        spectrum.isPeaktable = true;
 	        var i, ii, j, jj, values;
 	        var currentData = [];
 	        spectrum.data = [currentData];
@@ -872,7 +873,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    }
-
 
 
 	    return convert;
@@ -903,13 +903,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new Promise(function (resolve) {
 	        var stamp = Date.now() + '' + Math.random();
 	        stamps[stamp] = resolve;
-	        worker.postMessage(JSON.stringify({stamp: stamp, input: input, options: options}));
+	        worker.postMessage(JSON.stringify({
+	            stamp: stamp,
+	            input: input,
+	            options: options
+	        }));
 	    });
 	}
 
 	function createWorker() {
 	    var workerURL = URL.createObjectURL(new Blob([
-	        'var getConverter =' + getConverter.toString() + ';var convert = getConverter(); onmessage = function (event) { var data = JSON.parse(event.data); postMessage(JSON.stringify({stamp: event.data.stamp, output: convert(data.input, data.options)})); };'
+	        'var getConverter =' + getConverter.toString() + ';var convert = getConverter(); onmessage = function (event) { var data = JSON.parse(event.data); postMessage(JSON.stringify({stamp: data.stamp, output: convert(data.input, data.options)})); };'
 	    ], {type: 'application/javascript'}));
 	    worker = new Worker(workerURL);
 	    URL.revokeObjectURL(workerURL);
