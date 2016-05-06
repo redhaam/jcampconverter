@@ -853,7 +853,7 @@ function postToWorker(input, options) {
 
 function createWorker() {
     var workerURL = URL.createObjectURL(new Blob([
-        'var getConverter =' + getConverter.toString() + ';var convert = getConverter(); onmessage = function (event) { var data = JSON.parse(event.data); postMessage(JSON.stringify({stamp: event.data.stamp, output: convert(data.input, data.options)})); };'
+        'var getConverter =' + getConverter.toString() + ';var convert = getConverter(); onmessage = function (event) { var data = JSON.parse(event.data); postMessage(JSON.stringify({stamp: data.stamp, output: convert(data.input, data.options)})); };'
     ], {type: 'application/javascript'}));
     worker = new Worker(workerURL);
     URL.revokeObjectURL(workerURL);
