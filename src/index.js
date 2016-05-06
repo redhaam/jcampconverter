@@ -241,9 +241,6 @@ function getConverter() {
             }
         }
 
-        // Currently disabled
-        //    if (options && options.lowRes) addLowRes(spectra,options);
-
         if (result.profiling) result.profiling.push({action: 'Finished parsing', time: Date.now() - start});
 
         if (Object.keys(ntuples).length>0) {
@@ -574,37 +571,6 @@ function getConverter() {
             maxY: zData.maxY,
             segments: contourLevels
         };
-    }
-
-
-    function addLowRes(spectra, options) {
-        var spectrum;
-        var averageX, averageY;
-        var targetNbPoints = options.lowRes;
-        var highResData;
-        for (var i = 0; i < spectra.length; i++) {
-            spectrum = spectra[i];
-            // we need to find the current higher resolution
-            if (spectrum.data.length > 0) {
-                highResData = spectrum.data[0];
-                for (var j = 1; j < spectrum.data.length; j++) {
-                    if (spectrum.data[j].length > highResData.length) {
-                        highResData = spectrum.data[j];
-                    }
-                }
-
-                if (targetNbPoints > (highResData.length / 2)) return;
-                var i, ii;
-                var lowResData = [];
-                var modulo = Math.ceil(highResData.length / (targetNbPoints * 2));
-                for (i = 0, ii = highResData.length; i < ii; i = i + 2) {
-                    if (i % modulo === 0) {
-                        lowResData.push(highResData[i], highResData[i + 1])
-                    }
-                }
-                spectrum.data.push(lowResData);
-            }
-        }
     }
 
     function fastParseXYData(spectrum, value) {
