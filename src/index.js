@@ -261,7 +261,7 @@ function getConverter() {
         }
 
         if (result.twoD) {
-            add2D(result);
+            add2D(result, options);
             if (result.profiling) result.profiling.push({
                 action: 'Finished countour plot calculation',
                 time: Date.now() - start
@@ -449,20 +449,20 @@ function getConverter() {
 
     }
 
-    function add2D(result) {
+    function add2D(result, options) {
         var zData = convertTo3DZ(result.spectra);
-        result.contourLines = generateContourLines(zData);
+        result.contourLines = generateContourLines(zData, options);
         delete zData.z;
         result.minMax = zData;
     }
 
 
     function generateContourLines(zData, options) {
-        // console.time('generateContourLines');
         var noise = zData.noise;
         var z = zData.z;
         var contourLevels = [];
-        var nbLevels = 7;
+        var nbLevels = options.nbContourLevels || 7;
+        var noiseMultiplier = options.noiseMultiplier === undefined ? 5 : options.noiseMultiplier;
         var povarHeight0, povarHeight1, povarHeight2, povarHeight3;
         var isOver0, isOver1, isOver2, isOver3;
         var nbSubSpectra = z.length;
@@ -494,10 +494,11 @@ function getConverter() {
             var contourLevel = {};
             contourLevels[level]=contourLevel;
             var side = level % 2;
+            var factor = (maxZ - noiseMultiplier * noise) * Math.exp(level / 2 - nbLevels);
             if (side === 0) {
-                lineZValue = (maxZ - 5 * noise) * Math.exp(level / 2 - nbLevels) + 5 * noise;
+                lineZValue = factor + noiseMultiplier * noise;
             } else {
-                lineZValue = -(maxZ - 5 * noise) * Math.exp(level / 2 - nbLevels) - 5 * noise;
+                lineZValue = -factor - noiseMultiplier * noise;
             }
             var lines = [];
             contourLevel.zValue = lineZValue;
@@ -565,7 +566,7 @@ function getConverter() {
                 }
             }
         }
-        // console.timeEnd('generateContourLines');
+        
         return {
             minX: zData.minX,
             maxX: zData.maxX,
@@ -573,7 +574,6 @@ function getConverter() {
             maxY: zData.maxY,
             segments: contourLevels
         };
-        //return contourLevels;
     }
 
 
