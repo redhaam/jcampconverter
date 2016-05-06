@@ -18,6 +18,10 @@ function getConverter() {
         }
         return floatArray;
     }
+    
+    function Spectrum() {
+        
+    }
 
     /*
      options.keepSpectra: keep the original spectra for a 2D
@@ -46,7 +50,7 @@ function getConverter() {
         var spectra = [];
         result.spectra = spectra;
         result.info = {};
-        var spectrum = {};
+        var spectrum = new Spectrum();
 
         if (!(typeof jcamp === 'string')) return result;
         // console.time('start');
@@ -233,12 +237,12 @@ function getConverter() {
                     parsePeakTable(spectrum, dataValue, result);
                 }
                 spectra.push(spectrum);
-                spectrum = {};
+                spectrum = new Spectrum();
             } else if (dataLabel === 'PEAKTABLE') {
                 prepareSpectrum(result, spectrum);
                 parsePeakTable(spectrum, dataValue, result);
                 spectra.push(spectrum);
-                spectrum = {};
+                spectrum = new Spectrum();
             } else if (isMSField(dataLabel)) {
                 spectrum[convertMSFieldToLabel(dataLabel)] = dataValue;
             }
