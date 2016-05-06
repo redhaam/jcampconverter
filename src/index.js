@@ -505,7 +505,7 @@ function getConverter() {
             var contourLevel = {};
             contourLevels[level] = contourLevel;
             var side = level % 2;
-            var factor = (maxZ - noiseMultiplier * noise) * Math.exp(level / 2 - nbLevels);
+            var factor = (maxZ - noiseMultiplier * noise) * Math.exp(level >> 1 - nbLevels);
             if (side === 0) {
                 lineZValue = factor + noiseMultiplier * noise;
             } else {
