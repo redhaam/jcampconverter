@@ -4,7 +4,7 @@
   [![build status][travis-image]][travis-url]
   [![npm download][download-image]][download-url]
 
-Parse and convert JCAMP data
+Parse and convert JCAMP data.
 
 ## Installation
 
@@ -20,7 +20,8 @@ Parse and convert JCAMP data
 
 ### convert(jcamp, [options], [useWorker])
 
-Converts the `jcamp` using `options`.
+Converts the `jcamp` using `options`.  
+Returns an object with information about the converted file and uncompressed spectra data.
 
 __Arguments__
 
@@ -37,7 +38,7 @@ __Options__
 
 ### Use as a module
 
-#### Node JS
+#### Node.JS
 
 ```javascript
 var converter = require('jcampconverter');
@@ -70,10 +71,6 @@ npm run build
 ```
 npm run benchmark
 ```
-
-## How to create the tests
-
-http://unitjs.com/guide/should-js.html
 
 ## License
 
