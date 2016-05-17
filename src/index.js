@@ -513,7 +513,7 @@ function getConverter() {
             if (side === 0) {
                 lineZValue = factor + noiseMultiplier * noise;
             } else {
-                lineZValue = -factor - noiseMultiplier * noise;
+                lineZValue = (0 - factor) - noiseMultiplier * noise;
             }
             var lines = [];
             contourLevel.zValue = lineZValue;
@@ -692,8 +692,7 @@ function getConverter() {
                                 skipFirstValue = false;
                             } else {
                                 if (isDifference) {
-                                    if (currentValue === 0) lastDifference = 0;
-                                    else lastDifference = isNegative ? -currentValue : currentValue;
+                                    lastDifference = isNegative ? (0 - currentValue) : currentValue;
                                     isLastDifference = true;
                                     isDifference = false;
                                 }
@@ -702,14 +701,8 @@ function getConverter() {
                                     if (isLastDifference) {
                                         currentY += lastDifference;
                                     } else {
-                                        if (currentValue === 0) currentY = 0;
-                                        else currentY = isNegative ? -currentValue : currentValue;
+                                        currentY = isNegative ? (0 - currentValue) : currentValue;
                                     }
-
-                                    //  console.log("Separator",isNegative ?
-                                    //          -currentValue : currentValue,
-                                    //      "isDiff", isDifference, "isDup", isDuplicate,
-                                    //      "lastDif", lastDifference, "dup:", duplicate, "y", currentY);
 
                                     // push is slightly slower ... (we loose 10%)
                                     currentData[currentPosition++] = currentX;
