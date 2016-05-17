@@ -475,7 +475,6 @@ function getConverter() {
     function generateContourLines(zData, options) {
         var noise = zData.noise;
         var z = zData.z;
-        var contourLevels = [];
         var nbLevels = options.nbContourLevels || 7;
         var noiseMultiplier = options.noiseMultiplier === undefined ? 5 : options.noiseMultiplier;
         var povarHeight0, povarHeight1, povarHeight2, povarHeight3;
@@ -504,8 +503,10 @@ function getConverter() {
         //
         // ---------------------d------
 
+        var iter = nbLevels * 2;
+        var contourLevels = new Array(iter);
         var lineZValue;
-        for (var level = 0; level < nbLevels * 2; level++) { // multiply by 2 for positif and negatif
+        for (var level = 0; level < iter; level++) { // multiply by 2 for positif and negatif
             var contourLevel = {};
             contourLevels[level] = contourLevel;
             var side = level % 2;
@@ -621,7 +622,6 @@ function getConverter() {
         spectrum.isXYdata = true;
         // TODO to be improved using 2 array {x:[], y:[]}
         var currentData = [];
-        var currentPosition = 0;
         spectrum.data = [currentData];
 
 
@@ -703,10 +703,8 @@ function getConverter() {
                                     } else {
                                         currentY = isNegative ? (0 - currentValue) : currentValue;
                                     }
-
-                                    // push is slightly slower ... (we loose 10%)
-                                    currentData[currentPosition++] = currentX;
-                                    currentData[currentPosition++] = currentY * yFactor;
+                                    currentData.push(currentX);
+                                    currentData.push(currentY * yFactor);
                                     currentX += deltaX;
                                 }
                             }
@@ -796,14 +794,13 @@ function getConverter() {
         // counts for around 20% of the time
         var lines = value.split(/,? *,?[;\r\n]+ */);
 
-        var k = 0;
         for (i = 1, ii = lines.length; i < ii; i++) {
             values = lines[i].trim().replace(removeCommentRegExp, '').split(peakTableSplitRegExp);
             if (values.length % 2 === 0) {
                 for (j = 0, jj = values.length; j < jj; j = j + 2) {
                     // takes around 40% of the time to add and parse the 2 values nearly exclusively because of parseFloat
-                    currentData[k++] = (parseFloat(values[j]) * spectrum.xFactor);
-                    currentData[k++] = (parseFloat(values[j + 1]) * spectrum.yFactor);
+                    currentData.push(parseFloat(values[j]) * spectrum.xFactor);
+                    currentData.push(parseFloat(values[j + 1]) * spectrum.yFactor);
                 }
             } else {
                 result.logs.push('Format error: ' + values);
