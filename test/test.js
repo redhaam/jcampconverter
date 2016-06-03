@@ -21,6 +21,7 @@ function checkJcamp(filename, label, data) {
                 var spectrum = result.spectra[0];
                 spectrum.observeFrequency.should.eql(data.observeFrequency);
                 spectrum.nbPoints.should.eql(data.nbPoints);
+                spectrum.nbPoints.should.eql(spectrum.data[0].length/2);
                 spectrum.firstX.should.eql(data.firstX);
                 spectrum.lastX.should.eql(data.lastX);
                 spectrum.data[0].reduce(function (a, b) {
@@ -113,5 +114,18 @@ describe('Test JCAMP converter', function () {
             total: 24130609.545490365
         }
     );
+    
+    checkJcamp('/data/misc/nemo_generated.jdx', "Nemo generated JCamp",
+        {
+            nbSpectra: 2,
+            xType: "1H",
+            observeFrequency: 600.589925054317,
+            nbPoints: 131072,
+            firstX: 14.82852,
+            lastX: -5.183854946422537,
+            total: 92336803770.80695
+        }
+    );
+
 
 });
