@@ -273,7 +273,7 @@ function getConverter() {
             result.ntuples = newNtuples;
         }
 
-        if (result.twoD) {
+        if (result.twoD && wantXY) {
             add2D(result, options);
             if (result.profiling) result.profiling.push({
                 action: 'Finished countour plot calculation',
@@ -289,7 +289,7 @@ function getConverter() {
             options.xy = true;
         }
 
-        if (options.xy) { // the spectraData should not be a oneD array but an object with x and y
+        if (options.xy && wantXY) { // the spectraData should not be a oneD array but an object with x and y
             if (spectra.length > 0) {
                 for (var i = 0; i < spectra.length; i++) {
                     var spectrum = spectra[i];
@@ -314,7 +314,7 @@ function getConverter() {
         }
 
         // maybe it is a GC (HPLC) / MS. In this case we add a new format
-        if (isGCMS) {
+        if (isGCMS && wantXY) {
             if (options.newGCMS) {
                 addNewGCMS(result);
             } else {
