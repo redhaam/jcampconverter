@@ -23,17 +23,12 @@ function getConverter() {
         
     }
 
-    /*
-     options.keepSpectra: keep the original spectra for a 2D
-     options.xy: true // create x / y array instead of a 1D array
-     options.keepRecordsRegExp: which fields do we keep
-     */
-
     function convert(jcamp, options) {
         options = options || {};
 
         var keepRecordsRegExp = /^$/;
         if (options.keepRecordsRegExp) keepRecordsRegExp = options.keepRecordsRegExp;
+        var wantXY = !options.withoutXY;
 
         var start = Date.now();
 
@@ -131,6 +126,36 @@ function getConverter() {
                 }
             }
 
+            if (dataLabel === 'XYDATA') {
+                if (wantXY) {
+                    prepareSpectrum(result, spectrum);
+                    // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
+                    if (dataValue.match(/.*\+\+.*/)) {
+                        if (options.fastParse === false) {
+                            parseXYDataRegExp(spectrum, dataValue, result);
+                        } else {
+                            if (!spectrum.deltaX) {
+                                spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
+                            }
+                            fastParseXYData(spectrum, dataValue, result);
+                        }
+                    } else {
+                        parsePeakTable(spectrum, dataValue, result);
+                    }
+                    spectra.push(spectrum);
+                    spectrum = new Spectrum();
+                }
+                continue;
+            } else if (dataLabel === 'PEAKTABLE') {
+                if (wantXY) {
+                    prepareSpectrum(result, spectrum);
+                    parsePeakTable(spectrum, dataValue, result);
+                    spectra.push(spectrum);
+                    spectrum = new Spectrum();
+                }
+                continue;
+            }
+
 
             if (dataLabel === 'TITLE') {
                 spectrum.title = dataValue;
@@ -221,28 +246,6 @@ function getConverter() {
                 }
             } else if (dataLabel === 'RETENTIONTIME') {
                 spectrum.pageValue = parseFloat(dataValue);
-            } else if (dataLabel === 'XYDATA') {
-                prepareSpectrum(result, spectrum);
-                // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
-                if (dataValue.match(/.*\+\+.*/)) {
-                    if (options.fastParse === false) {
-                        parseXYDataRegExp(spectrum, dataValue, result);
-                    } else {
-                        if (!spectrum.deltaX) {
-                            spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
-                        }
-                        fastParseXYData(spectrum, dataValue, result);
-                    }
-                } else {
-                    parsePeakTable(spectrum, dataValue, result);
-                }
-                spectra.push(spectrum);
-                spectrum = new Spectrum();
-            } else if (dataLabel === 'PEAKTABLE') {
-                prepareSpectrum(result, spectrum);
-                parsePeakTable(spectrum, dataValue, result);
-                spectra.push(spectrum);
-                spectrum = new Spectrum();
             } else if (isMSField(dataLabel)) {
                 spectrum[convertMSFieldToLabel(dataLabel)] = dataValue;
             }
