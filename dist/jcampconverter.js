@@ -79,17 +79,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        
 	    }
 
-	    /*
-	     options.keepSpectra: keep the original spectra for a 2D
-	     options.xy: true // create x / y array instead of a 1D array
-	     options.keepRecordsRegExp: which fields do we keep
-	     */
-
 	    function convert(jcamp, options) {
 	        options = options || {};
 
 	        var keepRecordsRegExp = /^$/;
 	        if (options.keepRecordsRegExp) keepRecordsRegExp = options.keepRecordsRegExp;
+	        var wantXY = !options.withoutXY;
 
 	        var start = Date.now();
 
@@ -187,6 +182,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 
+	            if (dataLabel === 'XYDATA') {
+	                if (wantXY) {
+	                    prepareSpectrum(result, spectrum);
+	                    // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
+	                    if (dataValue.match(/.*\+\+.*/)) {
+	                        if (options.fastParse === false) {
+	                            parseXYDataRegExp(spectrum, dataValue, result);
+	                        } else {
+	                            if (!spectrum.deltaX) {
+	                                spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
+	                            }
+	                            fastParseXYData(spectrum, dataValue, result);
+	                        }
+	                    } else {
+	                        parsePeakTable(spectrum, dataValue, result);
+	                    }
+	                    spectra.push(spectrum);
+	                    spectrum = new Spectrum();
+	                }
+	                continue;
+	            } else if (dataLabel === 'PEAKTABLE') {
+	                if (wantXY) {
+	                    prepareSpectrum(result, spectrum);
+	                    parsePeakTable(spectrum, dataValue, result);
+	                    spectra.push(spectrum);
+	                    spectrum = new Spectrum();
+	                }
+	                continue;
+	            }
+
 
 	            if (dataLabel === 'TITLE') {
 	                spectrum.title = dataValue;
@@ -277,28 +302,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            } else if (dataLabel === 'RETENTIONTIME') {
 	                spectrum.pageValue = parseFloat(dataValue);
-	            } else if (dataLabel === 'XYDATA') {
-	                prepareSpectrum(result, spectrum);
-	                // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
-	                if (dataValue.match(/.*\+\+.*/)) {
-	                    if (options.fastParse === false) {
-	                        parseXYDataRegExp(spectrum, dataValue, result);
-	                    } else {
-	                        if (!spectrum.deltaX) {
-	                            spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
-	                        }
-	                        fastParseXYData(spectrum, dataValue, result);
-	                    }
-	                } else {
-	                    parsePeakTable(spectrum, dataValue, result);
-	                }
-	                spectra.push(spectrum);
-	                spectrum = new Spectrum();
-	            } else if (dataLabel === 'PEAKTABLE') {
-	                prepareSpectrum(result, spectrum);
-	                parsePeakTable(spectrum, dataValue, result);
-	                spectra.push(spectrum);
-	                spectrum = new Spectrum();
 	            } else if (isMSField(dataLabel)) {
 	                spectrum[convertMSFieldToLabel(dataLabel)] = dataValue;
 	            }
@@ -326,7 +329,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            result.ntuples = newNtuples;
 	        }
 
-	        if (result.twoD) {
+	        if (result.twoD && wantXY) {
 	            add2D(result, options);
 	            if (result.profiling) result.profiling.push({
 	                action: 'Finished countour plot calculation',
@@ -342,7 +345,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            options.xy = true;
 	        }
 
-	        if (options.xy) { // the spectraData should not be a oneD array but an object with x and y
+	        if (options.xy && wantXY) { // the spectraData should not be a oneD array but an object with x and y
 	            if (spectra.length > 0) {
 	                for (var i = 0; i < spectra.length; i++) {
 	                    var spectrum = spectra[i];
@@ -367,7 +370,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        // maybe it is a GC (HPLC) / MS. In this case we add a new format
-	        if (isGCMS) {
+	        if (isGCMS && wantXY) {
 	            if (options.newGCMS) {
 	                addNewGCMS(result);
 	            } else {
@@ -522,8 +525,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    function add2D(result, options) {
 	        var zData = convertTo3DZ(result.spectra);
-	        result.contourLines = generateContourLines(zData, options);
-	        delete zData.z;
+	        if (!options.noContour) {
+	            result.contourLines = generateContourLines(zData, options);
+	            delete zData.z;
+	        }
 	        result.minMax = zData;
 	    }
 
@@ -531,7 +536,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function generateContourLines(zData, options) {
 	        var noise = zData.noise;
 	        var z = zData.z;
-	        var contourLevels = [];
 	        var nbLevels = options.nbContourLevels || 7;
 	        var noiseMultiplier = options.noiseMultiplier === undefined ? 5 : options.noiseMultiplier;
 	        var povarHeight0, povarHeight1, povarHeight2, povarHeight3;
@@ -560,8 +564,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        //
 	        // ---------------------d------
 
+	        var iter = nbLevels * 2;
+	        var contourLevels = new Array(iter);
 	        var lineZValue;
-	        for (var level = 0; level < nbLevels * 2; level++) { // multiply by 2 for positif and negatif
+	        for (var level = 0; level < iter; level++) { // multiply by 2 for positif and negatif
 	            var contourLevel = {};
 	            contourLevels[level] = contourLevel;
 	            var side = level % 2;
@@ -569,7 +575,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (side === 0) {
 	                lineZValue = factor + noiseMultiplier * noise;
 	            } else {
-	                lineZValue = -factor - noiseMultiplier * noise;
+	                lineZValue = (0 - factor) - noiseMultiplier * noise;
 	            }
 	            var lines = [];
 	            contourLevel.zValue = lineZValue;
@@ -677,7 +683,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        spectrum.isXYdata = true;
 	        // TODO to be improved using 2 array {x:[], y:[]}
 	        var currentData = [];
-	        var currentPosition = 0;
 	        spectrum.data = [currentData];
 
 
@@ -748,8 +753,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                skipFirstValue = false;
 	                            } else {
 	                                if (isDifference) {
-	                                    if (currentValue === 0) lastDifference = 0;
-	                                    else lastDifference = isNegative ? -currentValue : currentValue;
+	                                    lastDifference = isNegative ? (0 - currentValue) : currentValue;
 	                                    isLastDifference = true;
 	                                    isDifference = false;
 	                                }
@@ -758,18 +762,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                    if (isLastDifference) {
 	                                        currentY += lastDifference;
 	                                    } else {
-	                                        if (currentValue === 0) currentY = 0;
-	                                        else currentY = isNegative ? -currentValue : currentValue;
+	                                        currentY = isNegative ? (0 - currentValue) : currentValue;
 	                                    }
-
-	                                    //  console.log("Separator",isNegative ?
-	                                    //          -currentValue : currentValue,
-	                                    //      "isDiff", isDifference, "isDup", isDuplicate,
-	                                    //      "lastDif", lastDifference, "dup:", duplicate, "y", currentY);
-
-	                                    // push is slightly slower ... (we loose 10%)
-	                                    currentData[currentPosition++] = currentX;
-	                                    currentData[currentPosition++] = currentY * yFactor;
+	                                    currentData.push(currentX);
+	                                    currentData.push(currentY * yFactor);
 	                                    currentX += deltaX;
 	                                }
 	                            }
@@ -859,14 +855,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // counts for around 20% of the time
 	        var lines = value.split(/,? *,?[;\r\n]+ */);
 
-	        var k = 0;
 	        for (i = 1, ii = lines.length; i < ii; i++) {
 	            values = lines[i].trim().replace(removeCommentRegExp, '').split(peakTableSplitRegExp);
 	            if (values.length % 2 === 0) {
 	                for (j = 0, jj = values.length; j < jj; j = j + 2) {
 	                    // takes around 40% of the time to add and parse the 2 values nearly exclusively because of parseFloat
-	                    currentData[k++] = (parseFloat(values[j]) * spectrum.xFactor);
-	                    currentData[k++] = (parseFloat(values[j + 1]) * spectrum.yFactor);
+	                    currentData.push(parseFloat(values[j]) * spectrum.xFactor);
+	                    currentData.push(parseFloat(values[j + 1]) * spectrum.yFactor);
 	                }
 	            } else {
 	                result.logs.push('Format error: ' + values);
