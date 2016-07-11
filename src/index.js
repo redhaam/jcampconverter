@@ -469,8 +469,10 @@ function getConverter() {
 
     function add2D(result, options) {
         var zData = convertTo3DZ(result.spectra);
-        result.contourLines = generateContourLines(zData, options);
-        delete zData.z;
+        if (!options.noContour) {
+            result.contourLines = generateContourLines(zData, options);
+            delete zData.z;
+        }
         result.minMax = zData;
     }
 

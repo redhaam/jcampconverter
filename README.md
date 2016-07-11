@@ -37,6 +37,7 @@ __Options__
 * newGCMS - use the new GC/MS data format output (default: false)
 
 2D NMR options:
+* noContour - if true, the contour levels will not be generated. Instead the raw data will be available in `result.minMax.z` (default: false)
 * nbContourLevels - number of contour levels to use in each positive and negative sides (default: 7)
 * noiseMultiplier - default: 5
 * keepSpectra - Generate array for 2D NMR spectra (default: false)
