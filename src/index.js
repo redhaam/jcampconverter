@@ -433,9 +433,17 @@ function getConverter() {
         }
     }
 
+    function getMedian(data) {
+        data = data.sort(compareNumbers);
+        var l = data.length;
+        return data[Math.floor(l / 2)];
+    }
+
+    function compareNumbers(a, b) {
+        return a - b;
+    }
 
     function convertTo3DZ(spectra) {
-        var noise = 0;
         var minZ = spectra[0].data[0][0];
         var maxZ = minZ;
         var ySize = spectra.length;
@@ -449,9 +457,6 @@ function getConverter() {
                 z[i][j] = value;
                 if (value < minZ) minZ = value;
                 if (value > maxZ) maxZ = value;
-                if (i !== 0 && j !== 0) {
-                    noise += Math.abs(value - z[i][j - 1]) + Math.abs(value - z[i - 1][j]);
-                }
             }
         }
         return {
@@ -462,7 +467,7 @@ function getConverter() {
             maxY: spectra[ySize - 1].pageValue,
             minZ: minZ,
             maxZ: maxZ,
-            noise: noise / ((ySize - 1) * (xSize - 1) * 2)
+            noise: getMedian(z[0].map(Math.abs))
         };
 
     }
