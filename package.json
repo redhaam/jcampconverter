@@ -1,6 +1,6 @@
 {
   "name": "jcampconverter",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "description": "Parse and convert JCAMP data",
   "main": "./src/index.js",
   "files": [
@@ -38,10 +38,10 @@
     "benchmark": "^2.1.4",
     "cheminfo-tools": "^1.19.2",
     "codecov": "^2.3.0",
-    "eslint": "^4.4.1",
+    "eslint": "^4.6.1",
     "eslint-config-cheminfo": "^1.8.0",
     "eslint-plugin-no-only-tests": "^2.0.0",
     "jest": "^21.0.2",
-    "npm-run-all": "^4.0.2"
+    "npm-run-all": "^4.1.1"
   }
 }
