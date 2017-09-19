@@ -894,8 +894,9 @@ function createTree(jcamp) {
             }
         } else if (current && current.jcamp) {
             current.jcamp += line + '\n';
-            if (line.substring(0, 10) === '##DATATYPE') {
-                current.dataType = line.substring(11).trim();
+            var dataType = line.match(/##data.*type\s*=\s*(.+)\s*/i);
+            if (dataType) {
+                current.dataType = dataType[1].trim();
             }
         }
 
