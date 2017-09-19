@@ -43,11 +43,5 @@ describe('Test from Mestrec Jcamp generator with assignment', function () {
         var result = Converter.createTree(fs.readFileSync(__dirname + '/data/' + 'bruker_fid_ft.jdx').toString());
         expect(result.length).toBe(1);
         expect(result[0].children.length).toBe(2);
-
-
-
     });
-
-
-
 });
