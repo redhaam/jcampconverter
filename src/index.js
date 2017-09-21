@@ -894,9 +894,12 @@ function createTree(jcamp) {
             }
         } else if (current && current.jcamp) {
             current.jcamp += line + '\n';
-            var dataType = line.match(/##data.*type\s*=\s*(.+)\s*/i);
-            if (dataType) {
-                current.dataType = dataType[1].trim();
+            var match = line.match(/^##(.*?)=(.+)/);
+            if (match) {
+                var dataLabel = match[1].replace(/[ _-]/g, '').toUpperCase();
+                if (dataLabel === 'DATATYPE') {
+                    current.dataType = match[2].trim();
+                }
             }
         }
 
