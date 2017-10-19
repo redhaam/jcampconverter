@@ -867,7 +867,7 @@ function createTree(jcamp) {
     var stack = [];
     var result = [];
     var current;
-    var ntupleLevel=0;
+    var ntupleLevel = 0;
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
 
@@ -882,7 +882,7 @@ function createTree(jcamp) {
                 children: []
             });
             current = stack[stack.length - 1];
-        } else if (line.substring(0, 5) === '##END' && ntupleLevel===0) {
+        } else if (line.substring(0, 5) === '##END' && ntupleLevel === 0) {
             current.jcamp += line + '\n';
             var finished = stack.pop();
             if (stack.length !== 0) {
@@ -899,7 +899,7 @@ function createTree(jcamp) {
             }
         }
 
-        if (line.substring(0, 5) === '##END' && ntupleLevel>0) {
+        if (line.substring(0, 5) === '##END' && ntupleLevel > 0) {
             ntupleLevel--;
         }
 

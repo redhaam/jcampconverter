@@ -15,26 +15,26 @@ describe('Test from Mestrec Jcamp generator with assignment', function () {
         expect(result).toEqual([{
             title: 'first level 1',
             dataType: 'first',
-            jcamp: '##TITLE= first level 1\n##DATATYPE=\tfirst\n##END\n',
+            jcamp: '##TITLE= first level 1\n##DATATYPE=\tfirst\n##END=\n',
             children: [{
                 title: 'second level 1',
                 dataType: 'second',
-                jcamp: '##TITLE= second level 1\n##DATATYPE= second\n##END\n',
+                jcamp: '##TITLE= second level 1\n##DATATYPE= second\n##END=\n',
                 children: []
             }, {
                 title: 'second level 2',
                 dataType: 'second',
-                jcamp: '##TITLE= second level 2\n##DATATYPE= second\n##END\n',
+                jcamp: '##TITLE= second level 2\n##DATATYPE= second\n##END=\n',
                 children: [{
                     title: 'third level',
-                    jcamp: '##TITLE= third level\n##END\n',
+                    jcamp: '##TITLE= third level\n##END=\n',
                     children: []
                 }]
             }]
         }, {
             title: 'first level 2',
             dataType: 'first',
-            jcamp: '##TITLE= first level 2\n##DATATYPE=\tfirst\n##END\n',
+            jcamp: '##TITLE= first level 2\n##DATATYPE=\tfirst\n##END=\n',
             children: []
         }]);
     });
