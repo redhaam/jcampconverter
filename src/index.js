@@ -867,22 +867,31 @@ function createTree(jcamp) {
     var stack = [];
     var result = [];
     var current;
-
+    var ntupleLevel=0;
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
+
+        if (line.substring(0, 9) === '##NTUPLES') {
+            console.log(line)
+            ntupleLevel++;
+        }
+
         if (line.substring(0, 7) === '##TITLE') {
+            console.log(line)
             stack.push({
                 title: line.substring(8).trim(),
                 jcamp: line + '\n',
                 children: []
             });
             current = stack[stack.length - 1];
-        } else if (line.substring(0, 5) === '##END') {
+        } else if (line.substring(0, 5) === '##END' && ntupleLevel===0) {
+            console.log(line, ntupleLevel, stack.length)
             var finished = stack.pop();
             if (stack.length !== 0) {
                 current = stack[stack.length - 1];
                 current.children.push(finished);
             } else {
+                console.log('PUSH')
                 current = undefined;
                 result.push(finished);
             }
@@ -892,8 +901,14 @@ function createTree(jcamp) {
                 current.dataType = line.substring(11).trim();
             }
         }
-    }
 
+        if (line.substring(0, 5) === '##END' && ntupleLevel>0) {
+            console.log('XX', ntupleLevel)
+            ntupleLevel--;
+        }
+
+    }
+console.log(stack.length);
     return result;
 }
 
