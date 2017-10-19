@@ -15,26 +15,26 @@ describe('Test from Mestrec Jcamp generator with assignment', function () {
         expect(result).toEqual([{
             title: 'first level 1',
             dataType: 'first',
-            jcamp: '##TITLE= first level 1\n##DATATYPE=\tfirst\n',
+            jcamp: '##TITLE= first level 1\n##DATATYPE=\tfirst\n##END\n',
             children: [{
                 title: 'second level 1',
                 dataType: 'second',
-                jcamp: '##TITLE= second level 1\n##DATATYPE= second\n',
+                jcamp: '##TITLE= second level 1\n##DATATYPE= second\n##END\n',
                 children: []
             }, {
                 title: 'second level 2',
                 dataType: 'second',
-                jcamp: '##TITLE= second level 2\n##DATATYPE= second\n',
+                jcamp: '##TITLE= second level 2\n##DATATYPE= second\n##END\n',
                 children: [{
                     title: 'third level',
-                    jcamp: '##TITLE= third level\n',
+                    jcamp: '##TITLE= third level\n##END\n',
                     children: []
                 }]
             }]
         }, {
             title: 'first level 2',
             dataType: 'first',
-            jcamp: '##TITLE= first level 2\n##DATATYPE=\tfirst\n',
+            jcamp: '##TITLE= first level 2\n##DATATYPE=\tfirst\n##END\n',
             children: []
         }]);
     });
@@ -42,7 +42,8 @@ describe('Test from Mestrec Jcamp generator with assignment', function () {
     it('test with bruker FID / FT combined file', function () {
         var result = Converter.createTree(fs.readFileSync(__dirname + '/data/' + 'bruker_fid_ft.jdx').toString());
         expect(result.length).toBe(1);
-        expect(result.children.length).toBe(2);
+        expect(result[0].children.length).toBe(2);
+
 
 
     });
