@@ -15,11 +15,11 @@ describe('Test from Mestrec Jcamp generator with assignment', function () {
         expect(result).toEqual([{
             title: 'first level 1',
             dataType: 'first',
-            jcamp: '##TITLE= first level 1\n##DATATYPE=\tfirst\n##END=\n',
+            jcamp: '##TITLE= first level 1\n##DATA TYPE=\tfirst\n##END=\n',
             children: [{
                 title: 'second level 1',
                 dataType: 'second',
-                jcamp: '##TITLE= second level 1\n##DATATYPE= second\n##END=\n',
+                jcamp: '##TITLE= second level 1\n##DATA_TYPE= second\n##END=\n',
                 children: []
             }, {
                 title: 'second level 2',
@@ -34,7 +34,7 @@ describe('Test from Mestrec Jcamp generator with assignment', function () {
         }, {
             title: 'first level 2',
             dataType: 'first',
-            jcamp: '##TITLE= first level 2\n##DATATYPE=\tfirst\n##END=\n',
+            jcamp: '##TITLE= first level 2\n##DATA-TYPE=\tfirst\n##END=\n',
             children: []
         }]);
     });
@@ -43,11 +43,5 @@ describe('Test from Mestrec Jcamp generator with assignment', function () {
         var result = Converter.createTree(fs.readFileSync(__dirname + '/data/' + 'bruker_fid_ft.jdx').toString());
         expect(result.length).toBe(1);
         expect(result[0].children.length).toBe(2);
-
-
-
     });
-
-
-
 });

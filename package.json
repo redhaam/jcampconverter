@@ -36,12 +36,12 @@
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
-    "cheminfo-tools": "^1.19.2",
-    "codecov": "^2.3.0",
-    "eslint": "^4.6.1",
+    "cheminfo-tools": "^1.20.0",
+    "codecov": "^2.3.1",
+    "eslint": "^4.10.0",
     "eslint-config-cheminfo": "^1.8.0",
     "eslint-plugin-no-only-tests": "^2.0.0",
-    "jest": "^21.0.2",
+    "jest": "^21.2.1",
     "npm-run-all": "^4.1.1"
   }
 }

@@ -1,14 +1,14 @@
 ##TITLE= first level 1
 ##TITLE= second level 1
-##DATATYPE= second
+##DATA_TYPE= second
 ##END=
 ##TITLE= second level 2
 ##DATATYPE= second
 ##TITLE= third level
 ##END=
 ##END=
-##DATATYPE=	first
+##DATA TYPE=	first
 ##END=
 ##TITLE= first level 2
-##DATATYPE=	first
+##DATA-TYPE=	first
 ##END=
