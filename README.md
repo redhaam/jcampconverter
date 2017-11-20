@@ -2,9 +2,11 @@
 
   [![NPM version][npm-image]][npm-url]
   [![build status][travis-image]][travis-url]
+  [![Test coverage][codecov-image]][codecov-url]
+  [![David deps][david-image]][david-url]
   [![npm download][download-image]][download-url]
-
-Parse and convert JCAMP data.
+  
+Parse and convert JCAMP data
 
 ## Installation
 
@@ -34,7 +36,7 @@ __Options__
 * keepRecordsRegExp - regexp to select which records should be placed in the info field. By default: :/^$/} (nothing is kept)
 * xy - instead of creating a 1D array containing [x1,y1,x2,y2, ...] create an object: {x:[], y:[]}
 * withoutXY - do not parse XYDATA or PEAKTABLE fields. Useful to only extract metadata fields (combine this option with `keepRecordsRegExp`)
-* newGCMS - use the new GC/MS data format output (default: false)
+* chromatogram - use the new GC/MS data format output (default: false)
 
 2D NMR options:
 * noContour - if true, the contour levels will not be generated. Instead the raw data will be available in `result.minMax.z` (default: false)
@@ -80,11 +82,15 @@ npm run benchmark
 
 ## License
 
-  [MIT](./LICENSE)
+[MIT](./LICENSE)
 
 [npm-image]: https://img.shields.io/npm/v/jcampconverter.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/jcampconverter
 [travis-image]: https://img.shields.io/travis/cheminfo-js/jcampconverter/master.svg?style=flat-square
 [travis-url]: https://travis-ci.org/cheminfo-js/jcampconverter
+[codecov-image]: https://img.shields.io/codecov/c/github/cheminfo-js/jcampconverter.svg?style=flat-square
+[codecov-url]: https://codecov.io/gh/cheminfo-js/jcampconverter
+[david-image]: https://img.shields.io/david/cheminfo-js/jcampconverter.svg?style=flat-square
+[david-url]: https://david-dm.org/cheminfo-js/jcampconverter
 [download-image]: https://img.shields.io/npm/dm/jcampconverter.svg?style=flat-square
 [download-url]: https://www.npmjs.com/package/jcampconverter

@@ -1,14 +1,9 @@
 'use strict';
 
-var parseXYDataRegExp = require('./parseXYData.js');
-
-
 function getConverter() {
-
     // the following RegExp can only be used for XYdata, some peakTables have values with a "E-5" ...
-    var ntuplesSeparator = /[, \t]{1,}/;
-
-    var GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
+    const ntuplesSeparator = /[, \t]+/;
+    const GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
 
     function convertToFloatArray(stringArray) {
         var l = stringArray.length;
@@ -18,26 +13,30 @@ function getConverter() {
         }
         return floatArray;
     }
-    
-    function Spectrum() {
-        
-    }
+
+    class Spectrum {}
+
+    const defaultOptions = {
+        keepRecordsRegExp: /^$/,
+        xy: false,
+        withoutXY: false,
+        chromatogram: false,
+        keepSpectra: false,
+        noContour: false,
+        nbContourLevels: 7,
+        noiseMultiplier: 5
+    };
 
     function convert(jcamp, options) {
-        options = options || {};
+        options = Object.assign({}, defaultOptions, options);
 
-        var keepRecordsRegExp = /^$/;
-        if (options.keepRecordsRegExp) keepRecordsRegExp = options.keepRecordsRegExp;
         var wantXY = !options.withoutXY;
 
         var start = Date.now();
 
-        var ntuples = {},
-            ldr,
-            dataLabel,
-            dataValue,
-            ldrs,
-            i, ii, position, endLine, infos;
+        var ntuples = {};
+        var ldr, dataLabel, dataValue, ldrs;
+        var i, ii, j, position, endLine, infos;
 
         var result = {};
         result.profiling = [];
@@ -47,20 +46,25 @@ function getConverter() {
         result.info = {};
         var spectrum = new Spectrum();
 
-        if (!(typeof jcamp === 'string')) return result;
-        // console.time('start');
+        if (!(typeof jcamp === 'string')) {
+            throw new TypeError('the JCAMP should be a string');
+        }
 
-        if (result.profiling) result.profiling.push({
-            action: 'Before split to LDRS',
-            time: Date.now() - start
-        });
+        if (result.profiling) {
+            result.profiling.push({
+                action: 'Before split to LDRS',
+                time: Date.now() - start
+            });
+        }
 
         ldrs = jcamp.split(/[\r\n]+##/);
 
-        if (result.profiling) result.profiling.push({
-            action: 'Split to LDRS',
-            time: Date.now() - start
-        });
+        if (result.profiling) {
+            result.profiling.push({
+                action: 'Split to LDRS',
+                time: Date.now() - start
+            });
+        }
 
         if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, '');
 
@@ -131,14 +135,10 @@ function getConverter() {
                     prepareSpectrum(result, spectrum);
                     // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
                     if (dataValue.match(/.*\+\+.*/)) {
-                        if (options.fastParse === false) {
-                            parseXYDataRegExp(spectrum, dataValue, result);
-                        } else {
-                            if (!spectrum.deltaX) {
-                                spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
-                            }
-                            fastParseXYData(spectrum, dataValue, result);
+                        if (!spectrum.deltaX) {
+                            spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
                         }
+                        fastParseXYData(spectrum, dataValue, result);
                     } else {
                         parsePeakTable(spectrum, dataValue, result);
                     }
@@ -195,10 +195,10 @@ function getConverter() {
             } else if (dataLabel === '$SFO2') {
                 if (!result.indirectFrequency) result.indirectFrequency = parseFloat(dataValue);
 
-            } else if (dataLabel === '$OFFSET') {   // OFFSET for Bruker spectra
+            } else if (dataLabel === '$OFFSET') { // OFFSET for Bruker spectra
                 result.shiftOffsetNum = 0;
-                if (!result.shiftOffsetVal)  result.shiftOffsetVal = parseFloat(dataValue);
-            } else if (dataLabel === '$REFERENCEPOINT') {   // OFFSET for Varian spectra
+                if (!result.shiftOffsetVal) result.shiftOffsetVal = parseFloat(dataValue);
+            } else if (dataLabel === '$REFERENCEPOINT') { // OFFSET for Varian spectra
 
 
                 // if we activate this part it does not work for ACD specmanager
@@ -235,7 +235,7 @@ function getConverter() {
             } else if (dataLabel === 'PAGE') {
                 spectrum.page = dataValue.trim();
                 spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ''));
-                spectrum.pageSymbol = spectrum.page.replace(/=.*/, '');
+                spectrum.pageSymbol = spectrum.page.replace(/[=].*/, '');
                 var pageSymbolIndex = ntuples.symbol.indexOf(spectrum.pageSymbol);
                 var unit = '';
                 if (ntuples.units && ntuples.units[pageSymbolIndex]) {
@@ -249,23 +249,25 @@ function getConverter() {
             } else if (isMSField(dataLabel)) {
                 spectrum[convertMSFieldToLabel(dataLabel)] = dataValue;
             }
-            if (dataLabel.match(keepRecordsRegExp)) {
+            if (dataLabel.match(options.keepRecordsRegExp)) {
                 result.info[dataLabel] = dataValue.trim();
             }
         }
 
-        if (result.profiling) result.profiling.push({
-            action: 'Finished parsing',
-            time: Date.now() - start
-        });
+        if (result.profiling) {
+            result.profiling.push({
+                action: 'Finished parsing',
+                time: Date.now() - start
+            });
+        }
 
         if (Object.keys(ntuples).length > 0) {
             var newNtuples = [];
             var keys = Object.keys(ntuples);
-            for (var i = 0; i < keys.length; i++) {
+            for (i = 0; i < keys.length; i++) {
                 var key = keys[i];
                 var values = ntuples[key];
-                for (var j = 0; j < values.length; j++) {
+                for (j = 0; j < values.length; j++) {
                     if (!newNtuples[j]) newNtuples[j] = {};
                     newNtuples[j][key] = values[j];
                 }
@@ -275,26 +277,27 @@ function getConverter() {
 
         if (result.twoD && wantXY) {
             add2D(result, options);
-            if (result.profiling) result.profiling.push({
-                action: 'Finished countour plot calculation',
-                time: Date.now() - start
-            });
+            if (result.profiling) {
+                result.profiling.push({
+                    action: 'Finished countour plot calculation',
+                    time: Date.now() - start
+                });
+            }
             if (!options.keepSpectra) {
                 delete result.spectra;
             }
         }
 
-        var isGCMS = (spectra.length > 1 && (!spectra[0].dataType || spectra[0].dataType.match(/.*mass.*/i)));
-        if (isGCMS && options.newGCMS) {
+        if (options.chromatogram) {
             options.xy = true;
         }
 
         if (options.xy && wantXY) { // the spectraData should not be a oneD array but an object with x and y
             if (spectra.length > 0) {
-                for (var i = 0; i < spectra.length; i++) {
-                    var spectrum = spectra[i];
+                for (i = 0; i < spectra.length; i++) {
+                    spectrum = spectra[i];
                     if (spectrum.data.length > 0) {
-                        for (var j = 0; j < spectrum.data.length; j++) {
+                        for (j = 0; j < spectrum.data.length; j++) {
                             var data = spectrum.data[j];
                             var newData = {
                                 x: new Array(data.length / 2),
@@ -314,16 +317,18 @@ function getConverter() {
         }
 
         // maybe it is a GC (HPLC) / MS. In this case we add a new format
-        if (isGCMS && wantXY) {
-            if (options.newGCMS) {
-                addNewGCMS(result);
+        if (options.chromatogram) {
+            if (result.spectra.length > 1) {
+                complexChromatogram(result);
             } else {
-                addGCMS(result);
+                simpleChromatogram(result);
             }
-            if (result.profiling) result.profiling.push({
-                action: 'Finished GCMS calculation',
-                time: Date.now() - start
-            });
+            if (result.profiling) {
+                result.profiling.push({
+                    action: 'Finished chromatogram calculation',
+                    time: Date.now() - start
+                });
+            }
         }
 
         if (result.profiling) {
@@ -345,16 +350,17 @@ function getConverter() {
         return GC_MS_FIELDS.indexOf(dataLabel) !== -1;
     }
 
-    function addNewGCMS(result) {
+    function complexChromatogram(result) {
         var spectra = result.spectra;
         var length = spectra.length;
-        var gcms = {
+        var chromatogram = {
             times: new Array(length),
-            series: [{
-                name: 'ms',
-                dimension: 2,
-                data: new Array(length)
-            }]
+            series: {
+                ms: {
+                    dimension: 2,
+                    data: new Array(length)
+                }
+            }
         };
 
         var i;
@@ -363,55 +369,38 @@ function getConverter() {
             var label = convertMSFieldToLabel(GC_MS_FIELDS[i]);
             if (spectra[0][label]) {
                 existingGCMSFields.push(label);
-                gcms.series.push({
-                    name: label,
+                chromatogram.series[label] = {
                     dimension: 1,
                     data: new Array(length)
-                });
+                };
             }
         }
 
         for (i = 0; i < length; i++) {
             var spectrum = spectra[i];
-            gcms.times[i] = spectrum.pageValue;
+            chromatogram.times[i] = spectrum.pageValue;
             for (var j = 0; j < existingGCMSFields.length; j++) {
-                gcms.series[j + 1].data[i] = parseFloat(spectrum[existingGCMSFields[j]]);
+                chromatogram.series[existingGCMSFields[j]].data[i] = parseFloat(spectrum[existingGCMSFields[j]]);
             }
             if (spectrum.data) {
-                gcms.series[0].data[i] = [spectrum.data[0].x, spectrum.data[0].y];
+                chromatogram.series.ms.data[i] = [spectrum.data[0].x, spectrum.data[0].y];
             }
 
         }
-        result.gcms = gcms;
+        result.chromatogram = chromatogram;
     }
 
-    function addGCMS(result) {
-        var spectra = result.spectra;
-        var existingGCMSFields = [];
-        var i;
-        for (i = 0; i < GC_MS_FIELDS.length; i++) {
-            var label = convertMSFieldToLabel(GC_MS_FIELDS[i]);
-            if (spectra[0][label]) {
-                existingGCMSFields.push(label);
+    function simpleChromatogram(result) {
+        var data = result.spectra[0].data[0];
+        result.chromatogram = {
+            times: data.x.slice(),
+            series: {
+                intensity: {
+                    dimension: 1,
+                    data: data.y.slice()
+                }
             }
-        }
-        if (existingGCMSFields.length === 0) return;
-        var gcms = {};
-        gcms.gc = {};
-        gcms.ms = [];
-        for (i = 0; i < existingGCMSFields.length; i++) {
-            gcms.gc[existingGCMSFields[i]] = [];
-        }
-        for (i = 0; i < spectra.length; i++) {
-            var spectrum = spectra[i];
-            for (var j = 0; j < existingGCMSFields.length; j++) {
-                gcms.gc[existingGCMSFields[j]].push(spectrum.pageValue);
-                gcms.gc[existingGCMSFields[j]].push(parseFloat(spectrum[existingGCMSFields[j]]));
-            }
-            if (spectrum.data) gcms.ms[i] = spectrum.data[0];
-
-        }
-        result.gcms = gcms;
+        };
     }
 
     function prepareSpectrum(result, spectrum) {
@@ -433,9 +422,17 @@ function getConverter() {
         }
     }
 
+    function getMedian(data) {
+        data = data.sort(compareNumbers);
+        var l = data.length;
+        return data[Math.floor(l / 2)];
+    }
+
+    function compareNumbers(a, b) {
+        return a - b;
+    }
 
     function convertTo3DZ(spectra) {
-        var noise = 0;
         var minZ = spectra[0].data[0][0];
         var maxZ = minZ;
         var ySize = spectra.length;
@@ -449,9 +446,6 @@ function getConverter() {
                 z[i][j] = value;
                 if (value < minZ) minZ = value;
                 if (value > maxZ) maxZ = value;
-                if (i !== 0 && j !== 0) {
-                    noise += Math.abs(value - z[i][j - 1]) + Math.abs(value - z[i - 1][j]);
-                }
             }
         }
         return {
@@ -462,7 +456,7 @@ function getConverter() {
             maxY: spectra[ySize - 1].pageValue,
             minZ: minZ,
             maxZ: maxZ,
-            noise: noise / ((ySize - 1) * (xSize - 1) * 2)
+            noise: getMedian(z[0].map(Math.abs))
         };
 
     }
@@ -480,8 +474,6 @@ function getConverter() {
     function generateContourLines(zData, options) {
         var noise = zData.noise;
         var z = zData.z;
-        var nbLevels = options.nbContourLevels || 7;
-        var noiseMultiplier = options.noiseMultiplier === undefined ? 5 : options.noiseMultiplier;
         var povarHeight0, povarHeight1, povarHeight2, povarHeight3;
         var isOver0, isOver1, isOver2, isOver3;
         var nbSubSpectra = z.length;
@@ -508,18 +500,18 @@ function getConverter() {
         //
         // ---------------------d------
 
-        var iter = nbLevels * 2;
+        var iter = options.nbContourLevels * 2;
         var contourLevels = new Array(iter);
         var lineZValue;
         for (var level = 0; level < iter; level++) { // multiply by 2 for positif and negatif
             var contourLevel = {};
             contourLevels[level] = contourLevel;
             var side = level % 2;
-            var factor = (maxZ - noiseMultiplier * noise) * Math.exp((level >> 1) - nbLevels);
+            var factor = (maxZ - options.noiseMultiplier * noise) * Math.exp((level >> 1) - options.nbContourLevels);
             if (side === 0) {
-                lineZValue = factor + noiseMultiplier * noise;
+                lineZValue = factor + options.noiseMultiplier * noise;
             } else {
-                lineZValue = (0 - factor) - noiseMultiplier * noise;
+                lineZValue = (0 - factor) - options.noiseMultiplier * noise;
             }
             var lines = [];
             contourLevel.zValue = lineZValue;
@@ -636,8 +628,9 @@ function getConverter() {
         // we skip the first line
         //
         var endLine = false;
+        var ascii;
         for (var i = 0; i < value.length; i++) {
-            var ascii = value.charCodeAt(i);
+            ascii = value.charCodeAt(i);
             if (ascii === 13 || ascii === 10) {
                 endLine = true;
             } else {
@@ -657,7 +650,6 @@ function getConverter() {
         var inValue = false;
         var skipFirstValue = false;
         var decimalPosition = 0;
-        var ascii;
         for (; i <= value.length; i++) {
             if (i === value.length) ascii = 13;
             else ascii = value.charCodeAt(i);
@@ -832,8 +824,8 @@ function JcampConverter(input, options, useWorker) {
     }
 }
 
-var stamps = {},
-    worker;
+var stamps = {};
+var worker;
 
 function postToWorker(input, options) {
     if (!worker) {
@@ -865,6 +857,61 @@ function createWorker() {
     });
 }
 
+function createTree(jcamp) {
+    if (typeof jcamp !== 'string') {
+        throw new TypeError('the JCAMP should be a string');
+    }
+
+    var lines = jcamp.split(/[\r\n]+/);
+
+    var stack = [];
+    var result = [];
+    var current;
+    var ntupleLevel = 0;
+    for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+
+        if (line.substring(0, 9) === '##NTUPLES') {
+            ntupleLevel++;
+        }
+
+        if (line.substring(0, 7) === '##TITLE') {
+            stack.push({
+                title: line.substring(8).trim(),
+                jcamp: line + '\n',
+                children: []
+            });
+            current = stack[stack.length - 1];
+        } else if (line.substring(0, 5) === '##END' && ntupleLevel === 0) {
+            current.jcamp += line + '\n';
+            var finished = stack.pop();
+            if (stack.length !== 0) {
+                current = stack[stack.length - 1];
+                current.children.push(finished);
+            } else {
+                current = undefined;
+                result.push(finished);
+            }
+        } else if (current && current.jcamp) {
+            current.jcamp += line + '\n';
+            var match = line.match(/^##(.*?)=(.+)/);
+            if (match) {
+                var dataLabel = match[1].replace(/[ _-]/g, '').toUpperCase();
+                if (dataLabel === 'DATATYPE') {
+                    current.dataType = match[2].trim();
+                }
+            }
+        }
+
+        if (line.substring(0, 5) === '##END' && ntupleLevel > 0) {
+            ntupleLevel--;
+        }
+
+    }
+    return result;
+}
+
 module.exports = {
-    convert: JcampConverter
+    convert: JcampConverter,
+    createTree: createTree
 };
