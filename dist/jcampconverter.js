@@ -1,3 +1,9 @@
+/**
+ * jcampconverter - Parse and convert JCAMP data
+ * @version v2.9.2
+ * @link https://github.com/cheminfo-js/jcampconverter#readme
+ * @license MIT
+ */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -840,7 +846,7 @@ function getConverter() {
                                                 var ascii2 = value.charCodeAt(i + 1);
                                                 if (ascii2 >= 48 && ascii2 <= 57 || ascii2 === 44 || ascii2 === 46) {
                                                     inValue = true;
-                                                    isLastDifference = false;
+                                                    if (!newLine) isLastDifference = false;
                                                     isNegative = true;
                                                 }
                                             } else if (ascii === 13 || ascii === 10) {
@@ -938,9 +944,14 @@ function createTree(jcamp) {
     var stack = [];
     var result = [];
     var current;
-
+    var ntupleLevel = 0;
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
+
+        if (line.substring(0, 9) === '##NTUPLES') {
+            ntupleLevel++;
+        }
+
         if (line.substring(0, 7) === '##TITLE') {
             stack.push({
                 title: line.substring(8).trim(),
@@ -948,7 +959,8 @@ function createTree(jcamp) {
                 children: []
             });
             current = stack[stack.length - 1];
-        } else if (line.substring(0, 5) === '##END') {
+        } else if (line.substring(0, 5) === '##END' && ntupleLevel === 0) {
+            current.jcamp += line + '\n';
             var finished = stack.pop();
             if (stack.length !== 0) {
                 current = stack[stack.length - 1];
@@ -959,12 +971,19 @@ function createTree(jcamp) {
             }
         } else if (current && current.jcamp) {
             current.jcamp += line + '\n';
-            if (line.substring(0, 10) === '##DATATYPE') {
-                current.dataType = line.substring(11).trim();
+            var match = line.match(/^##(.*?)=(.+)/);
+            if (match) {
+                var dataLabel = match[1].replace(/[ _-]/g, '').toUpperCase();
+                if (dataLabel === 'DATATYPE') {
+                    current.dataType = match[2].trim();
+                }
             }
         }
-    }
 
+        if (line.substring(0, 5) === '##END' && ntupleLevel > 0) {
+            ntupleLevel--;
+        }
+    }
     return result;
 }
 

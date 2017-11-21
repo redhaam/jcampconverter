@@ -1,6 +1,6 @@
 {
   "name": "jcampconverter",
-  "version": "2.9.1",
+  "version": "2.9.2",
   "description": "Parse and convert JCAMP data",
   "main": "./src/index.js",
   "files": [
