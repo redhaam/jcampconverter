@@ -765,7 +765,7 @@ function getConverter() {
                         var ascii2 = value.charCodeAt(i + 1);
                         if ((ascii2 >= 48 && ascii2 <= 57) || ascii2 === 44 || ascii2 === 46) {
                             inValue = true;
-                            isLastDifference = false;
+                            if (!newLine) isLastDifference = false;
                             isNegative = true;
                         }
                     } else if (ascii === 13 || ascii === 10) {
