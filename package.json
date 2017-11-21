@@ -12,7 +12,7 @@
     "test": "run-s testonly eslint",
     "test-travis": "eslint src && jest --coverage && codecov",
     "testonly": "jest",
-    "build": "cheminfo build --root JcampConverter",
+    "build": "cheminfo build --root JcampConverter --no-source-map",
     "benchmark": "node benchmark/benchmark.js",
     "deopt": "node --trace-opt --trace-deopt --code-comments debug/deoptimize.js > deopt.log",
     "hydra": "node --trace-hydrogen --trace-phase=Z --trace-deopt --code-comments --hydrogen-track-positions --redirect-code-traces --redirect-code-traces-to=code.asm debug/deoptimize.js"
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
-    "cheminfo-tools": "^1.20.0",
+    "cheminfo-tools": "^1.20.1",
     "codecov": "^2.3.1",
     "eslint": "^4.10.0",
     "eslint-config-cheminfo": "^1.8.0",
