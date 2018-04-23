@@ -7,7 +7,7 @@
     "src"
   ],
   "scripts": {
-    "eslint": "eslint src test",
+    "eslint": "eslint src __tests__",
     "eslint-fix": "npm run eslint -- --fix",
     "test": "run-s testonly eslint",
     "test-travis": "eslint src && jest --coverage && codecov",
