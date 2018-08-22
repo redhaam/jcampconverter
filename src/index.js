@@ -849,13 +849,16 @@ function createWorker() {
   });
 }
 
-function createTree(jcamp) {
+function createTree(jcamp, options = {}) {
+  const {
+    flatten = false
+  } = options;
   if (typeof jcamp !== 'string') {
     throw new TypeError('the JCAMP should be a string');
   }
 
   var lines = jcamp.split(/[\r\n]+/);
-
+  var flat = [];
   var stack = [];
   var result = [];
   var current;
@@ -874,6 +877,7 @@ function createTree(jcamp) {
         children: []
       });
       current = stack[stack.length - 1];
+      flat.push(current);
     } else if (line.substring(0, 5) === '##END' && ntupleLevel === 0) {
       current.jcamp += `${line}\n`;
       var finished = stack.pop();
@@ -899,7 +903,12 @@ function createTree(jcamp) {
       ntupleLevel--;
     }
   }
-  return result;
+  if (flatten) {
+    flat.forEach( (entry) => {entry.children=undefined;});
+    return flat;
+  } else {
+    return result;
+  }
 }
 
 module.exports = {
