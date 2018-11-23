@@ -1,3 +1,7 @@
+## [2.10.2](https://github.com/cheminfo-js/jcampconverter/compare/v2.10.1...v2.10.2) (2018-11-23)
+
+
+
 <a name="2.9.1"></a>
 ## [2.9.1](https://github.com/cheminfo-js/jcampconverter/compare/v2.9.0...v2.9.1) (2017-10-19)
 
