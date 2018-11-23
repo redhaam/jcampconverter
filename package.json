@@ -9,9 +9,9 @@
   "scripts": {
     "eslint": "eslint src __tests__",
     "eslint-fix": "npm run eslint -- --fix",
-    "test": "run-s testonly eslint",
-    "test-travis": "eslint src && jest --coverage && codecov",
-    "testonly": "jest",
+    "test": "run-s test-only eslint",
+    "test-travis": "eslint src && jest --coverage",
+    "test-only": "jest",
     "build": "cheminfo build --root JcampConverter --no-source-map",
     "benchmark": "node benchmark/benchmark.js",
     "deopt": "node --trace-opt --trace-deopt --code-comments debug/deoptimize.js > deopt.log",
@@ -37,13 +37,12 @@
   "devDependencies": {
     "benchmark": "^2.1.4",
     "cheminfo-tools": "^1.22.4",
-    "codecov": "^2.3.1",
-    "eslint": "^4.19.1",
+    "eslint": "^5.9.0",
     "eslint-config-cheminfo": "^1.18.0",
     "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jest": "^21.21.0",
+    "eslint-plugin-jest": "^22.0.0",
     "eslint-plugin-no-only-tests": "^2.0.1",
-    "jest": "^21.2.1",
+    "jest": "^23.6.0",
     "npm-run-all": "^4.1.3"
   }
 }
