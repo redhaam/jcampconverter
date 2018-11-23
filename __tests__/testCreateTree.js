@@ -87,6 +87,27 @@ describe('Test from Mestrec Jcamp generator with assignment', function () {
     ]);
   });
 
+  it('simple case with mulfiline', function () {
+    var result = Converter.createTree(
+      fs.readFileSync(`${route}verySimple.jdx`, 'utf8')
+    );
+
+    expect(result).toEqual([
+      {
+        title: 'first level 1\nsecond line',
+        jcamp: '##TITLE= first level 1\nsecond line\n##END=\n',
+        children: [
+          {
+            title: 'second level 1',
+            jcamp: '##TITLE= second level 1\n##DATA_TYPE= second\n##END=\n',
+            children: [],
+            dataType: 'second'
+          }
+        ]
+      }
+    ]);
+  });
+
   it('test with bruker FID / FT combined file', function () {
     var result = Converter.createTree(
       fs.readFileSync(`${__dirname}/data/bruker_fid_ft.jdx`, 'utf8')
