@@ -783,16 +783,14 @@ function getConverter() {
             inValue = true;
             isLastDifference = false;
             currentValue = ascii - 64;
-          }
-          // negative SQZ digits a b c d e f g h i (ascii 97-105)
-          else if (ascii > 96 && ascii < 106) {
+          } else if (ascii > 96 && ascii < 106) {
+            // negative SQZ digits a b c d e f g h i (ascii 97-105)
             inValue = true;
             isLastDifference = false;
             currentValue = ascii - 96;
             isNegative = true;
-          }
-          // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
-          else if (ascii === 115) {
+          } else if (ascii === 115) {
+            // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
             inValue = true;
             isDuplicate = true;
             currentValue = 9;
@@ -800,27 +798,23 @@ function getConverter() {
             inValue = true;
             isDuplicate = true;
             currentValue = ascii - 82;
-          }
-          // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
-          else if (ascii > 73 && ascii < 83) {
+          } else if (ascii > 73 && ascii < 83) {
+            // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
             inValue = true;
             isDifference = true;
             currentValue = ascii - 73;
-          }
-          // negative DIF digits j k l m n o p q r (ascii 106-114)
-          else if (ascii > 105 && ascii < 115) {
+          } else if (ascii > 105 && ascii < 115) {
+            // negative DIF digits j k l m n o p q r (ascii 106-114)
             inValue = true;
             isDifference = true;
             currentValue = ascii - 105;
             isNegative = true;
-          }
-          // $ sign, we need to check the next one
-          else if (ascii === 36 && value.charCodeAt(i + 1) === 36) {
+          } else if (ascii === 36 && value.charCodeAt(i + 1) === 36) {
+            // $ sign, we need to check the next one
             inValue = true;
             inComment = true;
-          }
-          // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
-          else if (ascii === 37) {
+          } else if (ascii === 37) {
+            // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
             inValue = true;
             isDifference = true;
             currentValue = 0;
