@@ -24,7 +24,8 @@ function getConverter() {
     keepSpectra: false,
     noContour: false,
     nbContourLevels: 7,
-    noiseMultiplier: 5
+    noiseMultiplier: 5,
+    profiling: false,
   };
 
   function convert(jcamp, options) {
@@ -39,7 +40,7 @@ function getConverter() {
     var i, ii, j, position, endLine, infos;
 
     var result = {};
-    result.profiling = [];
+    result.profiling = options.profiling ? [] : false;
     result.logs = [];
     var spectra = [];
     result.spectra = spectra;
