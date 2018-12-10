@@ -248,8 +248,8 @@ function getConverter() {
       } else if (dataLabel === '$OFFSET') {
         // OFFSET for Bruker spectra
         result.shiftOffsetNum = 0;
-        if (!result.shiftOffsetVal) {
-          result.shiftOffsetVal = parseFloat(dataValue);
+        if (!spectrum.shiftOffsetVal) {
+          spectrum.shiftOffsetVal = parseFloat(dataValue);
         }
       } else if (dataLabel === '$REFERENCEPOINT') {
         // OFFSET for Varian spectra
@@ -257,7 +257,7 @@ function getConverter() {
         //         } else if (dataLabel=='.SHIFTREFERENCE') {   // OFFSET FOR Bruker Spectra
         //                 var parts = dataValue.split(/ *, */);
         //                 result.shiftOffsetNum = parseInt(parts[2].trim());
-        //                 result.shiftOffsetVal = parseFloat(parts[3].trim());
+        //                 spectrum.shiftOffsetVal = parseFloat(parts[3].trim());
       } else if (dataLabel === 'VARNAME') {
         ntuples.varname = dataValue.split(ntuplesSeparator);
       } else if (dataLabel === 'SYMBOL') {
@@ -469,8 +469,8 @@ function getConverter() {
         spectrum.deltaX = spectrum.deltaX / spectrum.observeFrequency;
       }
     }
-    if (result.shiftOffsetVal) {
-      var shift = spectrum.firstX - result.shiftOffsetVal;
+    if (spectrum.shiftOffsetVal) {
+      var shift = spectrum.firstX - spectrum.shiftOffsetVal;
       spectrum.firstX = spectrum.firstX - shift;
       spectrum.lastX = spectrum.lastX - shift;
     }
