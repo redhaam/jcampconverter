@@ -38,7 +38,7 @@
     "benchmark": "^2.1.4",
     "cheminfo-tools": "^1.22.4",
     "eslint": "^5.9.0",
-    "eslint-config-cheminfo": "^1.18.0",
+    "eslint-config-cheminfo": "^1.19.1",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jest": "^22.0.0",
     "eslint-plugin-no-only-tests": "^2.0.1",
