@@ -6,10 +6,9 @@ function getConverter() {
   const GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
 
   function convertToFloatArray(stringArray) {
-    var l = stringArray.length;
-    var floatArray = new Array(l);
-    for (var i = 0; i < l; i++) {
-      floatArray[i] = parseFloat(stringArray[i]);
+    var floatArray = [];
+    for (let i = 0; i < stringArray.length; i++) {
+      floatArray.push(parseFloat(stringArray[i]));
     }
     return floatArray;
   }
@@ -25,7 +24,7 @@ function getConverter() {
     noContour: false,
     nbContourLevels: 7,
     noiseMultiplier: 5,
-    profiling: false,
+    profiling: false
   };
 
   function convert(jcamp, options) {
@@ -37,7 +36,7 @@ function getConverter() {
 
     var ntuples = {};
     var ldr, dataLabel, dataValue, ldrs;
-    var i, ii, j, position, endLine, infos;
+    var position, endLine, infos;
 
     var result = {};
     result.profiling = options.profiling ? [] : false;
@@ -69,7 +68,7 @@ function getConverter() {
 
     if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, '');
 
-    for (i = 0, ii = ldrs.length; i < ii; i++) {
+    for (let i = 0; i < ldrs.length; i++) {
       ldr = ldrs[i];
       // This is a new LDR
       position = ldr.indexOf('=');
@@ -161,7 +160,8 @@ function getConverter() {
         if (wantXY) {
           prepareSpectrum(result, spectrum);
           // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
-          if (dataValue.match(/.*\+\+.*/)) { // ex: (X++(Y..Y))
+          if (dataValue.match(/.*\+\+.*/)) {
+            // ex: (X++(Y..Y))
             if (!spectrum.deltaX) {
               spectrum.deltaX =
                 (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
@@ -185,7 +185,8 @@ function getConverter() {
       }
       if (dataLabel === 'PEAKASSIGNMENTS') {
         if (wantXY) {
-          if (dataValue.match(/.*(XYA).*/)) { // ex: (XYA)
+          if (dataValue.match(/.*(XYA).*/)) {
+            // ex: (XYA)
             parseXYA(spectrum, dataValue);
           }
           spectra.push(spectrum);
@@ -316,10 +317,10 @@ function getConverter() {
     if (Object.keys(ntuples).length > 0) {
       var newNtuples = [];
       var keys = Object.keys(ntuples);
-      for (i = 0; i < keys.length; i++) {
+      for (let i = 0; i < keys.length; i++) {
         var key = keys[i];
         var values = ntuples[key];
-        for (j = 0; j < values.length; j++) {
+        for (let j = 0; j < values.length; j++) {
           if (!newNtuples[j]) newNtuples[j] = {};
           newNtuples[j][key] = values[j];
         }
@@ -347,10 +348,10 @@ function getConverter() {
     if (options.xy && wantXY) {
       // the spectraData should not be a oneD array but an object with x and y
       if (spectra.length > 0) {
-        for (i = 0; i < spectra.length; i++) {
+        for (let i = 0; i < spectra.length; i++) {
           spectrum = spectra[i];
           if (spectrum.data.length > 0) {
-            for (j = 0; j < spectrum.data.length; j++) {
+            for (let j = 0; j < spectrum.data.length; j++) {
               var data = spectrum.data[j];
               var newData = {
                 x: new Array(data.length / 2),
@@ -413,9 +414,8 @@ function getConverter() {
       }
     };
 
-    var i;
     var existingGCMSFields = [];
-    for (i = 0; i < GC_MS_FIELDS.length; i++) {
+    for (let i = 0; i < GC_MS_FIELDS.length; i++) {
       var label = convertMSFieldToLabel(GC_MS_FIELDS[i]);
       if (spectra[0][label]) {
         existingGCMSFields.push(label);
@@ -426,10 +426,10 @@ function getConverter() {
       }
     }
 
-    for (i = 0; i < length; i++) {
+    for (let i = 0; i < length; i++) {
       var spectrum = spectra[i];
       chromatogram.times[i] = spectrum.pageValue;
-      for (var j = 0; j < existingGCMSFields.length; j++) {
+      for (let j = 0; j < existingGCMSFields.length; j++) {
         chromatogram.series[existingGCMSFields[j]].data[i] = parseFloat(
           spectrum[existingGCMSFields[j]]
         );
@@ -492,10 +492,10 @@ function getConverter() {
     var ySize = spectra.length;
     var xSize = spectra[0].data[0].length / 2;
     var z = new Array(ySize);
-    for (var i = 0; i < ySize; i++) {
+    for (let i = 0; i < ySize; i++) {
       z[i] = new Array(xSize);
       var xVector = spectra[i].data[0];
-      for (var j = 0; j < xSize; j++) {
+      for (let j = 0; j < xSize; j++) {
         var value = xVector[j * 2 + 1];
         z[i][j] = value;
         if (value < minZ) minZ = value;
@@ -711,7 +711,8 @@ function getConverter() {
     //
     var endLine = false;
     var ascii;
-    for (var i = 0; i < value.length; i++) {
+    let i = 0;
+    for (; i < value.length; i++) {
       ascii = value.charCodeAt(i);
       if (ascii === 13 || ascii === 10) {
         endLine = true;
@@ -866,14 +867,17 @@ function getConverter() {
     var removeSymbolRegExp = /(\(+|\)+|<+|>+|\s+)/g;
 
     spectrum.isXYAdata = true;
-    var i, ii, values;
+    var values;
     var currentData = [];
     spectrum.data = [currentData];
 
     var lines = value.split(/,? *,?[;\r\n]+ */);
 
-    for (i = 1, ii = lines.length; i < ii; i++) {
-      values = lines[i].trim().replace(removeSymbolRegExp, '').split(',');
+    for (let i = 1; i < lines.length; i++) {
+      values = lines[i]
+        .trim()
+        .replace(removeSymbolRegExp, '')
+        .split(',');
       currentData.push(parseFloat(values[0]));
       currentData.push(parseFloat(values[1]));
     }
@@ -884,20 +888,20 @@ function getConverter() {
     var peakTableSplitRegExp = /[,\t ]+/;
 
     spectrum.isPeaktable = true;
-    var i, ii, j, jj, values;
+    var values;
     var currentData = [];
     spectrum.data = [currentData];
 
     // counts for around 20% of the time
     var lines = value.split(/,? *,?[;\r\n]+ */);
 
-    for (i = 1, ii = lines.length; i < ii; i++) {
+    for (let i = 1; i < lines.length; i++) {
       values = lines[i]
         .trim()
         .replace(removeCommentRegExp, '')
         .split(peakTableSplitRegExp);
       if (values.length % 2 === 0) {
-        for (j = 0, jj = values.length; j < jj; j = j + 2) {
+        for (let j = 0; j < values.length; j = j + 2) {
           // takes around 40% of the time to add and parse the 2 values nearly exclusively because of parseFloat
           currentData.push(parseFloat(values[j]) * spectrum.xFactor);
           currentData.push(parseFloat(values[j + 1]) * spectrum.yFactor);
