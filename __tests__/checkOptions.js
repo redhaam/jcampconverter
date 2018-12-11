@@ -17,11 +17,9 @@ describe('Test JCAMP options', () => {
 });
 
 const checkOptions = (filename, options, goal, label) => {
-  const target = fs.readFileSync(
-    `${__dirname}/data${filename}`
-  ).toString();
+  const target = fs.readFileSync(`${__dirname}/data${filename}`).toString();
 
-  describe(label, () => {
+  describe(`Test ${label}`, () => {
     it('disables profiling by default', () => {
       const result = Converter.convert(target);
       expect(result.profiling).toBe(false);
@@ -37,12 +35,12 @@ const checkOptions = (filename, options, goal, label) => {
 };
 
 describe('Test JCAMP converter Options for NMR 13C_DEPT', () => {
-  const target = fs.readFileSync(
-    `${__dirname}/data/misc/nmr_13c_dept.dx`
-  ).toString();
+  const target = fs
+    .readFileSync(`${__dirname}/data/misc/nmr_13c_dept.dx`)
+    .toString();
 
   const options = {
-    profiling: true,
+    profiling: true
   };
 
   it('disables profiling by default', () => {
@@ -61,19 +59,19 @@ describe('Test JCAMP converter Options', () => {
     '/misc/chrom.jdx',
     {
       profiling: true,
-      chromatogram: true,
+      chromatogram: true
     },
     'Finished chromatogram calculation',
-    'chrom',
+    'chrom'
   );
 
   checkOptions(
     '/acd/test1_cosy.jdx',
     {
       profiling: true,
-      xy: true,
+      xy: true
     },
     'Finished countour plot calculation',
-    '2D',
+    '2D'
   );
 });

@@ -5,10 +5,12 @@ var Converter = require('..');
 var fs = require('fs');
 
 function checkJcamp(filename, label, data) {
-  const result = Converter.convert(fs.readFileSync(`${__dirname}/data${filename}`).toString());
-  describe(label, () => {
+  const result = Converter.convert(
+    fs.readFileSync(`${__dirname}/data${filename}`).toString()
+  );
+  describe(`Test ${label}`, () => {
     it('xAxis type', () => {
-      expect(result.xType).toEqual(data.xType);
+      expect(result.xType).toStrictEqual(data.xType);
     });
 
     if (result.spectra) {
@@ -18,12 +20,14 @@ function checkJcamp(filename, label, data) {
 
       it('Spectrum data', () => {
         var spectrum = result.spectra[0];
-        expect(spectrum.observeFrequency).toEqual(data.observeFrequency);
-        expect(spectrum.nbPoints).toEqual(data.nbPoints);
-        expect(spectrum.nbPoints).toEqual(spectrum.data[0].length / 2);
-        expect(spectrum.firstX).toEqual(data.firstX);
-        expect(spectrum.lastX).toEqual(data.lastX);
-        expect(spectrum.data[0].reduce((a, b) => a + b)).toEqual(data.total);
+        expect(spectrum.observeFrequency).toStrictEqual(data.observeFrequency);
+        expect(spectrum.nbPoints).toStrictEqual(data.nbPoints);
+        expect(spectrum.nbPoints).toStrictEqual(spectrum.data[0].length / 2);
+        expect(spectrum.firstX).toStrictEqual(data.firstX);
+        expect(spectrum.lastX).toStrictEqual(data.lastX);
+        expect(spectrum.data[0].reduce((a, b) => a + b)).toStrictEqual(
+          data.total
+        );
       });
     }
   });
@@ -53,7 +57,11 @@ describe('Test JCAMP converter', () => {
 
     checkJcamp('/compression/jcamp-fix.dx', 'Compression fixed', options);
     checkJcamp('/compression/jcamp-packed.dx', 'Compression packed', options);
-    checkJcamp('/compression/jcamp-squeezed.dx', 'Compression squeezed', options);
+    checkJcamp(
+      '/compression/jcamp-squeezed.dx',
+      'Compression squeezed',
+      options
+    );
     checkJcamp('/compression/jcamp-difdup.dx', 'Compression difdup', options);
   });
 
@@ -97,16 +105,16 @@ describe('Test JCAMP converter', () => {
     total: 24130609.545490365
   });
 
-// TODO fix this case
-// checkJcamp('/misc/nemo_generated.jdx', "Nemo generated JCamp",
-//     {
-//         nbSpectra: 2,
-//         xType: "1H",
-//         observeFrequency: 600.589925054317,
-//         nbPoints: 131072,
-//         firstX: 14.82852,
-//         lastX: -5.183854946422537,
-//         total: 92336803770.80695
-//     }
-// );
+  // TODO fix this case
+  // checkJcamp('/misc/nemo_generated.jdx', "Nemo generated JCamp",
+  //     {
+  //         nbSpectra: 2,
+  //         xType: "1H",
+  //         observeFrequency: 600.589925054317,
+  //         nbPoints: 131072,
+  //         firstX: 14.82852,
+  //         lastX: -5.183854946422537,
+  //         total: 92336803770.80695
+  //     }
+  // );
 });
