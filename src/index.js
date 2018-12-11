@@ -24,7 +24,8 @@ function getConverter() {
     keepSpectra: false,
     noContour: false,
     nbContourLevels: 7,
-    noiseMultiplier: 5
+    noiseMultiplier: 5,
+    profiling: false,
   };
 
   function convert(jcamp, options) {
@@ -39,7 +40,7 @@ function getConverter() {
     var i, ii, j, position, endLine, infos;
 
     var result = {};
-    result.profiling = [];
+    result.profiling = options.profiling ? [] : false;
     result.logs = [];
     var spectra = [];
     result.spectra = spectra;
@@ -160,7 +161,7 @@ function getConverter() {
         if (wantXY) {
           prepareSpectrum(result, spectrum);
           // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
-          if (dataValue.match(/.*\+\+.*/)) {
+          if (dataValue.match(/.*\+\+.*/)) { // ex: (X++(Y..Y))
             if (!spectrum.deltaX) {
               spectrum.deltaX =
                 (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
@@ -177,6 +178,16 @@ function getConverter() {
         if (wantXY) {
           prepareSpectrum(result, spectrum);
           parsePeakTable(spectrum, dataValue, result);
+          spectra.push(spectrum);
+          spectrum = new Spectrum();
+        }
+        continue;
+      }
+      if (dataLabel === 'PEAKASSIGNMENTS') {
+        if (wantXY) {
+          if (dataValue.match(/.*(XYA).*/)) { // ex: (XYA)
+            parseXYA(spectrum, dataValue);
+          }
           spectra.push(spectrum);
           spectrum = new Spectrum();
         }
@@ -212,6 +223,14 @@ function getConverter() {
         spectrum.xFactor = parseFloat(dataValue);
       } else if (dataLabel === 'YFACTOR') {
         spectrum.yFactor = parseFloat(dataValue);
+      } else if (dataLabel === 'MAXX') {
+        spectrum.maxX = parseFloat(dataValue);
+      } else if (dataLabel === 'MINX') {
+        spectrum.minX = parseFloat(dataValue);
+      } else if (dataLabel === 'MAXY') {
+        spectrum.maxY = parseFloat(dataValue);
+      } else if (dataLabel === 'MINY') {
+        spectrum.minY = parseFloat(dataValue);
       } else if (dataLabel === 'DELTAX') {
         spectrum.deltaX = parseFloat(dataValue);
       } else if (dataLabel === '.OBSERVEFREQUENCY' || dataLabel === '$SFO1') {
@@ -229,8 +248,8 @@ function getConverter() {
       } else if (dataLabel === '$OFFSET') {
         // OFFSET for Bruker spectra
         result.shiftOffsetNum = 0;
-        if (!result.shiftOffsetVal) {
-          result.shiftOffsetVal = parseFloat(dataValue);
+        if (!spectrum.shiftOffsetVal) {
+          spectrum.shiftOffsetVal = parseFloat(dataValue);
         }
       } else if (dataLabel === '$REFERENCEPOINT') {
         // OFFSET for Varian spectra
@@ -238,7 +257,7 @@ function getConverter() {
         //         } else if (dataLabel=='.SHIFTREFERENCE') {   // OFFSET FOR Bruker Spectra
         //                 var parts = dataValue.split(/ *, */);
         //                 result.shiftOffsetNum = parseInt(parts[2].trim());
-        //                 result.shiftOffsetVal = parseFloat(parts[3].trim());
+        //                 spectrum.shiftOffsetVal = parseFloat(parts[3].trim());
       } else if (dataLabel === 'VARNAME') {
         ntuples.varname = dataValue.split(ntuplesSeparator);
       } else if (dataLabel === 'SYMBOL') {
@@ -450,8 +469,8 @@ function getConverter() {
         spectrum.deltaX = spectrum.deltaX / spectrum.observeFrequency;
       }
     }
-    if (result.shiftOffsetVal) {
-      var shift = spectrum.firstX - result.shiftOffsetVal;
+    if (spectrum.shiftOffsetVal) {
+      var shift = spectrum.firstX - spectrum.shiftOffsetVal;
       spectrum.firstX = spectrum.firstX - shift;
       spectrum.lastX = spectrum.lastX - shift;
     }
@@ -840,6 +859,23 @@ function getConverter() {
           // if "+" we just don't care
         }
       }
+    }
+  }
+
+  function parseXYA(spectrum, value) {
+    var removeSymbolRegExp = /(\(+|\)+|<+|>+|\s+)/g;
+
+    spectrum.isXYAdata = true;
+    var i, ii, values;
+    var currentData = [];
+    spectrum.data = [currentData];
+
+    var lines = value.split(/,? *,?[;\r\n]+ */);
+
+    for (i = 1, ii = lines.length; i < ii; i++) {
+      values = lines[i].trim().replace(removeSymbolRegExp, '').split(',');
+      currentData.push(parseFloat(values[0]));
+      currentData.push(parseFloat(values[1]));
     }
   }
 
