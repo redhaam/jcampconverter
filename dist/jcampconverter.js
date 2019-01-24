@@ -1,6 +1,6 @@
 /**
  * jcampconverter - Parse and convert JCAMP data
- * @version v2.10.1
+ * @version v2.11.0
  * @link https://github.com/cheminfo-js/jcampconverter#readme
  * @license MIT
  */
@@ -113,11 +113,10 @@ function getConverter() {
   const GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
 
   function convertToFloatArray(stringArray) {
-    var l = stringArray.length;
-    var floatArray = new Array(l);
+    var floatArray = [];
 
-    for (var i = 0; i < l; i++) {
-      floatArray[i] = parseFloat(stringArray[i]);
+    for (let i = 0; i < stringArray.length; i++) {
+      floatArray.push(parseFloat(stringArray[i]));
     }
 
     return floatArray;
@@ -133,7 +132,8 @@ function getConverter() {
     keepSpectra: false,
     noContour: false,
     nbContourLevels: 7,
-    noiseMultiplier: 5
+    noiseMultiplier: 5,
+    profiling: false
   };
 
   function convert(jcamp, options) {
@@ -142,9 +142,9 @@ function getConverter() {
     var start = Date.now();
     var ntuples = {};
     var ldr, dataLabel, dataValue, ldrs;
-    var i, ii, j, position, endLine, infos;
+    var position, endLine, infos;
     var result = {};
-    result.profiling = [];
+    result.profiling = options.profiling ? [] : false;
     result.logs = [];
     var spectra = [];
     result.spectra = spectra;
@@ -173,7 +173,7 @@ function getConverter() {
 
     if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, '');
 
-    for (i = 0, ii = ldrs.length; i < ii; i++) {
+    for (let i = 0; i < ldrs.length; i++) {
       ldr = ldrs[i]; // This is a new LDR
 
       position = ldr.indexOf('=');
@@ -269,6 +269,7 @@ function getConverter() {
           prepareSpectrum(result, spectrum); // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
 
           if (dataValue.match(/.*\+\+.*/)) {
+            // ex: (X++(Y..Y))
             if (!spectrum.deltaX) {
               spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
             }
@@ -287,6 +288,20 @@ function getConverter() {
         if (wantXY) {
           prepareSpectrum(result, spectrum);
           parsePeakTable(spectrum, dataValue, result);
+          spectra.push(spectrum);
+          spectrum = new Spectrum();
+        }
+
+        continue;
+      }
+
+      if (dataLabel === 'PEAKASSIGNMENTS') {
+        if (wantXY) {
+          if (dataValue.match(/.*(XYA).*/)) {
+            // ex: (XYA)
+            parseXYA(spectrum, dataValue);
+          }
+
           spectra.push(spectrum);
           spectrum = new Spectrum();
         }
@@ -324,6 +339,14 @@ function getConverter() {
         spectrum.xFactor = parseFloat(dataValue);
       } else if (dataLabel === 'YFACTOR') {
         spectrum.yFactor = parseFloat(dataValue);
+      } else if (dataLabel === 'MAXX') {
+        spectrum.maxX = parseFloat(dataValue);
+      } else if (dataLabel === 'MINX') {
+        spectrum.minX = parseFloat(dataValue);
+      } else if (dataLabel === 'MAXY') {
+        spectrum.maxY = parseFloat(dataValue);
+      } else if (dataLabel === 'MINY') {
+        spectrum.minY = parseFloat(dataValue);
       } else if (dataLabel === 'DELTAX') {
         spectrum.deltaX = parseFloat(dataValue);
       } else if (dataLabel === '.OBSERVEFREQUENCY' || dataLabel === '$SFO1') {
@@ -342,15 +365,15 @@ function getConverter() {
         // OFFSET for Bruker spectra
         result.shiftOffsetNum = 0;
 
-        if (!result.shiftOffsetVal) {
-          result.shiftOffsetVal = parseFloat(dataValue);
+        if (!spectrum.shiftOffsetVal) {
+          spectrum.shiftOffsetVal = parseFloat(dataValue);
         }
       } else if (dataLabel === '$REFERENCEPOINT') {// OFFSET for Varian spectra
         // if we activate this part it does not work for ACD specmanager
         //         } else if (dataLabel=='.SHIFTREFERENCE') {   // OFFSET FOR Bruker Spectra
         //                 var parts = dataValue.split(/ *, */);
         //                 result.shiftOffsetNum = parseInt(parts[2].trim());
-        //                 result.shiftOffsetVal = parseFloat(parts[3].trim());
+        //                 spectrum.shiftOffsetVal = parseFloat(parts[3].trim());
       } else if (dataLabel === 'VARNAME') {
         ntuples.varname = dataValue.split(ntuplesSeparator);
       } else if (dataLabel === 'SYMBOL') {
@@ -395,6 +418,8 @@ function getConverter() {
         spectrum.pageValue = parseFloat(dataValue);
       } else if (isMSField(dataLabel)) {
         spectrum[convertMSFieldToLabel(dataLabel)] = dataValue;
+      } else if (dataLabel === 'SAMPLEDESCRIPTION') {
+        spectrum.sampleDescription = dataValue;
       }
 
       if (dataLabel.match(options.keepRecordsRegExp)) {
@@ -413,11 +438,11 @@ function getConverter() {
       var newNtuples = [];
       var keys = Object.keys(ntuples);
 
-      for (i = 0; i < keys.length; i++) {
+      for (let i = 0; i < keys.length; i++) {
         var key = keys[i];
         var values = ntuples[key];
 
-        for (j = 0; j < values.length; j++) {
+        for (let j = 0; j < values.length; j++) {
           if (!newNtuples[j]) newNtuples[j] = {};
           newNtuples[j][key] = values[j];
         }
@@ -448,11 +473,11 @@ function getConverter() {
     if (options.xy && wantXY) {
       // the spectraData should not be a oneD array but an object with x and y
       if (spectra.length > 0) {
-        for (i = 0; i < spectra.length; i++) {
+        for (let i = 0; i < spectra.length; i++) {
           spectrum = spectra[i];
 
           if (spectrum.data.length > 0) {
-            for (j = 0; j < spectrum.data.length; j++) {
+            for (let j = 0; j < spectrum.data.length; j++) {
               var data = spectrum.data[j];
               var newData = {
                 x: new Array(data.length / 2),
@@ -517,10 +542,9 @@ function getConverter() {
         }
       }
     };
-    var i;
     var existingGCMSFields = [];
 
-    for (i = 0; i < GC_MS_FIELDS.length; i++) {
+    for (let i = 0; i < GC_MS_FIELDS.length; i++) {
       var label = convertMSFieldToLabel(GC_MS_FIELDS[i]);
 
       if (spectra[0][label]) {
@@ -532,11 +556,11 @@ function getConverter() {
       }
     }
 
-    for (i = 0; i < length; i++) {
+    for (let i = 0; i < length; i++) {
       var spectrum = spectra[i];
       chromatogram.times[i] = spectrum.pageValue;
 
-      for (var j = 0; j < existingGCMSFields.length; j++) {
+      for (let j = 0; j < existingGCMSFields.length; j++) {
         chromatogram.series[existingGCMSFields[j]].data[i] = parseFloat(spectrum[existingGCMSFields[j]]);
       }
 
@@ -575,8 +599,8 @@ function getConverter() {
       }
     }
 
-    if (result.shiftOffsetVal) {
-      var shift = spectrum.firstX - result.shiftOffsetVal;
+    if (spectrum.shiftOffsetVal) {
+      var shift = spectrum.firstX - spectrum.shiftOffsetVal;
       spectrum.firstX = spectrum.firstX - shift;
       spectrum.lastX = spectrum.lastX - shift;
     }
@@ -599,11 +623,11 @@ function getConverter() {
     var xSize = spectra[0].data[0].length / 2;
     var z = new Array(ySize);
 
-    for (var i = 0; i < ySize; i++) {
+    for (let i = 0; i < ySize; i++) {
       z[i] = new Array(xSize);
       var xVector = spectra[i].data[0];
 
-      for (var j = 0; j < xSize; j++) {
+      for (let j = 0; j < xSize; j++) {
         var value = xVector[j * 2 + 1];
         z[i][j] = value;
         if (value < minZ) minZ = value;
@@ -792,8 +816,9 @@ function getConverter() {
 
     var endLine = false;
     var ascii;
+    let i = 0;
 
-    for (var i = 0; i < value.length; i++) {
+    for (; i < value.length; i++) {
       ascii = value.charCodeAt(i);
 
       if (ascii === 13 || ascii === 10) {
@@ -892,56 +917,56 @@ function getConverter() {
             inValue = true;
             isLastDifference = false;
             currentValue = ascii - 64;
-          } // negative SQZ digits a b c d e f g h i (ascii 97-105)
-          else if (ascii > 96 && ascii < 106) {
-              inValue = true;
-              isLastDifference = false;
-              currentValue = ascii - 96;
-              isNegative = true;
-            } // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
-            else if (ascii === 115) {
-                inValue = true;
-                isDuplicate = true;
-                currentValue = 9;
-              } else if (ascii > 82 && ascii < 91) {
-                inValue = true;
-                isDuplicate = true;
-                currentValue = ascii - 82;
-              } // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
-              else if (ascii > 73 && ascii < 83) {
-                  inValue = true;
-                  isDifference = true;
-                  currentValue = ascii - 73;
-                } // negative DIF digits j k l m n o p q r (ascii 106-114)
-                else if (ascii > 105 && ascii < 115) {
-                    inValue = true;
-                    isDifference = true;
-                    currentValue = ascii - 105;
-                    isNegative = true;
-                  } // $ sign, we need to check the next one
-                  else if (ascii === 36 && value.charCodeAt(i + 1) === 36) {
-                      inValue = true;
-                      inComment = true;
-                    } // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
-                    else if (ascii === 37) {
-                        inValue = true;
-                        isDifference = true;
-                        currentValue = 0;
-                        isNegative = false;
-                      } else if (ascii === 45) {
-                        // a "-"
-                        // check if after there is a number, decimal or comma
-                        var ascii2 = value.charCodeAt(i + 1);
+          } else if (ascii > 96 && ascii < 106) {
+            // negative SQZ digits a b c d e f g h i (ascii 97-105)
+            inValue = true;
+            isLastDifference = false;
+            currentValue = ascii - 96;
+            isNegative = true;
+          } else if (ascii === 115) {
+            // DUP digits S T U V W X Y Z s (ascii 83-90, 115)
+            inValue = true;
+            isDuplicate = true;
+            currentValue = 9;
+          } else if (ascii > 82 && ascii < 91) {
+            inValue = true;
+            isDuplicate = true;
+            currentValue = ascii - 82;
+          } else if (ascii > 73 && ascii < 83) {
+            // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
+            inValue = true;
+            isDifference = true;
+            currentValue = ascii - 73;
+          } else if (ascii > 105 && ascii < 115) {
+            // negative DIF digits j k l m n o p q r (ascii 106-114)
+            inValue = true;
+            isDifference = true;
+            currentValue = ascii - 105;
+            isNegative = true;
+          } else if (ascii === 36 && value.charCodeAt(i + 1) === 36) {
+            // $ sign, we need to check the next one
+            inValue = true;
+            inComment = true;
+          } else if (ascii === 37) {
+            // positive DIF digits % J K L M N O P Q R (ascii 37, 74-82)
+            inValue = true;
+            isDifference = true;
+            currentValue = 0;
+            isNegative = false;
+          } else if (ascii === 45) {
+            // a "-"
+            // check if after there is a number, decimal or comma
+            var ascii2 = value.charCodeAt(i + 1);
 
-                        if (ascii2 >= 48 && ascii2 <= 57 || ascii2 === 44 || ascii2 === 46) {
-                          inValue = true;
-                          if (!newLine) isLastDifference = false;
-                          isNegative = true;
-                        }
-                      } else if (ascii === 13 || ascii === 10) {
-                        newLine = true;
-                        inComment = false;
-                      } // and now analyse the details ... space or tabulation
+            if (ascii2 >= 48 && ascii2 <= 57 || ascii2 === 44 || ascii2 === 46) {
+              inValue = true;
+              if (!newLine) isLastDifference = false;
+              isNegative = true;
+            }
+          } else if (ascii === 13 || ascii === 10) {
+            newLine = true;
+            inComment = false;
+          } // and now analyse the details ... space or tabulation
           // if "+" we just don't care
 
         }
@@ -949,21 +974,36 @@ function getConverter() {
     }
   }
 
+  function parseXYA(spectrum, value) {
+    var removeSymbolRegExp = /(\(+|\)+|<+|>+|\s+)/g;
+    spectrum.isXYAdata = true;
+    var values;
+    var currentData = [];
+    spectrum.data = [currentData];
+    var lines = value.split(/,? *,?[;\r\n]+ */);
+
+    for (let i = 1; i < lines.length; i++) {
+      values = lines[i].trim().replace(removeSymbolRegExp, '').split(',');
+      currentData.push(parseFloat(values[0]));
+      currentData.push(parseFloat(values[1]));
+    }
+  }
+
   function parsePeakTable(spectrum, value, result) {
     var removeCommentRegExp = /\$\$.*/;
     var peakTableSplitRegExp = /[,\t ]+/;
     spectrum.isPeaktable = true;
-    var i, ii, j, jj, values;
+    var values;
     var currentData = [];
     spectrum.data = [currentData]; // counts for around 20% of the time
 
     var lines = value.split(/,? *,?[;\r\n]+ */);
 
-    for (i = 1, ii = lines.length; i < ii; i++) {
+    for (let i = 1; i < lines.length; i++) {
       values = lines[i].trim().replace(removeCommentRegExp, '').split(peakTableSplitRegExp);
 
       if (values.length % 2 === 0) {
-        for (j = 0, jj = values.length; j < jj; j = j + 2) {
+        for (let j = 0; j < values.length; j = j + 2) {
           // takes around 40% of the time to add and parse the 2 values nearly exclusively because of parseFloat
           currentData.push(parseFloat(values[j]) * spectrum.xFactor);
           currentData.push(parseFloat(values[j + 1]) * spectrum.yFactor);
