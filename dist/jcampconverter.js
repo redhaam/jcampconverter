@@ -1,6 +1,6 @@
 /**
  * jcampconverter - Parse and convert JCAMP data
- * @version v2.11.0
+ * @version v3.0.0
  * @link https://github.com/cheminfo-js/jcampconverter#readme
  * @license MIT
  */
@@ -423,7 +423,15 @@ function getConverter() {
       }
 
       if (dataLabel.match(options.keepRecordsRegExp)) {
-        result.info[dataLabel] = dataValue.trim();
+        if (result.info[dataLabel]) {
+          if (!Array.isArray(result.info[dataLabel])) {
+            result.info[dataLabel] = [result.info[dataLabel]];
+          }
+
+          result.info[dataLabel].push(dataValue.trim());
+        } else {
+          result.info[dataLabel] = dataValue.trim();
+        }
       }
     }
 
