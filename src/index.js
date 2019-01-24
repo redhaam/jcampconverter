@@ -305,7 +305,14 @@ function getConverter() {
         spectrum.sampleDescription = dataValue;
       }
       if (dataLabel.match(options.keepRecordsRegExp)) {
-        result.info[dataLabel] = dataValue.trim();
+        if (result.info[dataLabel]) {
+          if (!Array.isArray(result.info[dataLabel])) {
+            result.info[dataLabel] = [result.info[dataLabel]];
+          }
+          result.info[dataLabel].push(dataValue.trim());
+        } else {
+          result.info[dataLabel] = dataValue.trim();
+        }
       }
     }
 
