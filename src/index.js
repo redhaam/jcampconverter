@@ -737,7 +737,8 @@ function getConverter() {
     var lastDifference = 0;
     var isDuplicate = false;
     var inComment = false;
-    var currentValue = 0;
+    var currentValue = 0; // can be a difference or a duplicate
+    var lastValue = 0; // must be the real last value
     var isNegative = false;
     var inValue = false;
     var skipFirstValue = false;
@@ -786,13 +787,15 @@ function getConverter() {
                   lastDifference = isNegative ? 0 - currentValue : currentValue;
                   isLastDifference = true;
                   isDifference = false;
+                } else if (!isDuplicate) {
+                  lastValue = isNegative ? 0 - currentValue : currentValue;
                 }
                 var duplicate = isDuplicate ? currentValue - 1 : 1;
                 for (var j = 0; j < duplicate; j++) {
                   if (isLastDifference) {
                     currentY += lastDifference;
                   } else {
-                    currentY = isNegative ? 0 - currentValue : currentValue;
+                    currentY = lastValue;
                   }
                   currentData.push(currentX);
                   currentData.push(currentY * yFactor);
