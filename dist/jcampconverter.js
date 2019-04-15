@@ -1,6 +1,6 @@
 /**
  * jcampconverter - Parse and convert JCAMP data
- * @version v3.0.0
+ * @version v3.0.1
  * @link https://github.com/cheminfo-js/jcampconverter#readme
  * @license MIT
  */
@@ -843,7 +843,10 @@ function getConverter() {
     var lastDifference = 0;
     var isDuplicate = false;
     var inComment = false;
-    var currentValue = 0;
+    var currentValue = 0; // can be a difference or a duplicate
+
+    var lastValue = 0; // must be the real last value
+
     var isNegative = false;
     var inValue = false;
     var skipFirstValue = false;
@@ -895,6 +898,8 @@ function getConverter() {
                   lastDifference = isNegative ? 0 - currentValue : currentValue;
                   isLastDifference = true;
                   isDifference = false;
+                } else if (!isDuplicate) {
+                  lastValue = isNegative ? 0 - currentValue : currentValue;
                 }
 
                 var duplicate = isDuplicate ? currentValue - 1 : 1;
@@ -903,7 +908,7 @@ function getConverter() {
                   if (isLastDifference) {
                     currentY += lastDifference;
                   } else {
-                    currentY = isNegative ? 0 - currentValue : currentValue;
+                    currentY = lastValue;
                   }
 
                   currentData.push(currentX);
@@ -1017,7 +1022,7 @@ function getConverter() {
           currentData.push(parseFloat(values[j + 1]) * spectrum.yFactor);
         }
       } else {
-        result.logs.push(`Format error: ${values}`);
+        result.logs.push("Format error: ".concat(values));
       }
     }
   }
@@ -1049,7 +1054,7 @@ function postToWorker(input, options) {
   }
 
   return new Promise(function (resolve) {
-    var stamp = `${Date.now()}${Math.random()}`;
+    var stamp = "".concat(Date.now()).concat(Math.random());
     stamps[stamp] = resolve;
     worker.postMessage(JSON.stringify({
       stamp: stamp,
@@ -1060,7 +1065,7 @@ function postToWorker(input, options) {
 }
 
 function createWorker() {
-  var workerURL = URL.createObjectURL(new Blob([`var getConverter =${getConverter.toString()};var convert = getConverter(); onmessage = function (event) { var data = JSON.parse(event.data); postMessage(JSON.stringify({stamp: data.stamp, output: convert(data.input, data.options)})); };`], {
+  var workerURL = URL.createObjectURL(new Blob(["var getConverter =".concat(getConverter.toString(), ";var convert = getConverter(); onmessage = function (event) { var data = JSON.parse(event.data); postMessage(JSON.stringify({stamp: data.stamp, output: convert(data.input, data.options)})); };")], {
     type: 'application/javascript'
   }));
   worker = new Worker(workerURL);
@@ -1090,16 +1095,18 @@ function createTree(jcamp) {
   let result = [];
   let current;
   let ntupleLevel = 0;
+  let spaces = jcamp.includes('## ');
 
   for (var i = 0; i < lines.length; i++) {
-    var line = lines[i];
+    let line = lines[i];
+    let labelLine = spaces ? line.replace(/ /g, '') : line;
 
-    if (line.substring(0, 9) === '##NTUPLES') {
+    if (labelLine.substring(0, 9) === '##NTUPLES') {
       ntupleLevel++;
     }
 
-    if (line.substring(0, 7) === '##TITLE') {
-      let title = [line.substring(8).trim()];
+    if (labelLine.substring(0, 7) === '##TITLE') {
+      let title = [labelLine.substring(8).trim()];
 
       for (let j = i + 1; j < lines.length; j++) {
         if (lines[j].startsWith('##')) {
@@ -1111,13 +1118,13 @@ function createTree(jcamp) {
 
       stack.push({
         title: title.join('\n'),
-        jcamp: `${line}\n`,
+        jcamp: "".concat(line, "\n"),
         children: []
       });
       current = stack[stack.length - 1];
       flat.push(current);
-    } else if (line.substring(0, 5) === '##END' && ntupleLevel === 0) {
-      current.jcamp += `${line}\n`;
+    } else if (labelLine.substring(0, 5) === '##END' && ntupleLevel === 0) {
+      current.jcamp += "".concat(line, "\n");
       var finished = stack.pop();
 
       if (stack.length !== 0) {
@@ -1128,8 +1135,8 @@ function createTree(jcamp) {
         result.push(finished);
       }
     } else if (current && current.jcamp) {
-      current.jcamp += `${line}\n`;
-      var match = line.match(/^##(.*?)=(.+)/);
+      current.jcamp += "".concat(line, "\n");
+      var match = labelLine.match(/^##(.*?)=(.+)/);
 
       if (match) {
         var dataLabel = match[1].replace(/[ _-]/g, '').toUpperCase();
@@ -1140,7 +1147,7 @@ function createTree(jcamp) {
       }
     }
 
-    if (line.substring(0, 5) === '##END' && ntupleLevel > 0) {
+    if (labelLine.substring(0, 5) === '##END' && ntupleLevel > 0) {
       ntupleLevel--;
     }
   }
