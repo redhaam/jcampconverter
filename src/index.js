@@ -992,15 +992,18 @@ function createTree(jcamp, options = {}) {
   let current;
   let ntupleLevel = 0;
 
-  for (var i = 0; i < lines.length; i++) {
-    var line = lines[i];
+  let spaces = jcamp.includes('## ');
 
-    if (line.substring(0, 9) === '##NTUPLES') {
+  for (var i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    let labelLine = spaces ? line.replace(/ /g, '') : line;
+
+    if (labelLine.substring(0, 9) === '##NTUPLES') {
       ntupleLevel++;
     }
 
-    if (line.substring(0, 7) === '##TITLE') {
-      let title = [line.substring(8).trim()];
+    if (labelLine.substring(0, 7) === '##TITLE') {
+      let title = [labelLine.substring(8).trim()];
       for (let j = i + 1; j < lines.length; j++) {
         if (lines[j].startsWith('##')) {
           break;
@@ -1015,7 +1018,7 @@ function createTree(jcamp, options = {}) {
       });
       current = stack[stack.length - 1];
       flat.push(current);
-    } else if (line.substring(0, 5) === '##END' && ntupleLevel === 0) {
+    } else if (labelLine.substring(0, 5) === '##END' && ntupleLevel === 0) {
       current.jcamp += `${line}\n`;
       var finished = stack.pop();
       if (stack.length !== 0) {
@@ -1027,7 +1030,7 @@ function createTree(jcamp, options = {}) {
       }
     } else if (current && current.jcamp) {
       current.jcamp += `${line}\n`;
-      var match = line.match(/^##(.*?)=(.+)/);
+      var match = labelLine.match(/^##(.*?)=(.+)/);
       if (match) {
         var dataLabel = match[1].replace(/[ _-]/g, '').toUpperCase();
         if (dataLabel === 'DATATYPE') {
@@ -1036,7 +1039,7 @@ function createTree(jcamp, options = {}) {
       }
     }
 
-    if (line.substring(0, 5) === '##END' && ntupleLevel > 0) {
+    if (labelLine.substring(0, 5) === '##END' && ntupleLevel > 0) {
       ntupleLevel--;
     }
   }

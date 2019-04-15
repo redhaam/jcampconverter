@@ -18,7 +18,7 @@ describe('Test from Mestrec Jcamp generator with assignment', function () {
     var result = Converter.createTree(
       fs.readFileSync(`${route}simple.jdx`, 'utf8')
     );
-    expect(result).toEqual([
+    expect(result).toStrictEqual([
       {
         title: 'first level 1',
         dataType: 'first',
@@ -59,27 +59,32 @@ describe('Test from Mestrec Jcamp generator with assignment', function () {
       { flatten: true }
     );
 
-    expect(result).toEqual([
+    expect(result).toStrictEqual([
       {
+        children: undefined,
         title: 'first level 1',
         jcamp: '##TITLE= first level 1\n##DATA TYPE=\tfirst\n##END=\n',
         dataType: 'first'
       },
       {
+        children: undefined,
         title: 'second level 1',
         jcamp: '##TITLE= second level 1\n##DATA_TYPE= second\n##END=\n',
         dataType: 'second'
       },
       {
+        children: undefined,
         title: 'second level 2',
         jcamp: '##TITLE= second level 2\n##DATATYPE= second\n##END=\n',
         dataType: 'second'
       },
       {
+        children: undefined,
         title: 'third level',
         jcamp: '##TITLE= third level\n##END=\n'
       },
       {
+        children: undefined,
         title: 'first level 2',
         jcamp: '##TITLE= first level 2\n##DATA-TYPE=\tfirst\n##END=\n',
         dataType: 'first'
@@ -92,7 +97,7 @@ describe('Test from Mestrec Jcamp generator with assignment', function () {
       fs.readFileSync(`${route}verySimple.jdx`, 'utf8')
     );
 
-    expect(result).toEqual([
+    expect(result).toStrictEqual([
       {
         title: 'first level 1\nsecond line',
         jcamp: '##TITLE= first level 1\nsecond line\n##END=\n',
@@ -115,4 +120,12 @@ describe('Test from Mestrec Jcamp generator with assignment', function () {
     expect(result).toHaveLength(1);
     expect(result[0].children).toHaveLength(2);
   });
+});
+
+describe('Test from UV Jcamp with tree', function () {
+  var result = Converter.createTree(
+    fs.readFileSync(`${__dirname}/data/tree-uv.jdx`, 'latin1')
+  );
+  expect(result).toHaveLength(1);
+  expect(result[0].children).toHaveLength(2);
 });
