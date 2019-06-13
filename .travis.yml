@@ -3,6 +3,5 @@ node_js:
   - 6
   - 8
   - 10
-  - 11
-script: "npm run test-travis"
+  - 12
 after_script: "bash <(curl -s https://codecov.io/bash)"
