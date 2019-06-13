@@ -1,6 +1,6 @@
 /**
  * jcampconverter - Parse and convert JCAMP data
- * @version v3.0.1
+ * @version v3.0.2
  * @link https://github.com/cheminfo-js/jcampconverter#readme
  * @license MIT
  */
@@ -643,13 +643,17 @@ function getConverter() {
       }
     }
 
+    const firstX = spectra[0].data[0][0];
+    const lastX = spectra[0].data[0][spectra[0].data[0].length - 2]; // has to be -2 because it is a 1D array [x,y,x,y,...]
+
+    const firstY = spectra[0].pageValue;
+    const lastY = spectra[ySize - 1].pageValue;
     return {
       z: z,
-      minX: spectra[0].data[0][0],
-      maxX: spectra[0].data[0][spectra[0].data[0].length - 2],
-      // has to be -2 because it is a 1D array [x,y,x,y,...]
-      minY: spectra[0].pageValue,
-      maxY: spectra[ySize - 1].pageValue,
+      minX: Math.min(firstX, lastX),
+      maxX: Math.max(firstX, lastX),
+      minY: Math.min(firstY, lastY),
+      maxY: Math.max(firstY, lastY),
       minZ: minZ,
       maxZ: maxZ,
       noise: getMedian(z[0].map(Math.abs))
