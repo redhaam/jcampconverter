@@ -1,6 +1,6 @@
 /**
  * jcampconverter - Parse and convert JCAMP data
- * @version v3.0.2
+ * @version v3.0.3
  * @link https://github.com/cheminfo-js/jcampconverter#readme
  * @license MIT
  */
@@ -647,7 +647,19 @@ function getConverter() {
     const lastX = spectra[0].data[0][spectra[0].data[0].length - 2]; // has to be -2 because it is a 1D array [x,y,x,y,...]
 
     const firstY = spectra[0].pageValue;
-    const lastY = spectra[ySize - 1].pageValue;
+    const lastY = spectra[ySize - 1].pageValue; // Because the min / max value are the only information about the matrix if we invert
+    // min and max we need to invert the array
+
+    if (firstX > lastX) {
+      for (let spectrum of z) {
+        spectrum.reverse();
+      }
+    }
+
+    if (firstY > lastY) {
+      z.reverse();
+    }
+
     return {
       z: z,
       minX: Math.min(firstX, lastX),
@@ -1086,8 +1098,9 @@ function createWorker() {
 
 function createTree(jcamp) {
   let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  const _options$flatten = options.flatten,
-        flatten = _options$flatten === void 0 ? false : _options$flatten;
+  const {
+    flatten = false
+  } = options;
 
   if (typeof jcamp !== 'string') {
     throw new TypeError('the JCAMP should be a string');
