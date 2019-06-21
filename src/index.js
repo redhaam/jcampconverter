@@ -517,6 +517,17 @@ function getConverter() {
     const firstY = spectra[0].pageValue;
     const lastY = spectra[ySize - 1].pageValue;
 
+    // Because the min / max value are the only information about the matrix if we invert
+    // min and max we need to invert the array
+    if (firstX > lastX) {
+      for (let spectrum of z) {
+        spectrum.reverse();
+      }
+    }
+    if (firstY > lastY) {
+      z.reverse();
+    }
+
     return {
       z: z,
       minX: Math.min(firstX, lastX),
