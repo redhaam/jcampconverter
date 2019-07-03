@@ -1,6 +1,6 @@
 /**
  * jcampconverter - Parse and convert JCAMP data
- * @version v3.0.3
+ * @version v3.0.4
  * @link https://github.com/cheminfo-js/jcampconverter#readme
  * @license MIT
  */
