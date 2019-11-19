@@ -35,7 +35,7 @@ function getConverter() {
     var start = Date.now();
 
     var ntuples = {};
-    var ldr, dataLabel, dataValue, ldrs;
+    var ldr, canonicDataLabel, dataValue, ldrs;
     var position, endLine, infos;
 
     var result = {};
@@ -73,15 +73,15 @@ function getConverter() {
       // This is a new LDR
       position = ldr.indexOf('=');
       if (position > 0) {
-        dataLabel = ldr.substring(0, position);
+        canonicDataLabel = ldr.substring(0, position);
         dataValue = ldr.substring(position + 1).trim();
       } else {
-        dataLabel = ldr;
+        canonicDataLabel = ldr;
         dataValue = '';
       }
-      dataLabel = dataLabel.replace(/[_ -]/g, '').toUpperCase();
+      canonicDataLabel = canonicDataLabel.replace(/[_ -]/g, '').toUpperCase();
 
-      if (dataLabel === 'DATATABLE') {
+      if (canonicDataLabel === 'DATATABLE') {
         endLine = dataValue.indexOf('\n');
         if (endLine === -1) endLine = dataValue.indexOf('\r');
         if (endLine > 0) {
@@ -144,19 +144,19 @@ function getConverter() {
           }
           spectrum.datatable = infos[0];
           if (infos[1] && infos[1].indexOf('PEAKS') > -1) {
-            dataLabel = 'PEAKTABLE';
+            canonicDataLabel = 'PEAKTABLE';
           } else if (
             infos[1] &&
             (infos[1].indexOf('XYDATA') || infos[0].indexOf('++') > 0)
           ) {
-            dataLabel = 'XYDATA';
+            canonicDataLabel = 'XYDATA';
             spectrum.deltaX =
               (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
           }
         }
       }
 
-      if (dataLabel === 'XYDATA') {
+      if (canonicDataLabel === 'XYDATA') {
         if (wantXY) {
           prepareSpectrum(result, spectrum);
           // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
@@ -174,7 +174,7 @@ function getConverter() {
           spectrum = new Spectrum();
         }
         continue;
-      } else if (dataLabel === 'PEAKTABLE') {
+      } else if (canonicDataLabel === 'PEAKTABLE') {
         if (wantXY) {
           prepareSpectrum(result, spectrum);
           parsePeakTable(spectrum, dataValue, result);
@@ -183,7 +183,7 @@ function getConverter() {
         }
         continue;
       }
-      if (dataLabel === 'PEAKASSIGNMENTS') {
+      if (canonicDataLabel === 'PEAKASSIGNMENTS') {
         if (wantXY) {
           if (dataValue.match(/.*(XYA).*/)) {
             // ex: (XYA)
@@ -195,97 +195,100 @@ function getConverter() {
         continue;
       }
 
-      if (dataLabel === 'TITLE') {
+      if (canonicDataLabel === 'TITLE') {
         spectrum.title = dataValue;
-      } else if (dataLabel === 'DATATYPE') {
+      } else if (canonicDataLabel === 'DATATYPE') {
         spectrum.dataType = dataValue;
         if (dataValue.indexOf('nD') > -1) {
           result.twoD = true;
         }
-      } else if (dataLabel === 'NTUPLES') {
+      } else if (canonicDataLabel === 'NTUPLES') {
         if (dataValue.indexOf('nD') > -1) {
           result.twoD = true;
         }
-      } else if (dataLabel === 'XUNITS') {
+      } else if (canonicDataLabel === 'XUNITS') {
         spectrum.xUnit = dataValue;
-      } else if (dataLabel === 'YUNITS') {
+      } else if (canonicDataLabel === 'YUNITS') {
         spectrum.yUnit = dataValue;
-      } else if (dataLabel === 'FIRSTX') {
+      } else if (canonicDataLabel === 'FIRSTX') {
         spectrum.firstX = parseFloat(dataValue);
-      } else if (dataLabel === 'LASTX') {
+      } else if (canonicDataLabel === 'LASTX') {
         spectrum.lastX = parseFloat(dataValue);
-      } else if (dataLabel === 'FIRSTY') {
+      } else if (canonicDataLabel === 'FIRSTY') {
         spectrum.firstY = parseFloat(dataValue);
-      } else if (dataLabel === 'LASTY') {
+      } else if (canonicDataLabel === 'LASTY') {
         spectrum.lastY = parseFloat(dataValue);
-      } else if (dataLabel === 'NPOINTS') {
+      } else if (canonicDataLabel === 'NPOINTS') {
         spectrum.nbPoints = parseFloat(dataValue);
-      } else if (dataLabel === 'XFACTOR') {
+      } else if (canonicDataLabel === 'XFACTOR') {
         spectrum.xFactor = parseFloat(dataValue);
-      } else if (dataLabel === 'YFACTOR') {
+      } else if (canonicDataLabel === 'YFACTOR') {
         spectrum.yFactor = parseFloat(dataValue);
-      } else if (dataLabel === 'MAXX') {
+      } else if (canonicDataLabel === 'MAXX') {
         spectrum.maxX = parseFloat(dataValue);
-      } else if (dataLabel === 'MINX') {
+      } else if (canonicDataLabel === 'MINX') {
         spectrum.minX = parseFloat(dataValue);
-      } else if (dataLabel === 'MAXY') {
+      } else if (canonicDataLabel === 'MAXY') {
         spectrum.maxY = parseFloat(dataValue);
-      } else if (dataLabel === 'MINY') {
+      } else if (canonicDataLabel === 'MINY') {
         spectrum.minY = parseFloat(dataValue);
-      } else if (dataLabel === 'DELTAX') {
+      } else if (canonicDataLabel === 'DELTAX') {
         spectrum.deltaX = parseFloat(dataValue);
-      } else if (dataLabel === '.OBSERVEFREQUENCY' || dataLabel === '$SFO1') {
+      } else if (
+        canonicDataLabel === '.OBSERVEFREQUENCY' ||
+        canonicDataLabel === '$SFO1'
+      ) {
         if (!spectrum.observeFrequency) {
           spectrum.observeFrequency = parseFloat(dataValue);
         }
-      } else if (dataLabel === '.OBSERVENUCLEUS') {
+      } else if (canonicDataLabel === '.OBSERVENUCLEUS') {
         if (!spectrum.xType) {
           result.xType = dataValue.replace(/[^a-zA-Z0-9]/g, '');
         }
-      } else if (dataLabel === '$SFO2') {
+      } else if (canonicDataLabel === '$SFO2') {
         if (!result.indirectFrequency) {
           result.indirectFrequency = parseFloat(dataValue);
         }
-      } else if (dataLabel === '$OFFSET') {
+      } else if (canonicDataLabel === '$OFFSET') {
         // OFFSET for Bruker spectra
         result.shiftOffsetNum = 0;
         if (!spectrum.shiftOffsetVal) {
           spectrum.shiftOffsetVal = parseFloat(dataValue);
         }
-      } else if (dataLabel === '$REFERENCEPOINT') {
+      } else if (canonicDataLabel === '$REFERENCEPOINT') {
         // OFFSET for Varian spectra
         // if we activate this part it does not work for ACD specmanager
-        //         } else if (dataLabel=='.SHIFTREFERENCE') {   // OFFSET FOR Bruker Spectra
+        //         } else if (canonicDataLabel=='.SHIFTREFERENCE') {   // OFFSET FOR Bruker Spectra
         //                 var parts = dataValue.split(/ *, */);
         //                 result.shiftOffsetNum = parseInt(parts[2].trim());
         //                 spectrum.shiftOffsetVal = parseFloat(parts[3].trim());
-      } else if (dataLabel === 'VARNAME') {
+      } else if (canonicDataLabel === 'VARNAME') {
         ntuples.varname = dataValue.split(ntuplesSeparator);
-      } else if (dataLabel === 'SYMBOL') {
+      } else if (canonicDataLabel === 'SYMBOL') {
         ntuples.symbol = dataValue.split(ntuplesSeparator);
-      } else if (dataLabel === 'VARTYPE') {
+      } else if (canonicDataLabel === 'VARTYPE') {
         ntuples.vartype = dataValue.split(ntuplesSeparator);
-      } else if (dataLabel === 'VARFORM') {
+      } else if (canonicDataLabel === 'VARFORM') {
         ntuples.varform = dataValue.split(ntuplesSeparator);
-      } else if (dataLabel === 'VARDIM') {
+      } else if (canonicDataLabel === 'VARDIM') {
         ntuples.vardim = convertToFloatArray(dataValue.split(ntuplesSeparator));
-      } else if (dataLabel === 'UNITS') {
+      } else if (canonicDataLabel === 'UNITS') {
         ntuples.units = dataValue.split(ntuplesSeparator);
-      } else if (dataLabel === 'FACTOR') {
+      } else if (canonicDataLabel === 'FACTOR') {
         ntuples.factor = convertToFloatArray(dataValue.split(ntuplesSeparator));
-      } else if (dataLabel === 'FIRST') {
+      } else if (canonicDataLabel === 'FIRST') {
         ntuples.first = convertToFloatArray(dataValue.split(ntuplesSeparator));
-      } else if (dataLabel === 'LAST') {
+      } else if (canonicDataLabel === 'LAST') {
         ntuples.last = convertToFloatArray(dataValue.split(ntuplesSeparator));
-      } else if (dataLabel === 'MIN') {
+      } else if (canonicDataLabel === 'MIN') {
         ntuples.min = convertToFloatArray(dataValue.split(ntuplesSeparator));
-      } else if (dataLabel === 'MAX') {
+      } else if (canonicDataLabel === 'MAX') {
         ntuples.max = convertToFloatArray(dataValue.split(ntuplesSeparator));
-      } else if (dataLabel === '.NUCLEUS') {
+      } else if (canonicDataLabel === '.NUCLEUS') {
         if (result.twoD) {
           result.yType = dataValue.split(ntuplesSeparator)[0];
         }
-      } else if (dataLabel === 'PAGE') {
+      } else if (canonicDataLabel === 'PAGE') {
         spectrum.page = dataValue.trim();
         spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ''));
         spectrum.pageSymbol = spectrum.page.replace(/[=].*/, '');
@@ -297,21 +300,21 @@ function getConverter() {
         if (result.indirectFrequency && unit !== 'PPM') {
           spectrum.pageValue /= result.indirectFrequency;
         }
-      } else if (dataLabel === 'RETENTIONTIME') {
+      } else if (canonicDataLabel === 'RETENTIONTIME') {
         spectrum.pageValue = parseFloat(dataValue);
-      } else if (isMSField(dataLabel)) {
-        spectrum[convertMSFieldToLabel(dataLabel)] = dataValue;
-      } else if (dataLabel === 'SAMPLEDESCRIPTION') {
+      } else if (isMSField(canonicDataLabel)) {
+        spectrum[convertMSFieldToLabel(canonicDataLabel)] = dataValue;
+      } else if (canonicDataLabel === 'SAMPLEDESCRIPTION') {
         spectrum.sampleDescription = dataValue;
       }
-      if (dataLabel.match(options.keepRecordsRegExp)) {
-        if (result.info[dataLabel]) {
-          if (!Array.isArray(result.info[dataLabel])) {
-            result.info[dataLabel] = [result.info[dataLabel]];
+      if (canonicDataLabel.match(options.keepRecordsRegExp)) {
+        if (result.info[canonicDataLabel]) {
+          if (!Array.isArray(result.info[canonicDataLabel])) {
+            result.info[canonicDataLabel] = [result.info[canonicDataLabel]];
           }
-          result.info[dataLabel].push(dataValue.trim());
+          result.info[canonicDataLabel].push(dataValue.trim());
         } else {
-          result.info[dataLabel] = dataValue.trim();
+          result.info[canonicDataLabel] = dataValue.trim();
         }
       }
     }
@@ -406,8 +409,8 @@ function getConverter() {
     return value.toLowerCase().replace(/[^a-z0-9]/g, '');
   }
 
-  function isMSField(dataLabel) {
-    return GC_MS_FIELDS.indexOf(dataLabel) !== -1;
+  function isMSField(canonicDataLabel) {
+    return GC_MS_FIELDS.indexOf(canonicDataLabel) !== -1;
   }
 
   function complexChromatogram(result) {
@@ -1049,8 +1052,8 @@ function createTree(jcamp, options = {}) {
       current.jcamp += `${line}\n`;
       var match = labelLine.match(/^##(.*?)=(.+)/);
       if (match) {
-        var dataLabel = match[1].replace(/[ _-]/g, '').toUpperCase();
-        if (dataLabel === 'DATATYPE') {
+        var canonicDataLabel = match[1].replace(/[ _-]/g, '').toUpperCase();
+        if (canonicDataLabel === 'DATATYPE') {
           current.dataType = match[2].trim();
         }
       }
