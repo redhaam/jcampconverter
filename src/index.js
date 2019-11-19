@@ -17,6 +17,7 @@ function getConverter() {
 
   const defaultOptions = {
     keepRecordsRegExp: /^$/,
+    canonicDataLabels: true,
     xy: false,
     withoutXY: false,
     chromatogram: false,
@@ -35,7 +36,7 @@ function getConverter() {
     let start = Date.now();
 
     let ntuples = {};
-    let ldr, canonicDataLabel, dataValue, ldrs;
+    let ldr, dataValue, ldrs;
     let position, endLine, infos;
 
     let result = {};
@@ -69,17 +70,18 @@ function getConverter() {
     if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, '');
 
     for (let i = 0; i < ldrs.length; i++) {
+      let dataLabel;
       ldr = ldrs[i];
       // This is a new LDR
       position = ldr.indexOf('=');
       if (position > 0) {
-        canonicDataLabel = ldr.substring(0, position);
+        dataLabel = ldr.substring(0, position);
         dataValue = ldr.substring(position + 1).trim();
       } else {
-        canonicDataLabel = ldr;
+        dataLabel = ldr;
         dataValue = '';
       }
-      canonicDataLabel = canonicDataLabel.replace(/[_ -]/g, '').toUpperCase();
+      let canonicDataLabel = dataLabel.replace(/[_ -]/g, '').toUpperCase();
 
       if (canonicDataLabel === 'DATATABLE') {
         endLine = dataValue.indexOf('\n');
@@ -308,13 +310,14 @@ function getConverter() {
         spectrum.sampleDescription = dataValue;
       }
       if (canonicDataLabel.match(options.keepRecordsRegExp)) {
-        if (result.info[canonicDataLabel]) {
-          if (!Array.isArray(result.info[canonicDataLabel])) {
-            result.info[canonicDataLabel] = [result.info[canonicDataLabel]];
+        let label = options.canonicDataLabels ? canonicDataLabel : dataLabel;
+        if (result.info[label]) {
+          if (!Array.isArray(result.info[label])) {
+            result.info[label] = [result.info[label]];
           }
-          result.info[canonicDataLabel].push(dataValue.trim());
+          result.info[label].push(dataValue.trim());
         } else {
-          result.info[canonicDataLabel] = dataValue.trim();
+          result.info[label] = dataValue.trim();
         }
       }
     }
