@@ -1,13 +1,13 @@
 'use strict';
 
-const Converter = require('..');
-
 const fs = require('fs');
 
+const Converter = require('..');
+
 describe('Test JCAMP converter of NMR with peak assignments', () => {
-  const target = fs.readFileSync(
-    `${__dirname}/data/misc/nmr_13c_dept.dx`
-  ).toString();
+  const target = fs
+    .readFileSync(`${__dirname}/data/misc/nmr_13c_dept.dx`)
+    .toString();
 
   const result = Converter.convert(target);
 

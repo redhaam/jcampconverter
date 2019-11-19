@@ -1,16 +1,18 @@
 'use strict';
 
-const Converter = require('..');
-
 const fs = require('fs');
 
+const Converter = require('..');
+
 const gcms = fs.readFileSync(`${__dirname}/data/misc/gcms.jdx`).toString();
-const chromTest = fs.readFileSync(`${__dirname}/data/misc/chrom.jdx`).toString();
+const chromTest = fs
+  .readFileSync(`${__dirname}/data/misc/chrom.jdx`)
+  .toString();
 
 describe('Test JCAMP converter of GCMS', () => {
   it('complex chromatogram', () => {
-    var result = Converter.convert(gcms, { chromatogram: true });
-    var chrom = result.chromatogram;
+    let result = Converter.convert(gcms, { chromatogram: true });
+    let chrom = result.chromatogram;
 
     // Check content
     expect(chrom.times).toBeInstanceOf(Array);
@@ -23,8 +25,8 @@ describe('Test JCAMP converter of GCMS', () => {
   });
 
   it('simple chromatogram', () => {
-    var result = Converter.convert(chromTest, { chromatogram: true });
-    var chrom = result.chromatogram;
+    let result = Converter.convert(chromTest, { chromatogram: true });
+    let chrom = result.chromatogram;
 
     // Check content
     expect(chrom.times).toBeInstanceOf(Array);

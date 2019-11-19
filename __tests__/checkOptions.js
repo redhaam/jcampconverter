@@ -1,14 +1,14 @@
 'use strict';
 
-const Converter = require('..');
-
 const fs = require('fs');
+
+const Converter = require('..');
 
 describe('Test JCAMP options', () => {
   it('1H NMR ethyl vinyl ether', () => {
-    var result = Converter.convert(
+    let result = Converter.convert(
       fs.readFileSync(`${__dirname}/data/ethylvinylether/1h.jdx`).toString(),
-      { keepRecordsRegExp: /^.+$/ }
+      { keepRecordsRegExp: /^.+$/ },
     );
 
     expect(Object.keys(result.info)).toHaveLength(385);
@@ -40,7 +40,7 @@ describe('Test JCAMP converter Options for NMR 13C_DEPT', () => {
     .toString();
 
   const options = {
-    profiling: true
+    profiling: true,
   };
 
   it('disables profiling by default', () => {
@@ -59,19 +59,19 @@ describe('Test JCAMP converter Options', () => {
     '/misc/chrom.jdx',
     {
       profiling: true,
-      chromatogram: true
+      chromatogram: true,
     },
     'Finished chromatogram calculation',
-    'chrom'
+    'chrom',
   );
 
   checkOptions(
     '/acd/test1_cosy.jdx',
     {
       profiling: true,
-      xy: true
+      xy: true,
     },
     'Finished countour plot calculation',
-    '2D'
+    '2D',
   );
 });
