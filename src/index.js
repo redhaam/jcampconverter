@@ -18,6 +18,7 @@ function getConverter() {
   const defaultOptions = {
     keepRecordsRegExp: /^$/,
     canonicDataLabels: true,
+    dynamicTyping: false,
     xy: false,
     withoutXY: false,
     chromatogram: false,
@@ -311,13 +312,17 @@ function getConverter() {
       }
       if (canonicDataLabel.match(options.keepRecordsRegExp)) {
         let label = options.canonicDataLabels ? canonicDataLabel : dataLabel;
+        let value = dataValue.trim();
+        if (options.dynamicTyping && !isNaN(value)) {
+          value = Number(value);
+        }
         if (result.info[label]) {
           if (!Array.isArray(result.info[label])) {
             result.info[label] = [result.info[label]];
           }
-          result.info[label].push(dataValue.trim());
+          result.info[label].push(value);
         } else {
-          result.info[label] = dataValue.trim();
+          result.info[label] = value;
         }
       }
     }
