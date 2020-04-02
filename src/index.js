@@ -914,10 +914,7 @@ function getConverter() {
     let lines = value.split(/,? *,?[;\r\n]+ */);
 
     for (let i = 1; i < lines.length; i++) {
-      values = lines[i]
-        .trim()
-        .replace(removeSymbolRegExp, '')
-        .split(',');
+      values = lines[i].trim().replace(removeSymbolRegExp, '').split(',');
       currentData.push(parseFloat(values[0]));
       currentData.push(parseFloat(values[1]));
     }
@@ -976,7 +973,7 @@ function postToWorker(input, options) {
   if (!worker) {
     createWorker();
   }
-  return new Promise(function(resolve) {
+  return new Promise(function (resolve) {
     let stamp = `${Date.now()}${Math.random()}`;
     stamps[stamp] = resolve;
     worker.postMessage(
@@ -1000,7 +997,7 @@ function createWorker() {
   );
   worker = new Worker(workerURL);
   URL.revokeObjectURL(workerURL);
-  worker.addEventListener('message', function(event) {
+  worker.addEventListener('message', function (event) {
     let data = JSON.parse(event.data);
     let stamp = data.stamp;
     if (stamps[stamp]) {
