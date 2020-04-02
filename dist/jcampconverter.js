@@ -1,6 +1,6 @@
 /**
  * jcampconverter - Parse and convert JCAMP data
- * @version v3.0.3
+ * @version v4.1.0
  * @link https://github.com/cheminfo-js/jcampconverter#readme
  * @license MIT
  */
@@ -113,7 +113,7 @@ function getConverter() {
   const GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
 
   function convertToFloatArray(stringArray) {
-    var floatArray = [];
+    let floatArray = [];
 
     for (let i = 0; i < stringArray.length; i++) {
       floatArray.push(parseFloat(stringArray[i]));
@@ -126,6 +126,8 @@ function getConverter() {
 
   const defaultOptions = {
     keepRecordsRegExp: /^$/,
+    canonicDataLabels: true,
+    dynamicTyping: false,
     xy: false,
     withoutXY: false,
     chromatogram: false,
@@ -138,18 +140,18 @@ function getConverter() {
 
   function convert(jcamp, options) {
     options = Object.assign({}, defaultOptions, options);
-    var wantXY = !options.withoutXY;
-    var start = Date.now();
-    var ntuples = {};
-    var ldr, dataLabel, dataValue, ldrs;
-    var position, endLine, infos;
-    var result = {};
+    let wantXY = !options.withoutXY;
+    let start = Date.now();
+    let ntuples = {};
+    let ldr, dataValue, ldrs;
+    let position, endLine, infos;
+    let result = {};
     result.profiling = options.profiling ? [] : false;
     result.logs = [];
-    var spectra = [];
+    let spectra = [];
     result.spectra = spectra;
     result.info = {};
-    var spectrum = new Spectrum();
+    let spectrum = new Spectrum();
 
     if (!(typeof jcamp === 'string')) {
       throw new TypeError('the JCAMP should be a string');
@@ -174,6 +176,7 @@ function getConverter() {
     if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, '');
 
     for (let i = 0; i < ldrs.length; i++) {
+      let dataLabel;
       ldr = ldrs[i]; // This is a new LDR
 
       position = ldr.indexOf('=');
@@ -186,22 +189,22 @@ function getConverter() {
         dataValue = '';
       }
 
-      dataLabel = dataLabel.replace(/[_ -]/g, '').toUpperCase();
+      let canonicDataLabel = dataLabel.replace(/[_ -]/g, '').toUpperCase();
 
-      if (dataLabel === 'DATATABLE') {
+      if (canonicDataLabel === 'DATATABLE') {
         endLine = dataValue.indexOf('\n');
         if (endLine === -1) endLine = dataValue.indexOf('\r');
 
         if (endLine > 0) {
-          var xIndex = -1;
-          var yIndex = -1; // ##DATA TABLE= (X++(I..I)), XYDATA
+          let xIndex = -1;
+          let yIndex = -1; // ##DATA TABLE= (X++(I..I)), XYDATA
           // We need to find the variables
 
           infos = dataValue.substring(0, endLine).split(/[ ,;\t]+/);
 
           if (infos[0].indexOf('++') > 0) {
-            var firstVariable = infos[0].replace(/.*\(([a-zA-Z0-9]+)\+\+.*/, '$1');
-            var secondVariable = infos[0].replace(/.*\.\.([a-zA-Z0-9]+).*/, '$1');
+            let firstVariable = infos[0].replace(/.*\(([a-zA-Z0-9]+)\+\+.*/, '$1');
+            let secondVariable = infos[0].replace(/.*\.\.([a-zA-Z0-9]+).*/, '$1');
             xIndex = ntuples.symbol.indexOf(firstVariable);
             yIndex = ntuples.symbol.indexOf(secondVariable);
           }
@@ -256,15 +259,15 @@ function getConverter() {
           spectrum.datatable = infos[0];
 
           if (infos[1] && infos[1].indexOf('PEAKS') > -1) {
-            dataLabel = 'PEAKTABLE';
+            canonicDataLabel = 'PEAKTABLE';
           } else if (infos[1] && (infos[1].indexOf('XYDATA') || infos[0].indexOf('++') > 0)) {
-            dataLabel = 'XYDATA';
+            canonicDataLabel = 'XYDATA';
             spectrum.deltaX = (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
           }
         }
       }
 
-      if (dataLabel === 'XYDATA') {
+      if (canonicDataLabel === 'XYDATA') {
         if (wantXY) {
           prepareSpectrum(result, spectrum); // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
 
@@ -284,7 +287,7 @@ function getConverter() {
         }
 
         continue;
-      } else if (dataLabel === 'PEAKTABLE') {
+      } else if (canonicDataLabel === 'PEAKTABLE') {
         if (wantXY) {
           prepareSpectrum(result, spectrum);
           parsePeakTable(spectrum, dataValue, result);
@@ -295,7 +298,7 @@ function getConverter() {
         continue;
       }
 
-      if (dataLabel === 'PEAKASSIGNMENTS') {
+      if (canonicDataLabel === 'PEAKASSIGNMENTS') {
         if (wantXY) {
           if (dataValue.match(/.*(XYA).*/)) {
             // ex: (XYA)
@@ -309,103 +312,103 @@ function getConverter() {
         continue;
       }
 
-      if (dataLabel === 'TITLE') {
+      if (canonicDataLabel === 'TITLE') {
         spectrum.title = dataValue;
-      } else if (dataLabel === 'DATATYPE') {
+      } else if (canonicDataLabel === 'DATATYPE') {
         spectrum.dataType = dataValue;
 
         if (dataValue.indexOf('nD') > -1) {
           result.twoD = true;
         }
-      } else if (dataLabel === 'NTUPLES') {
+      } else if (canonicDataLabel === 'NTUPLES') {
         if (dataValue.indexOf('nD') > -1) {
           result.twoD = true;
         }
-      } else if (dataLabel === 'XUNITS') {
+      } else if (canonicDataLabel === 'XUNITS') {
         spectrum.xUnit = dataValue;
-      } else if (dataLabel === 'YUNITS') {
+      } else if (canonicDataLabel === 'YUNITS') {
         spectrum.yUnit = dataValue;
-      } else if (dataLabel === 'FIRSTX') {
+      } else if (canonicDataLabel === 'FIRSTX') {
         spectrum.firstX = parseFloat(dataValue);
-      } else if (dataLabel === 'LASTX') {
+      } else if (canonicDataLabel === 'LASTX') {
         spectrum.lastX = parseFloat(dataValue);
-      } else if (dataLabel === 'FIRSTY') {
+      } else if (canonicDataLabel === 'FIRSTY') {
         spectrum.firstY = parseFloat(dataValue);
-      } else if (dataLabel === 'LASTY') {
+      } else if (canonicDataLabel === 'LASTY') {
         spectrum.lastY = parseFloat(dataValue);
-      } else if (dataLabel === 'NPOINTS') {
+      } else if (canonicDataLabel === 'NPOINTS') {
         spectrum.nbPoints = parseFloat(dataValue);
-      } else if (dataLabel === 'XFACTOR') {
+      } else if (canonicDataLabel === 'XFACTOR') {
         spectrum.xFactor = parseFloat(dataValue);
-      } else if (dataLabel === 'YFACTOR') {
+      } else if (canonicDataLabel === 'YFACTOR') {
         spectrum.yFactor = parseFloat(dataValue);
-      } else if (dataLabel === 'MAXX') {
+      } else if (canonicDataLabel === 'MAXX') {
         spectrum.maxX = parseFloat(dataValue);
-      } else if (dataLabel === 'MINX') {
+      } else if (canonicDataLabel === 'MINX') {
         spectrum.minX = parseFloat(dataValue);
-      } else if (dataLabel === 'MAXY') {
+      } else if (canonicDataLabel === 'MAXY') {
         spectrum.maxY = parseFloat(dataValue);
-      } else if (dataLabel === 'MINY') {
+      } else if (canonicDataLabel === 'MINY') {
         spectrum.minY = parseFloat(dataValue);
-      } else if (dataLabel === 'DELTAX') {
+      } else if (canonicDataLabel === 'DELTAX') {
         spectrum.deltaX = parseFloat(dataValue);
-      } else if (dataLabel === '.OBSERVEFREQUENCY' || dataLabel === '$SFO1') {
+      } else if (canonicDataLabel === '.OBSERVEFREQUENCY' || canonicDataLabel === '$SFO1') {
         if (!spectrum.observeFrequency) {
           spectrum.observeFrequency = parseFloat(dataValue);
         }
-      } else if (dataLabel === '.OBSERVENUCLEUS') {
+      } else if (canonicDataLabel === '.OBSERVENUCLEUS') {
         if (!spectrum.xType) {
           result.xType = dataValue.replace(/[^a-zA-Z0-9]/g, '');
         }
-      } else if (dataLabel === '$SFO2') {
+      } else if (canonicDataLabel === '$SFO2') {
         if (!result.indirectFrequency) {
           result.indirectFrequency = parseFloat(dataValue);
         }
-      } else if (dataLabel === '$OFFSET') {
+      } else if (canonicDataLabel === '$OFFSET') {
         // OFFSET for Bruker spectra
         result.shiftOffsetNum = 0;
 
         if (!spectrum.shiftOffsetVal) {
           spectrum.shiftOffsetVal = parseFloat(dataValue);
         }
-      } else if (dataLabel === '$REFERENCEPOINT') {// OFFSET for Varian spectra
+      } else if (canonicDataLabel === '$REFERENCEPOINT') {// OFFSET for Varian spectra
         // if we activate this part it does not work for ACD specmanager
-        //         } else if (dataLabel=='.SHIFTREFERENCE') {   // OFFSET FOR Bruker Spectra
+        //         } else if (canonicDataLabel=='.SHIFTREFERENCE') {   // OFFSET FOR Bruker Spectra
         //                 var parts = dataValue.split(/ *, */);
         //                 result.shiftOffsetNum = parseInt(parts[2].trim());
         //                 spectrum.shiftOffsetVal = parseFloat(parts[3].trim());
-      } else if (dataLabel === 'VARNAME') {
+      } else if (canonicDataLabel === 'VARNAME') {
         ntuples.varname = dataValue.split(ntuplesSeparator);
-      } else if (dataLabel === 'SYMBOL') {
+      } else if (canonicDataLabel === 'SYMBOL') {
         ntuples.symbol = dataValue.split(ntuplesSeparator);
-      } else if (dataLabel === 'VARTYPE') {
+      } else if (canonicDataLabel === 'VARTYPE') {
         ntuples.vartype = dataValue.split(ntuplesSeparator);
-      } else if (dataLabel === 'VARFORM') {
+      } else if (canonicDataLabel === 'VARFORM') {
         ntuples.varform = dataValue.split(ntuplesSeparator);
-      } else if (dataLabel === 'VARDIM') {
+      } else if (canonicDataLabel === 'VARDIM') {
         ntuples.vardim = convertToFloatArray(dataValue.split(ntuplesSeparator));
-      } else if (dataLabel === 'UNITS') {
+      } else if (canonicDataLabel === 'UNITS') {
         ntuples.units = dataValue.split(ntuplesSeparator);
-      } else if (dataLabel === 'FACTOR') {
+      } else if (canonicDataLabel === 'FACTOR') {
         ntuples.factor = convertToFloatArray(dataValue.split(ntuplesSeparator));
-      } else if (dataLabel === 'FIRST') {
+      } else if (canonicDataLabel === 'FIRST') {
         ntuples.first = convertToFloatArray(dataValue.split(ntuplesSeparator));
-      } else if (dataLabel === 'LAST') {
+      } else if (canonicDataLabel === 'LAST') {
         ntuples.last = convertToFloatArray(dataValue.split(ntuplesSeparator));
-      } else if (dataLabel === 'MIN') {
+      } else if (canonicDataLabel === 'MIN') {
         ntuples.min = convertToFloatArray(dataValue.split(ntuplesSeparator));
-      } else if (dataLabel === 'MAX') {
+      } else if (canonicDataLabel === 'MAX') {
         ntuples.max = convertToFloatArray(dataValue.split(ntuplesSeparator));
-      } else if (dataLabel === '.NUCLEUS') {
+      } else if (canonicDataLabel === '.NUCLEUS') {
         if (result.twoD) {
           result.yType = dataValue.split(ntuplesSeparator)[0];
         }
-      } else if (dataLabel === 'PAGE') {
+      } else if (canonicDataLabel === 'PAGE') {
         spectrum.page = dataValue.trim();
         spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ''));
         spectrum.pageSymbol = spectrum.page.replace(/[=].*/, '');
-        var pageSymbolIndex = ntuples.symbol.indexOf(spectrum.pageSymbol);
-        var unit = '';
+        let pageSymbolIndex = ntuples.symbol.indexOf(spectrum.pageSymbol);
+        let unit = '';
 
         if (ntuples.units && ntuples.units[pageSymbolIndex]) {
           unit = ntuples.units[pageSymbolIndex];
@@ -414,23 +417,30 @@ function getConverter() {
         if (result.indirectFrequency && unit !== 'PPM') {
           spectrum.pageValue /= result.indirectFrequency;
         }
-      } else if (dataLabel === 'RETENTIONTIME') {
+      } else if (canonicDataLabel === 'RETENTIONTIME') {
         spectrum.pageValue = parseFloat(dataValue);
-      } else if (isMSField(dataLabel)) {
-        spectrum[convertMSFieldToLabel(dataLabel)] = dataValue;
-      } else if (dataLabel === 'SAMPLEDESCRIPTION') {
+      } else if (isMSField(canonicDataLabel)) {
+        spectrum[convertMSFieldToLabel(canonicDataLabel)] = dataValue;
+      } else if (canonicDataLabel === 'SAMPLEDESCRIPTION') {
         spectrum.sampleDescription = dataValue;
       }
 
-      if (dataLabel.match(options.keepRecordsRegExp)) {
-        if (result.info[dataLabel]) {
-          if (!Array.isArray(result.info[dataLabel])) {
-            result.info[dataLabel] = [result.info[dataLabel]];
+      if (canonicDataLabel.match(options.keepRecordsRegExp)) {
+        let label = options.canonicDataLabels ? canonicDataLabel : dataLabel;
+        let value = dataValue.trim();
+
+        if (options.dynamicTyping && !isNaN(value)) {
+          value = Number(value);
+        }
+
+        if (result.info[label]) {
+          if (!Array.isArray(result.info[label])) {
+            result.info[label] = [result.info[label]];
           }
 
-          result.info[dataLabel].push(dataValue.trim());
+          result.info[label].push(value);
         } else {
-          result.info[dataLabel] = dataValue.trim();
+          result.info[label] = value;
         }
       }
     }
@@ -443,12 +453,12 @@ function getConverter() {
     }
 
     if (Object.keys(ntuples).length > 0) {
-      var newNtuples = [];
-      var keys = Object.keys(ntuples);
+      let newNtuples = [];
+      let keys = Object.keys(ntuples);
 
       for (let i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        var values = ntuples[key];
+        let key = keys[i];
+        let values = ntuples[key];
 
         for (let j = 0; j < values.length; j++) {
           if (!newNtuples[j]) newNtuples[j] = {};
@@ -486,13 +496,13 @@ function getConverter() {
 
           if (spectrum.data.length > 0) {
             for (let j = 0; j < spectrum.data.length; j++) {
-              var data = spectrum.data[j];
-              var newData = {
+              let data = spectrum.data[j];
+              let newData = {
                 x: new Array(data.length / 2),
                 y: new Array(data.length / 2)
               };
 
-              for (var k = 0; k < data.length; k = k + 2) {
+              for (let k = 0; k < data.length; k = k + 2) {
                 newData.x[k / 2] = data[k];
                 newData.y[k / 2] = data[k + 1];
               }
@@ -534,14 +544,14 @@ function getConverter() {
     return value.toLowerCase().replace(/[^a-z0-9]/g, '');
   }
 
-  function isMSField(dataLabel) {
-    return GC_MS_FIELDS.indexOf(dataLabel) !== -1;
+  function isMSField(canonicDataLabel) {
+    return GC_MS_FIELDS.indexOf(canonicDataLabel) !== -1;
   }
 
   function complexChromatogram(result) {
-    var spectra = result.spectra;
-    var length = spectra.length;
-    var chromatogram = {
+    let spectra = result.spectra;
+    let length = spectra.length;
+    let chromatogram = {
       times: new Array(length),
       series: {
         ms: {
@@ -550,10 +560,10 @@ function getConverter() {
         }
       }
     };
-    var existingGCMSFields = [];
+    let existingGCMSFields = [];
 
     for (let i = 0; i < GC_MS_FIELDS.length; i++) {
-      var label = convertMSFieldToLabel(GC_MS_FIELDS[i]);
+      let label = convertMSFieldToLabel(GC_MS_FIELDS[i]);
 
       if (spectra[0][label]) {
         existingGCMSFields.push(label);
@@ -565,7 +575,7 @@ function getConverter() {
     }
 
     for (let i = 0; i < length; i++) {
-      var spectrum = spectra[i];
+      let spectrum = spectra[i];
       chromatogram.times[i] = spectrum.pageValue;
 
       for (let j = 0; j < existingGCMSFields.length; j++) {
@@ -581,7 +591,7 @@ function getConverter() {
   }
 
   function simpleChromatogram(result) {
-    var data = result.spectra[0].data[0];
+    let data = result.spectra[0].data[0];
     result.chromatogram = {
       times: data.x.slice(),
       series: {
@@ -608,7 +618,7 @@ function getConverter() {
     }
 
     if (spectrum.shiftOffsetVal) {
-      var shift = spectrum.firstX - spectrum.shiftOffsetVal;
+      let shift = spectrum.firstX - spectrum.shiftOffsetVal;
       spectrum.firstX = spectrum.firstX - shift;
       spectrum.lastX = spectrum.lastX - shift;
     }
@@ -616,7 +626,7 @@ function getConverter() {
 
   function getMedian(data) {
     data = data.sort(compareNumbers);
-    var l = data.length;
+    let l = data.length;
     return data[Math.floor(l / 2)];
   }
 
@@ -625,18 +635,18 @@ function getConverter() {
   }
 
   function convertTo3DZ(spectra) {
-    var minZ = spectra[0].data[0][0];
-    var maxZ = minZ;
-    var ySize = spectra.length;
-    var xSize = spectra[0].data[0].length / 2;
-    var z = new Array(ySize);
+    let minZ = spectra[0].data[0][0];
+    let maxZ = minZ;
+    let ySize = spectra.length;
+    let xSize = spectra[0].data[0].length / 2;
+    let z = new Array(ySize);
 
     for (let i = 0; i < ySize; i++) {
       z[i] = new Array(xSize);
-      var xVector = spectra[i].data[0];
+      let xVector = spectra[i].data[0];
 
       for (let j = 0; j < xSize; j++) {
-        var value = xVector[j * 2 + 1];
+        let value = xVector[j * 2 + 1];
         z[i][j] = value;
         if (value < minZ) minZ = value;
         if (value > maxZ) maxZ = value;
@@ -673,7 +683,7 @@ function getConverter() {
   }
 
   function add2D(result, options) {
-    var zData = convertTo3DZ(result.spectra);
+    let zData = convertTo3DZ(result.spectra);
 
     if (!options.noContour) {
       result.contourLines = generateContourLines(zData, options);
@@ -684,21 +694,21 @@ function getConverter() {
   }
 
   function generateContourLines(zData, options) {
-    var noise = zData.noise;
-    var z = zData.z;
-    var povarHeight0, povarHeight1, povarHeight2, povarHeight3;
-    var isOver0, isOver1, isOver2, isOver3;
-    var nbSubSpectra = z.length;
-    var nbPovars = z[0].length;
-    var pAx, pAy, pBx, pBy;
-    var x0 = zData.minX;
-    var xN = zData.maxX;
-    var dx = (xN - x0) / (nbPovars - 1);
-    var y0 = zData.minY;
-    var yN = zData.maxY;
-    var dy = (yN - y0) / (nbSubSpectra - 1);
-    var minZ = zData.minZ;
-    var maxZ = zData.maxZ; // System.out.prvarln('y0 '+y0+' yN '+yN);
+    let noise = zData.noise;
+    let z = zData.z;
+    let povarHeight0, povarHeight1, povarHeight2, povarHeight3;
+    let isOver0, isOver1, isOver2, isOver3;
+    let nbSubSpectra = z.length;
+    let nbPovars = z[0].length;
+    let pAx, pAy, pBx, pBy;
+    let x0 = zData.minX;
+    let xN = zData.maxX;
+    let dx = (xN - x0) / (nbPovars - 1);
+    let y0 = zData.minY;
+    let yN = zData.maxY;
+    let dy = (yN - y0) / (nbSubSpectra - 1);
+    let minZ = zData.minZ;
+    let maxZ = zData.maxZ; // System.out.prvarln('y0 '+y0+' yN '+yN);
     // -------------------------
     // Povars attribution
     //
@@ -709,16 +719,16 @@ function getConverter() {
     //
     // ---------------------d------
 
-    var iter = options.nbContourLevels * 2;
-    var contourLevels = new Array(iter);
-    var lineZValue;
+    let iter = options.nbContourLevels * 2;
+    let contourLevels = new Array(iter);
+    let lineZValue;
 
-    for (var level = 0; level < iter; level++) {
+    for (let level = 0; level < iter; level++) {
       // multiply by 2 for positif and negatif
-      var contourLevel = {};
+      let contourLevel = {};
       contourLevels[level] = contourLevel;
-      var side = level % 2;
-      var factor = (maxZ - options.noiseMultiplier * noise) * Math.exp((level >> 1) - options.nbContourLevels);
+      let side = level % 2;
+      let factor = (maxZ - options.noiseMultiplier * noise) * Math.exp((level >> 1) - options.nbContourLevels);
 
       if (side === 0) {
         lineZValue = factor + options.noiseMultiplier * noise;
@@ -726,16 +736,16 @@ function getConverter() {
         lineZValue = 0 - factor - options.noiseMultiplier * noise;
       }
 
-      var lines = [];
+      let lines = [];
       contourLevel.zValue = lineZValue;
       contourLevel.lines = lines;
       if (lineZValue <= minZ || lineZValue >= maxZ) continue;
 
-      for (var iSubSpectra = 0; iSubSpectra < nbSubSpectra - 1; iSubSpectra++) {
-        var subSpectra = z[iSubSpectra];
-        var subSpectraAfter = z[iSubSpectra + 1];
+      for (let iSubSpectra = 0; iSubSpectra < nbSubSpectra - 1; iSubSpectra++) {
+        let subSpectra = z[iSubSpectra];
+        let subSpectraAfter = z[iSubSpectra + 1];
 
-        for (var povar = 0; povar < nbPovars - 1; povar++) {
+        for (let povar = 0; povar < nbPovars - 1; povar++) {
           povarHeight0 = subSpectra[povar];
           povarHeight1 = subSpectra[povar + 1];
           povarHeight2 = subSpectraAfter[povar];
@@ -828,18 +838,18 @@ function getConverter() {
     // TODO need to deal with result
     //  console.log(value);
     // we check if deltaX is defined otherwise we calculate it
-    var yFactor = spectrum.yFactor;
-    var deltaX = spectrum.deltaX;
+    let yFactor = spectrum.yFactor;
+    let deltaX = spectrum.deltaX;
     spectrum.isXYdata = true; // TODO to be improved using 2 array {x:[], y:[]}
 
-    var currentData = [];
+    let currentData = [];
     spectrum.data = [currentData];
-    var currentX = spectrum.firstX;
-    var currentY = spectrum.firstY; // we skip the first line
+    let currentX = spectrum.firstX;
+    let currentY = spectrum.firstY; // we skip the first line
     //
 
-    var endLine = false;
-    var ascii;
+    let endLine = false;
+    let ascii;
     let i = 0;
 
     for (; i < value.length; i++) {
@@ -853,20 +863,20 @@ function getConverter() {
     } // we proceed taking the i after the first line
 
 
-    var newLine = true;
-    var isDifference = false;
-    var isLastDifference = false;
-    var lastDifference = 0;
-    var isDuplicate = false;
-    var inComment = false;
-    var currentValue = 0; // can be a difference or a duplicate
+    let newLine = true;
+    let isDifference = false;
+    let isLastDifference = false;
+    let lastDifference = 0;
+    let isDuplicate = false;
+    let inComment = false;
+    let currentValue = 0; // can be a difference or a duplicate
 
-    var lastValue = 0; // must be the real last value
+    let lastValue = 0; // must be the real last value
 
-    var isNegative = false;
-    var inValue = false;
-    var skipFirstValue = false;
-    var decimalPosition = 0;
+    let isNegative = false;
+    let inValue = false;
+    let skipFirstValue = false;
+    let decimalPosition = 0;
 
     for (; i <= value.length; i++) {
       if (i === value.length) ascii = 13;else ascii = value.charCodeAt(i);
@@ -918,9 +928,9 @@ function getConverter() {
                   lastValue = isNegative ? 0 - currentValue : currentValue;
                 }
 
-                var duplicate = isDuplicate ? currentValue - 1 : 1;
+                let duplicate = isDuplicate ? currentValue - 1 : 1;
 
-                for (var j = 0; j < duplicate; j++) {
+                for (let j = 0; j < duplicate; j++) {
                   if (isLastDifference) {
                     currentY += lastDifference;
                   } else {
@@ -985,7 +995,7 @@ function getConverter() {
           } else if (ascii === 45) {
             // a "-"
             // check if after there is a number, decimal or comma
-            var ascii2 = value.charCodeAt(i + 1);
+            let ascii2 = value.charCodeAt(i + 1);
 
             if (ascii2 >= 48 && ascii2 <= 57 || ascii2 === 44 || ascii2 === 46) {
               inValue = true;
@@ -1004,12 +1014,12 @@ function getConverter() {
   }
 
   function parseXYA(spectrum, value) {
-    var removeSymbolRegExp = /(\(+|\)+|<+|>+|\s+)/g;
+    let removeSymbolRegExp = /(\(+|\)+|<+|>+|\s+)/g;
     spectrum.isXYAdata = true;
-    var values;
-    var currentData = [];
+    let values;
+    let currentData = [];
     spectrum.data = [currentData];
-    var lines = value.split(/,? *,?[;\r\n]+ */);
+    let lines = value.split(/,? *,?[;\r\n]+ */);
 
     for (let i = 1; i < lines.length; i++) {
       values = lines[i].trim().replace(removeSymbolRegExp, '').split(',');
@@ -1019,14 +1029,14 @@ function getConverter() {
   }
 
   function parsePeakTable(spectrum, value, result) {
-    var removeCommentRegExp = /\$\$.*/;
-    var peakTableSplitRegExp = /[,\t ]+/;
+    let removeCommentRegExp = /\$\$.*/;
+    let peakTableSplitRegExp = /[,\t ]+/;
     spectrum.isPeaktable = true;
-    var values;
-    var currentData = [];
+    let values;
+    let currentData = [];
     spectrum.data = [currentData]; // counts for around 20% of the time
 
-    var lines = value.split(/,? *,?[;\r\n]+ */);
+    let lines = value.split(/,? *,?[;\r\n]+ */);
 
     for (let i = 1; i < lines.length; i++) {
       values = lines[i].trim().replace(removeCommentRegExp, '').split(peakTableSplitRegExp);
@@ -1046,7 +1056,7 @@ function getConverter() {
   return convert;
 }
 
-var convert = getConverter();
+let convert = getConverter();
 
 function JcampConverter(input, options, useWorker) {
   if (typeof options === 'boolean') {
@@ -1061,8 +1071,8 @@ function JcampConverter(input, options, useWorker) {
   }
 }
 
-var stamps = {};
-var worker;
+let stamps = {};
+let worker;
 
 function postToWorker(input, options) {
   if (!worker) {
@@ -1070,7 +1080,7 @@ function postToWorker(input, options) {
   }
 
   return new Promise(function (resolve) {
-    var stamp = "".concat(Date.now()).concat(Math.random());
+    let stamp = "".concat(Date.now()).concat(Math.random());
     stamps[stamp] = resolve;
     worker.postMessage(JSON.stringify({
       stamp: stamp,
@@ -1081,14 +1091,14 @@ function postToWorker(input, options) {
 }
 
 function createWorker() {
-  var workerURL = URL.createObjectURL(new Blob(["var getConverter =".concat(getConverter.toString(), ";var convert = getConverter(); onmessage = function (event) { var data = JSON.parse(event.data); postMessage(JSON.stringify({stamp: data.stamp, output: convert(data.input, data.options)})); };")], {
+  let workerURL = URL.createObjectURL(new Blob(["var getConverter =".concat(getConverter.toString(), ";var convert = getConverter(); onmessage = function (event) { var data = JSON.parse(event.data); postMessage(JSON.stringify({stamp: data.stamp, output: convert(data.input, data.options)})); };")], {
     type: 'application/javascript'
   }));
   worker = new Worker(workerURL);
   URL.revokeObjectURL(workerURL);
   worker.addEventListener('message', function (event) {
-    var data = JSON.parse(event.data);
-    var stamp = data.stamp;
+    let data = JSON.parse(event.data);
+    let stamp = data.stamp;
 
     if (stamps[stamp]) {
       stamps[stamp](data.output);
@@ -1114,7 +1124,7 @@ function createTree(jcamp) {
   let ntupleLevel = 0;
   let spaces = jcamp.includes('## ');
 
-  for (var i = 0; i < lines.length; i++) {
+  for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
     let labelLine = spaces ? line.replace(/ /g, '') : line;
 
@@ -1142,7 +1152,7 @@ function createTree(jcamp) {
       flat.push(current);
     } else if (labelLine.substring(0, 5) === '##END' && ntupleLevel === 0) {
       current.jcamp += "".concat(line, "\n");
-      var finished = stack.pop();
+      let finished = stack.pop();
 
       if (stack.length !== 0) {
         current = stack[stack.length - 1];
@@ -1153,12 +1163,12 @@ function createTree(jcamp) {
       }
     } else if (current && current.jcamp) {
       current.jcamp += "".concat(line, "\n");
-      var match = labelLine.match(/^##(.*?)=(.+)/);
+      let match = labelLine.match(/^##(.*?)=(.+)/);
 
       if (match) {
-        var dataLabel = match[1].replace(/[ _-]/g, '').toUpperCase();
+        let canonicDataLabel = match[1].replace(/[ _-]/g, '').toUpperCase();
 
-        if (dataLabel === 'DATATYPE') {
+        if (canonicDataLabel === 'DATATYPE') {
           current.dataType = match[2].trim();
         }
       }

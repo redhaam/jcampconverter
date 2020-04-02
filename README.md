@@ -1,11 +1,11 @@
 # JCAMP converter
 
-  [![NPM version][npm-image]][npm-url]
-  [![build status][travis-image]][travis-url]
-  [![Test coverage][codecov-image]][codecov-url]
-  [![David deps][david-image]][david-url]
-  [![npm download][download-image]][download-url]
-  
+[![NPM version][npm-image]][npm-url]
+[![build status][travis-image]][travis-url]
+[![Test coverage][codecov-image]][codecov-url]
+[![David deps][david-image]][david-url]
+[![npm download][download-image]][download-url]
+
 Parse and convert JCAMP data
 
 ## Installation
@@ -25,32 +25,37 @@ Parse and convert JCAMP data
 Converts the `jcamp` using `options`.  
 Returns an object with information about the converted file and uncompressed spectra data.
 
-__Arguments__
+**Arguments**
 
-* `jcamp` - String containing the JCAMP data
-* `options` - Object with options to pass to the converter
-* `useWorker` - Browser only: convert in a web worker (default: false). If this option is set to true, it will return a [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+- `jcamp` - String containing the JCAMP data
+- `options` - Object with options to pass to the converter
+- `useWorker` - Browser only: convert in a web worker (default: false). If this option is set to true, it will return a [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
-__Options__
+**Options**
 
-* keepRecordsRegExp - regexp to select which records should be placed in the info field. By default: :/^$/} (nothing is kept)
-* xy - instead of creating a 1D array containing [x1,y1,x2,y2, ...] create an object: {x:[], y:[]}
-* withoutXY - do not parse XYDATA or PEAKTABLE fields. Useful to only extract metadata fields (combine this option with `keepRecordsRegExp`)
-* chromatogram - use the new GC/MS data format output (default: false)
+- keepRecordsRegExp - regexp to select which records should be placed in the info field. By default: :/^\$/} (nothing is kept)
+- xy - instead of creating a 1D array containing [x1,y1,x2,y2, ...] create an object: {x:[], y:[]}
+- withoutXY - do not parse XYDATA or PEAKTABLE fields. Useful to only extract metadata fields (combine this option with `keepRecordsRegExp`)
+- chromatogram - use the new GC/MS data format output (default: false)
+- canonicDataLabels - canonize data labels (uppercase) (default: true).
+- dynamicTyping - When parsing field convert to number if a number
 
 2D NMR options:
-* noContour - if true, the contour levels will not be generated. Instead the raw data will be available in `result.minMax.z` (default: false)
-* nbContourLevels - number of contour levels to use in each positive and negative sides (default: 7)
-* noiseMultiplier - default: 5
-* keepSpectra - Generate array for 2D NMR spectra (default: false)
+
+- noContour - if true, the contour levels will not be generated. Instead the raw data will be available in `result.minMax.z` (default: false)
+- nbContourLevels - number of contour levels to use in each positive and negative sides (default: 7)
+- noiseMultiplier - default: 5
+- keepSpectra - Generate array for 2D NMR spectra (default: false)
 
 ### Use as a module
 
 #### Node.JS
 
 ```javascript
-var converter = require('jcampconverter');
-var jcamp = require('fs').readFileSync('path/to/jcamp.dx').toString();
+var converter = require("jcampconverter");
+var jcamp = require("fs")
+  .readFileSync("path/to/jcamp.dx")
+  .toString();
 
 var result = converter.convert(jcamp);
 ```
@@ -58,11 +63,11 @@ var result = converter.convert(jcamp);
 #### AMD
 
 ```javascript
-require(['jcampconverter'], function(JcampConverter) {
-    // Use the worker
-    JcampConverter.convert(jcamp, true).then(function (result) {
-        // Do something with result
-    });
+require(["jcampconverter"], function(JcampConverter) {
+  // Use the worker
+  JcampConverter.convert(jcamp, true).then(function(result) {
+    // Do something with result
+  });
 });
 ```
 
