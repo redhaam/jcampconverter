@@ -973,7 +973,7 @@ function postToWorker(input, options) {
   if (!worker) {
     createWorker();
   }
-  return new Promise(function(resolve) {
+  return new Promise(function (resolve) {
     let stamp = `${Date.now()}${Math.random()}`;
     stamps[stamp] = resolve;
     worker.postMessage(
@@ -997,7 +997,7 @@ function createWorker() {
   );
   worker = new Worker(workerURL);
   URL.revokeObjectURL(workerURL);
-  worker.addEventListener('message', function(event) {
+  worker.addEventListener('message', function (event) {
     let data = JSON.parse(event.data);
     let stamp = data.stamp;
     if (stamps[stamp]) {
