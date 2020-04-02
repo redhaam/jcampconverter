@@ -1,34 +1,34 @@
 'use strict';
 
-const Converter = require('..');
-
 const fs = require('fs');
 
+const Converter = require('..');
+
 const options = {
-  fastParse: true
+  fastParse: true,
 };
-var result = Converter.convert(
+let result = Converter.convert(
   fs.readFileSync(`${__dirname}/data/compression/jcamp-fix.dx`).toString(),
-  options
+  options,
 );
-var result2 = Converter.convert(
+let result2 = Converter.convert(
   fs.readFileSync(`${__dirname}/data/compression/jcamp-packed.dx`).toString(),
-  options
+  options,
 );
-var result3 = Converter.convert(
+let result3 = Converter.convert(
   fs.readFileSync(`${__dirname}/data/compression/jcamp-packed.dx`).toString(),
-  options
+  options,
 );
-var result4 = Converter.convert(
+let result4 = Converter.convert(
   fs.readFileSync(`${__dirname}/data/compression/jcamp-difdup.dx`).toString(),
-  options
+  options,
 );
-var result5 = Converter.convert(
-  fs.readFileSync(`${__dirname}/data/compression/jcamp-difdup.dx`).toString()
+let result5 = Converter.convert(
+  fs.readFileSync(`${__dirname}/data/compression/jcamp-difdup.dx`).toString(),
 );
 
 describe('Test fastParseXYData', () => {
-  it('It should yield exactly the same data', () => {
+  it('should yield exactly the same data', () => {
     expect(result.spectra).toStrictEqual(result2.spectra);
     expect(result.spectra).toStrictEqual(result3.spectra);
     expect(result.spectra).toStrictEqual(result4.spectra);

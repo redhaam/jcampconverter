@@ -6,7 +6,7 @@ function getConverter() {
   const GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
 
   function convertToFloatArray(stringArray) {
-    var floatArray = [];
+    let floatArray = [];
     for (let i = 0; i < stringArray.length; i++) {
       floatArray.push(parseFloat(stringArray[i]));
     }
@@ -24,27 +24,27 @@ function getConverter() {
     noContour: false,
     nbContourLevels: 7,
     noiseMultiplier: 5,
-    profiling: false
+    profiling: false,
   };
 
   function convert(jcamp, options) {
     options = Object.assign({}, defaultOptions, options);
 
-    var wantXY = !options.withoutXY;
+    let wantXY = !options.withoutXY;
 
-    var start = Date.now();
+    let start = Date.now();
 
-    var ntuples = {};
-    var ldr, dataLabel, dataValue, ldrs;
-    var position, endLine, infos;
+    let ntuples = {};
+    let ldr, dataLabel, dataValue, ldrs;
+    let position, endLine, infos;
 
-    var result = {};
+    let result = {};
     result.profiling = options.profiling ? [] : false;
     result.logs = [];
-    var spectra = [];
+    let spectra = [];
     result.spectra = spectra;
     result.info = {};
-    var spectrum = new Spectrum();
+    let spectrum = new Spectrum();
 
     if (!(typeof jcamp === 'string')) {
       throw new TypeError('the JCAMP should be a string');
@@ -53,7 +53,7 @@ function getConverter() {
     if (result.profiling) {
       result.profiling.push({
         action: 'Before split to LDRS',
-        time: Date.now() - start
+        time: Date.now() - start,
       });
     }
 
@@ -62,7 +62,7 @@ function getConverter() {
     if (result.profiling) {
       result.profiling.push({
         action: 'Split to LDRS',
-        time: Date.now() - start
+        time: Date.now() - start,
       });
     }
 
@@ -85,20 +85,20 @@ function getConverter() {
         endLine = dataValue.indexOf('\n');
         if (endLine === -1) endLine = dataValue.indexOf('\r');
         if (endLine > 0) {
-          var xIndex = -1;
-          var yIndex = -1;
+          let xIndex = -1;
+          let yIndex = -1;
           // ##DATA TABLE= (X++(I..I)), XYDATA
           // We need to find the variables
 
           infos = dataValue.substring(0, endLine).split(/[ ,;\t]+/);
           if (infos[0].indexOf('++') > 0) {
-            var firstVariable = infos[0].replace(
+            let firstVariable = infos[0].replace(
               /.*\(([a-zA-Z0-9]+)\+\+.*/,
-              '$1'
+              '$1',
             );
-            var secondVariable = infos[0].replace(
+            let secondVariable = infos[0].replace(
               /.*\.\.([a-zA-Z0-9]+).*/,
-              '$1'
+              '$1',
             );
             xIndex = ntuples.symbol.indexOf(firstVariable);
             yIndex = ntuples.symbol.indexOf(secondVariable);
@@ -289,8 +289,8 @@ function getConverter() {
         spectrum.page = dataValue.trim();
         spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ''));
         spectrum.pageSymbol = spectrum.page.replace(/[=].*/, '');
-        var pageSymbolIndex = ntuples.symbol.indexOf(spectrum.pageSymbol);
-        var unit = '';
+        let pageSymbolIndex = ntuples.symbol.indexOf(spectrum.pageSymbol);
+        let unit = '';
         if (ntuples.units && ntuples.units[pageSymbolIndex]) {
           unit = ntuples.units[pageSymbolIndex];
         }
@@ -319,16 +319,16 @@ function getConverter() {
     if (result.profiling) {
       result.profiling.push({
         action: 'Finished parsing',
-        time: Date.now() - start
+        time: Date.now() - start,
       });
     }
 
     if (Object.keys(ntuples).length > 0) {
-      var newNtuples = [];
-      var keys = Object.keys(ntuples);
+      let newNtuples = [];
+      let keys = Object.keys(ntuples);
       for (let i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        var values = ntuples[key];
+        let key = keys[i];
+        let values = ntuples[key];
         for (let j = 0; j < values.length; j++) {
           if (!newNtuples[j]) newNtuples[j] = {};
           newNtuples[j][key] = values[j];
@@ -342,7 +342,7 @@ function getConverter() {
       if (result.profiling) {
         result.profiling.push({
           action: 'Finished countour plot calculation',
-          time: Date.now() - start
+          time: Date.now() - start,
         });
       }
       if (!options.keepSpectra) {
@@ -361,12 +361,12 @@ function getConverter() {
           spectrum = spectra[i];
           if (spectrum.data.length > 0) {
             for (let j = 0; j < spectrum.data.length; j++) {
-              var data = spectrum.data[j];
-              var newData = {
+              let data = spectrum.data[j];
+              let newData = {
                 x: new Array(data.length / 2),
-                y: new Array(data.length / 2)
+                y: new Array(data.length / 2),
               };
-              for (var k = 0; k < data.length; k = k + 2) {
+              for (let k = 0; k < data.length; k = k + 2) {
                 newData.x[k / 2] = data[k];
                 newData.y[k / 2] = data[k + 1];
               }
@@ -387,7 +387,7 @@ function getConverter() {
       if (result.profiling) {
         result.profiling.push({
           action: 'Finished chromatogram calculation',
-          time: Date.now() - start
+          time: Date.now() - start,
         });
       }
     }
@@ -395,7 +395,7 @@ function getConverter() {
     if (result.profiling) {
       result.profiling.push({
         action: 'Total time',
-        time: Date.now() - start
+        time: Date.now() - start,
       });
     }
 
@@ -411,42 +411,42 @@ function getConverter() {
   }
 
   function complexChromatogram(result) {
-    var spectra = result.spectra;
-    var length = spectra.length;
-    var chromatogram = {
+    let spectra = result.spectra;
+    let length = spectra.length;
+    let chromatogram = {
       times: new Array(length),
       series: {
         ms: {
           dimension: 2,
-          data: new Array(length)
-        }
-      }
+          data: new Array(length),
+        },
+      },
     };
 
-    var existingGCMSFields = [];
+    let existingGCMSFields = [];
     for (let i = 0; i < GC_MS_FIELDS.length; i++) {
-      var label = convertMSFieldToLabel(GC_MS_FIELDS[i]);
+      let label = convertMSFieldToLabel(GC_MS_FIELDS[i]);
       if (spectra[0][label]) {
         existingGCMSFields.push(label);
         chromatogram.series[label] = {
           dimension: 1,
-          data: new Array(length)
+          data: new Array(length),
         };
       }
     }
 
     for (let i = 0; i < length; i++) {
-      var spectrum = spectra[i];
+      let spectrum = spectra[i];
       chromatogram.times[i] = spectrum.pageValue;
       for (let j = 0; j < existingGCMSFields.length; j++) {
         chromatogram.series[existingGCMSFields[j]].data[i] = parseFloat(
-          spectrum[existingGCMSFields[j]]
+          spectrum[existingGCMSFields[j]],
         );
       }
       if (spectrum.data) {
         chromatogram.series.ms.data[i] = [
           spectrum.data[0].x,
-          spectrum.data[0].y
+          spectrum.data[0].y,
         ];
       }
     }
@@ -454,15 +454,15 @@ function getConverter() {
   }
 
   function simpleChromatogram(result) {
-    var data = result.spectra[0].data[0];
+    let data = result.spectra[0].data[0];
     result.chromatogram = {
       times: data.x.slice(),
       series: {
         intensity: {
           dimension: 1,
-          data: data.y.slice()
-        }
-      }
+          data: data.y.slice(),
+        },
+      },
     };
   }
 
@@ -479,7 +479,7 @@ function getConverter() {
       }
     }
     if (spectrum.shiftOffsetVal) {
-      var shift = spectrum.firstX - spectrum.shiftOffsetVal;
+      let shift = spectrum.firstX - spectrum.shiftOffsetVal;
       spectrum.firstX = spectrum.firstX - shift;
       spectrum.lastX = spectrum.lastX - shift;
     }
@@ -487,7 +487,7 @@ function getConverter() {
 
   function getMedian(data) {
     data = data.sort(compareNumbers);
-    var l = data.length;
+    let l = data.length;
     return data[Math.floor(l / 2)];
   }
 
@@ -496,16 +496,16 @@ function getConverter() {
   }
 
   function convertTo3DZ(spectra) {
-    var minZ = spectra[0].data[0][0];
-    var maxZ = minZ;
-    var ySize = spectra.length;
-    var xSize = spectra[0].data[0].length / 2;
-    var z = new Array(ySize);
+    let minZ = spectra[0].data[0][0];
+    let maxZ = minZ;
+    let ySize = spectra.length;
+    let xSize = spectra[0].data[0].length / 2;
+    let z = new Array(ySize);
     for (let i = 0; i < ySize; i++) {
       z[i] = new Array(xSize);
-      var xVector = spectra[i].data[0];
+      let xVector = spectra[i].data[0];
       for (let j = 0; j < xSize; j++) {
-        var value = xVector[j * 2 + 1];
+        let value = xVector[j * 2 + 1];
         z[i][j] = value;
         if (value < minZ) minZ = value;
         if (value > maxZ) maxZ = value;
@@ -536,12 +536,12 @@ function getConverter() {
       maxY: Math.max(firstY, lastY),
       minZ: minZ,
       maxZ: maxZ,
-      noise: getMedian(z[0].map(Math.abs))
+      noise: getMedian(z[0].map(Math.abs)),
     };
   }
 
   function add2D(result, options) {
-    var zData = convertTo3DZ(result.spectra);
+    let zData = convertTo3DZ(result.spectra);
     if (!options.noContour) {
       result.contourLines = generateContourLines(zData, options);
       delete zData.z;
@@ -550,22 +550,22 @@ function getConverter() {
   }
 
   function generateContourLines(zData, options) {
-    var noise = zData.noise;
-    var z = zData.z;
-    var povarHeight0, povarHeight1, povarHeight2, povarHeight3;
-    var isOver0, isOver1, isOver2, isOver3;
-    var nbSubSpectra = z.length;
-    var nbPovars = z[0].length;
-    var pAx, pAy, pBx, pBy;
+    let noise = zData.noise;
+    let z = zData.z;
+    let povarHeight0, povarHeight1, povarHeight2, povarHeight3;
+    let isOver0, isOver1, isOver2, isOver3;
+    let nbSubSpectra = z.length;
+    let nbPovars = z[0].length;
+    let pAx, pAy, pBx, pBy;
 
-    var x0 = zData.minX;
-    var xN = zData.maxX;
-    var dx = (xN - x0) / (nbPovars - 1);
-    var y0 = zData.minY;
-    var yN = zData.maxY;
-    var dy = (yN - y0) / (nbSubSpectra - 1);
-    var minZ = zData.minZ;
-    var maxZ = zData.maxZ;
+    let x0 = zData.minX;
+    let xN = zData.maxX;
+    let dx = (xN - x0) / (nbPovars - 1);
+    let y0 = zData.minY;
+    let yN = zData.maxY;
+    let dy = (yN - y0) / (nbSubSpectra - 1);
+    let minZ = zData.minZ;
+    let maxZ = zData.maxZ;
 
     // System.out.prvarln('y0 '+y0+' yN '+yN);
     // -------------------------
@@ -578,15 +578,15 @@ function getConverter() {
     //
     // ---------------------d------
 
-    var iter = options.nbContourLevels * 2;
-    var contourLevels = new Array(iter);
-    var lineZValue;
-    for (var level = 0; level < iter; level++) {
+    let iter = options.nbContourLevels * 2;
+    let contourLevels = new Array(iter);
+    let lineZValue;
+    for (let level = 0; level < iter; level++) {
       // multiply by 2 for positif and negatif
-      var contourLevel = {};
+      let contourLevel = {};
       contourLevels[level] = contourLevel;
-      var side = level % 2;
-      var factor =
+      let side = level % 2;
+      let factor =
         (maxZ - options.noiseMultiplier * noise) *
         Math.exp((level >> 1) - options.nbContourLevels);
       if (side === 0) {
@@ -594,16 +594,16 @@ function getConverter() {
       } else {
         lineZValue = 0 - factor - options.noiseMultiplier * noise;
       }
-      var lines = [];
+      let lines = [];
       contourLevel.zValue = lineZValue;
       contourLevel.lines = lines;
 
       if (lineZValue <= minZ || lineZValue >= maxZ) continue;
 
-      for (var iSubSpectra = 0; iSubSpectra < nbSubSpectra - 1; iSubSpectra++) {
-        var subSpectra = z[iSubSpectra];
-        var subSpectraAfter = z[iSubSpectra + 1];
-        for (var povar = 0; povar < nbPovars - 1; povar++) {
+      for (let iSubSpectra = 0; iSubSpectra < nbSubSpectra - 1; iSubSpectra++) {
+        let subSpectra = z[iSubSpectra];
+        let subSpectraAfter = z[iSubSpectra + 1];
+        for (let povar = 0; povar < nbPovars - 1; povar++) {
           povarHeight0 = subSpectra[povar];
           povarHeight1 = subSpectra[povar + 1];
           povarHeight2 = subSpectraAfter[povar];
@@ -713,7 +713,7 @@ function getConverter() {
       maxX: zData.maxX,
       minY: zData.minY,
       maxY: zData.maxY,
-      segments: contourLevels
+      segments: contourLevels,
     };
   }
 
@@ -722,21 +722,21 @@ function getConverter() {
     //  console.log(value);
     // we check if deltaX is defined otherwise we calculate it
 
-    var yFactor = spectrum.yFactor;
-    var deltaX = spectrum.deltaX;
+    let yFactor = spectrum.yFactor;
+    let deltaX = spectrum.deltaX;
 
     spectrum.isXYdata = true;
     // TODO to be improved using 2 array {x:[], y:[]}
-    var currentData = [];
+    let currentData = [];
     spectrum.data = [currentData];
 
-    var currentX = spectrum.firstX;
-    var currentY = spectrum.firstY;
+    let currentX = spectrum.firstX;
+    let currentY = spectrum.firstY;
 
     // we skip the first line
     //
-    var endLine = false;
-    var ascii;
+    let endLine = false;
+    let ascii;
     let i = 0;
     for (; i < value.length; i++) {
       ascii = value.charCodeAt(i);
@@ -748,18 +748,18 @@ function getConverter() {
     }
 
     // we proceed taking the i after the first line
-    var newLine = true;
-    var isDifference = false;
-    var isLastDifference = false;
-    var lastDifference = 0;
-    var isDuplicate = false;
-    var inComment = false;
-    var currentValue = 0; // can be a difference or a duplicate
-    var lastValue = 0; // must be the real last value
-    var isNegative = false;
-    var inValue = false;
-    var skipFirstValue = false;
-    var decimalPosition = 0;
+    let newLine = true;
+    let isDifference = false;
+    let isLastDifference = false;
+    let lastDifference = 0;
+    let isDuplicate = false;
+    let inComment = false;
+    let currentValue = 0; // can be a difference or a duplicate
+    let lastValue = 0; // must be the real last value
+    let isNegative = false;
+    let inValue = false;
+    let skipFirstValue = false;
+    let decimalPosition = 0;
     for (; i <= value.length; i++) {
       if (i === value.length) ascii = 13;
       else ascii = value.charCodeAt(i);
@@ -807,8 +807,8 @@ function getConverter() {
                 } else if (!isDuplicate) {
                   lastValue = isNegative ? 0 - currentValue : currentValue;
                 }
-                var duplicate = isDuplicate ? currentValue - 1 : 1;
-                for (var j = 0; j < duplicate; j++) {
+                let duplicate = isDuplicate ? currentValue - 1 : 1;
+                for (let j = 0; j < duplicate; j++) {
                   if (isLastDifference) {
                     currentY += lastDifference;
                   } else {
@@ -871,7 +871,7 @@ function getConverter() {
           } else if (ascii === 45) {
             // a "-"
             // check if after there is a number, decimal or comma
-            var ascii2 = value.charCodeAt(i + 1);
+            let ascii2 = value.charCodeAt(i + 1);
             if (
               (ascii2 >= 48 && ascii2 <= 57) ||
               ascii2 === 44 ||
@@ -893,36 +893,33 @@ function getConverter() {
   }
 
   function parseXYA(spectrum, value) {
-    var removeSymbolRegExp = /(\(+|\)+|<+|>+|\s+)/g;
+    let removeSymbolRegExp = /(\(+|\)+|<+|>+|\s+)/g;
 
     spectrum.isXYAdata = true;
-    var values;
-    var currentData = [];
+    let values;
+    let currentData = [];
     spectrum.data = [currentData];
 
-    var lines = value.split(/,? *,?[;\r\n]+ */);
+    let lines = value.split(/,? *,?[;\r\n]+ */);
 
     for (let i = 1; i < lines.length; i++) {
-      values = lines[i]
-        .trim()
-        .replace(removeSymbolRegExp, '')
-        .split(',');
+      values = lines[i].trim().replace(removeSymbolRegExp, '').split(',');
       currentData.push(parseFloat(values[0]));
       currentData.push(parseFloat(values[1]));
     }
   }
 
   function parsePeakTable(spectrum, value, result) {
-    var removeCommentRegExp = /\$\$.*/;
-    var peakTableSplitRegExp = /[,\t ]+/;
+    let removeCommentRegExp = /\$\$.*/;
+    let peakTableSplitRegExp = /[,\t ]+/;
 
     spectrum.isPeaktable = true;
-    var values;
-    var currentData = [];
+    let values;
+    let currentData = [];
     spectrum.data = [currentData];
 
     // counts for around 20% of the time
-    var lines = value.split(/,? *,?[;\r\n]+ */);
+    let lines = value.split(/,? *,?[;\r\n]+ */);
 
     for (let i = 1; i < lines.length; i++) {
       values = lines[i]
@@ -944,7 +941,7 @@ function getConverter() {
   return convert;
 }
 
-var convert = getConverter();
+let convert = getConverter();
 
 function JcampConverter(input, options, useWorker) {
   if (typeof options === 'boolean') {
@@ -958,38 +955,40 @@ function JcampConverter(input, options, useWorker) {
   }
 }
 
-var stamps = {};
-var worker;
+let stamps = {};
+let worker;
 
 function postToWorker(input, options) {
   if (!worker) {
     createWorker();
   }
   return new Promise(function (resolve) {
-    var stamp = `${Date.now()}${Math.random()}`;
+    let stamp = `${Date.now()}${Math.random()}`;
     stamps[stamp] = resolve;
     worker.postMessage(
       JSON.stringify({
         stamp: stamp,
         input: input,
-        options: options
-      })
+        options: options,
+      }),
     );
   });
 }
 
 function createWorker() {
-  var workerURL = URL.createObjectURL(
+  let workerURL = URL.createObjectURL(
     new Blob(
-      [`var getConverter =${getConverter.toString()};var convert = getConverter(); onmessage = function (event) { var data = JSON.parse(event.data); postMessage(JSON.stringify({stamp: data.stamp, output: convert(data.input, data.options)})); };`],
-      { type: 'application/javascript' }
-    )
+      [
+        `var getConverter =${getConverter.toString()};var convert = getConverter(); onmessage = function (event) { var data = JSON.parse(event.data); postMessage(JSON.stringify({stamp: data.stamp, output: convert(data.input, data.options)})); };`,
+      ],
+      { type: 'application/javascript' },
+    ),
   );
   worker = new Worker(workerURL);
   URL.revokeObjectURL(workerURL);
   worker.addEventListener('message', function (event) {
-    var data = JSON.parse(event.data);
-    var stamp = data.stamp;
+    let data = JSON.parse(event.data);
+    let stamp = data.stamp;
     if (stamps[stamp]) {
       stamps[stamp](data.output);
     }
@@ -1011,7 +1010,7 @@ function createTree(jcamp, options = {}) {
 
   let spaces = jcamp.includes('## ');
 
-  for (var i = 0; i < lines.length; i++) {
+  for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
     let labelLine = spaces ? line.replace(/ /g, '') : line;
 
@@ -1031,13 +1030,13 @@ function createTree(jcamp, options = {}) {
       stack.push({
         title: title.join('\n'),
         jcamp: `${line}\n`,
-        children: []
+        children: [],
       });
       current = stack[stack.length - 1];
       flat.push(current);
     } else if (labelLine.substring(0, 5) === '##END' && ntupleLevel === 0) {
       current.jcamp += `${line}\n`;
-      var finished = stack.pop();
+      let finished = stack.pop();
       if (stack.length !== 0) {
         current = stack[stack.length - 1];
         current.children.push(finished);
@@ -1047,9 +1046,9 @@ function createTree(jcamp, options = {}) {
       }
     } else if (current && current.jcamp) {
       current.jcamp += `${line}\n`;
-      var match = labelLine.match(/^##(.*?)=(.+)/);
+      let match = labelLine.match(/^##(.*?)=(.+)/);
       if (match) {
-        var dataLabel = match[1].replace(/[ _-]/g, '').toUpperCase();
+        let dataLabel = match[1].replace(/[ _-]/g, '').toUpperCase();
         if (dataLabel === 'DATATYPE') {
           current.dataType = match[2].trim();
         }
@@ -1072,5 +1071,5 @@ function createTree(jcamp, options = {}) {
 
 module.exports = {
   convert: JcampConverter,
-  createTree: createTree
+  createTree: createTree,
 };

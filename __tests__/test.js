@@ -1,12 +1,12 @@
 'use strict';
 
-var Converter = require('..');
+let fs = require('fs');
 
-var fs = require('fs');
+let Converter = require('..');
 
 function checkJcamp(filename, label, data) {
   const result = Converter.convert(
-    fs.readFileSync(`${__dirname}/data${filename}`).toString()
+    fs.readFileSync(`${__dirname}/data${filename}`).toString(),
   );
   describe(`Test ${label}`, () => {
     it('xAxis type', () => {
@@ -19,14 +19,14 @@ function checkJcamp(filename, label, data) {
       });
 
       it('Spectrum data', () => {
-        var spectrum = result.spectra[0];
+        let spectrum = result.spectra[0];
         expect(spectrum.observeFrequency).toStrictEqual(data.observeFrequency);
         expect(spectrum.nbPoints).toStrictEqual(data.nbPoints);
         expect(spectrum.nbPoints).toStrictEqual(spectrum.data[0].length / 2);
         expect(spectrum.firstX).toStrictEqual(data.firstX);
         expect(spectrum.lastX).toStrictEqual(data.lastX);
         expect(spectrum.data[0].reduce((a, b) => a + b)).toStrictEqual(
-          data.total
+          data.total,
         );
       });
     }
@@ -41,18 +41,18 @@ describe('Test JCAMP converter', () => {
     nbPoints: 16384,
     firstX: 11.00659,
     lastX: -1.009276326659311,
-    total: 10199322812.993612
+    total: 10199322812.993612,
   });
 
   describe('All those compressions should give exactly the dame result', () => {
-    var options = {
+    let options = {
       nbSpectra: 1,
       xType: '1H',
       observeFrequency: 400.1321303162,
       nbPoints: 16384,
       firstX: 12.31284,
       lastX: -1.6646457842364946,
-      total: 11044828778.007011
+      total: 11044828778.007011,
     };
 
     checkJcamp('/compression/jcamp-fix.dx', 'Compression fixed', options);
@@ -60,7 +60,7 @@ describe('Test JCAMP converter', () => {
     checkJcamp(
       '/compression/jcamp-squeezed.dx',
       'Compression squeezed',
-      options
+      options,
     );
     checkJcamp('/compression/jcamp-difdup.dx', 'Compression difdup', options);
   });
@@ -72,7 +72,7 @@ describe('Test JCAMP converter', () => {
     nbPoints: 32768,
     firstX: 16.46138,
     lastX: -4.114164000759506,
-    total: 34968303169.78704
+    total: 34968303169.78704,
   });
 
   checkJcamp('/indometacin/cosy.dx', 'COSY Indometacin', {
@@ -82,7 +82,7 @@ describe('Test JCAMP converter', () => {
     nbPoints: 1024,
     firstX: 13.42727,
     lastX: 1.3052585346869103,
-    total: 543213.05460976
+    total: 543213.05460976,
   });
 
   checkJcamp('/indometacin/hsqc.dx', 'HSQC Indometacin', {
@@ -92,7 +92,7 @@ describe('Test JCAMP converter', () => {
     nbPoints: 1024,
     firstX: 13.42727,
     lastX: 1.3052585346869103,
-    total: 8546795.054609755
+    total: 8546795.054609755,
   });
 
   checkJcamp('/indometacin/hmbc.dx', 'HMBC Indometacin', {
@@ -102,7 +102,7 @@ describe('Test JCAMP converter', () => {
     nbPoints: 1024,
     firstX: 13.35119,
     lastX: 1.4369847858490203,
-    total: 24130609.545490365
+    total: 24130609.545490365,
   });
 
   // TODO fix this case
