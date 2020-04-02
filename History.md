@@ -1,3 +1,12 @@
+## [4.1.1](https://github.com/cheminfo-js/jcampconverter/compare/v4.1.0...v4.1.1) (2020-04-02)
+
+
+### Bug Fixes
+
+* allow jcamp with no data ([4365d79](https://github.com/cheminfo-js/jcampconverter/commit/4365d79b16fa6f1651e6a2d4a1626107d0072e8a))
+
+
+
 ## [2.10.2](https://github.com/cheminfo-js/jcampconverter/compare/v2.10.1...v2.10.2) (2018-11-23)
 
 
