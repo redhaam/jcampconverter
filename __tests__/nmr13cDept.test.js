@@ -7,7 +7,7 @@ describe('Test JCAMP converter of NMR with peak assignments', () => {
     `${__dirname}/data/misc/nmr_13c_dept.dx`,
   ).toString();
 
-  const result = convert(target);
+  const result = convert(target, { xy: false });
 
   const paTarget = result.spectra[4];
   const nmrTarget = result.spectra[2];

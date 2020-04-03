@@ -20,12 +20,14 @@ function checkJcamp(filename, label, data) {
         let spectrum = result.spectra[0];
         expect(spectrum.observeFrequency).toStrictEqual(data.observeFrequency);
         expect(spectrum.nbPoints).toStrictEqual(data.nbPoints);
-        expect(spectrum.nbPoints).toStrictEqual(spectrum.data[0].length / 2);
+        expect(spectrum.nbPoints).toStrictEqual(spectrum.data[0].x.length);
+        expect(spectrum.nbPoints).toStrictEqual(spectrum.data[0].y.length);
         expect(spectrum.firstX).toStrictEqual(data.firstX);
         expect(spectrum.lastX).toStrictEqual(data.lastX);
-        expect(spectrum.data[0].reduce((a, b) => a + b)).toStrictEqual(
-          data.total,
-        );
+        expect(
+          spectrum.data[0].x.reduce((a, b) => a + b) +
+            spectrum.data[0].y.reduce((a, b) => a + b),
+        ).toBeCloseTo(data.total, 3);
       });
     }
   });
