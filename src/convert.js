@@ -1,15 +1,11 @@
-import add2D from './2d/add2D';
-import {
-  complexChromatogram,
-  isMSField,
-  convertMSFieldToLabel,
-} from './complexChromatogram';
+import { isMSField, convertMSFieldToLabel } from './complexChromatogram';
 import convertToFloatArray from './convertToFloatArray';
 import fastParseXYData from './parse/fastParseXYData';
 import parsePeakTable from './parse/parsePeakTable';
 import parseXYA from './parse/parseXYA';
 import prepareSpectrum from './prepareSpectrum';
-import simpleChromatogram from './simpleChromatogram';
+
+import postProcessing from './postProcessing';
 
 // the following RegExp can only be used for XYdata, some peakTables have values with a "E-5" ...
 const ntuplesSeparator = /[, \t]+/;
@@ -32,9 +28,8 @@ const defaultOptions = {
 
 export default function convert(jcamp, options) {
   options = Object.assign({}, defaultOptions, options);
-
-  let wantXY = !options.withoutXY;
-  let start = Date.now();
+  options.wantXY = !options.withoutXY;
+  options.start = Date.now();
 
   let entriesFlat = [];
   let entriesStack = [];
@@ -58,7 +53,7 @@ export default function convert(jcamp, options) {
   if (result.profiling) {
     result.profiling.push({
       action: 'Before split to LDRS',
-      time: Date.now() - start,
+      time: Date.now() - options.start,
     });
   }
 
@@ -67,7 +62,7 @@ export default function convert(jcamp, options) {
   if (result.profiling) {
     result.profiling.push({
       action: 'Split to LDRS',
-      time: Date.now() - start,
+      time: Date.now() - options.start,
     });
   }
 
@@ -160,7 +155,7 @@ export default function convert(jcamp, options) {
     }
 
     if (canonicDataLabel === 'XYDATA') {
-      if (wantXY) {
+      if (options.wantXY) {
         prepareSpectrum(spectrum);
         // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
         if (dataValue.match(/.*\+\+.*/)) {
@@ -178,7 +173,7 @@ export default function convert(jcamp, options) {
       }
       continue;
     } else if (canonicDataLabel === 'PEAKTABLE') {
-      if (wantXY) {
+      if (options.wantXY) {
         prepareSpectrum(spectrum);
         parsePeakTable(spectrum, dataValue, result);
         result.spectra.push(spectrum);
@@ -187,7 +182,7 @@ export default function convert(jcamp, options) {
       continue;
     }
     if (canonicDataLabel === 'PEAKASSIGNMENTS') {
-      if (wantXY) {
+      if (options.wantXY) {
         if (dataValue.match(/.*(XYA).*/)) {
           // ex: (XYA)
           parseXYA(spectrum, dataValue);
@@ -338,84 +333,11 @@ export default function convert(jcamp, options) {
   if (result.profiling) {
     result.profiling.push({
       action: 'Finished parsing',
-      time: Date.now() - start,
+      time: Date.now() - options.start,
     });
   }
 
-  if (Object.keys(ntuples).length > 0) {
-    let newNtuples = [];
-    let keys = Object.keys(ntuples);
-    for (let i = 0; i < keys.length; i++) {
-      let key = keys[i];
-      let values = ntuples[key];
-      for (let j = 0; j < values.length; j++) {
-        if (!newNtuples[j]) newNtuples[j] = {};
-        newNtuples[j][key] = values[j];
-      }
-    }
-    result.ntuples = newNtuples;
-  }
-
-  if (result.twoD && wantXY) {
-    add2D(result, options);
-    if (result.profiling) {
-      result.profiling.push({
-        action: 'Finished countour plot calculation',
-        time: Date.now() - start,
-      });
-    }
-    if (!options.keepSpectra) {
-      delete result.spectra;
-    }
-  }
-
-  if (options.chromatogram) {
-    options.xy = true;
-  }
-
-  if (options.xy && wantXY) {
-    // the spectraData should not be a oneD array but an object with x and y
-    if (result.spectra && result.spectra.length > 0) {
-      for (let spectrum of result.spectra) {
-        if (spectrum.data && spectrum.data.length > 0) {
-          for (let j = 0; j < spectrum.data.length; j++) {
-            let data = spectrum.data[j];
-            let newData = {
-              x: new Array(data.length / 2),
-              y: new Array(data.length / 2),
-            };
-            for (let k = 0; k < data.length; k = k + 2) {
-              newData.x[k / 2] = data[k];
-              newData.y[k / 2] = data[k + 1];
-            }
-            spectrum.data[j] = newData;
-          }
-        }
-      }
-    }
-  }
-
-  // maybe it is a GC (HPLC) / MS. In this case we add a new format
-  if (options.chromatogram) {
-    if (result.spectra.length > 1) {
-      complexChromatogram(result);
-    } else {
-      simpleChromatogram(result);
-    }
-    if (result.profiling) {
-      result.profiling.push({
-        action: 'Finished chromatogram calculation',
-        time: Date.now() - start,
-      });
-    }
-  }
-
-  if (result.profiling) {
-    result.profiling.push({
-      action: 'Total time',
-      time: Date.now() - start,
-    });
-  }
+  postProcessing(result, result.profiling, ntuples, options);
 
   return result;
 }
