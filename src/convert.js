@@ -36,8 +36,7 @@ export default function convert(jcamp, options) {
   let ntupleLevel = 0;
 
   let ntuples = {};
-  let ldr, dataValue, ldrs;
-  let position, endLine, infos;
+  let infos;
 
   let result = {};
   result.profiling = options.profiling ? [] : false;
@@ -52,28 +51,22 @@ export default function convert(jcamp, options) {
 
   profiling(result, 'Before split to LDRS', options);
 
-  ldrs = jcamp.split(/[\r\n]+##/);
+  let ldrs = jcamp.split(/[\r\n]+##/);
 
   profiling(result, 'Split to LDRS', options);
 
   if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, '');
 
-  for (let i = 0; i < ldrs.length; i++) {
-    let dataLabel;
-    ldr = ldrs[i];
+  for (let ldr of ldrs) {
     // This is a new LDR
-    position = ldr.indexOf('=');
-    if (position > 0) {
-      dataLabel = ldr.substring(0, position);
-      dataValue = ldr.substring(position + 1).trim();
-    } else {
-      dataLabel = ldr;
-      dataValue = '';
-    }
+    let position = ldr.indexOf('=');
+    let dataLabel = position > 0 ? ldr.substring(0, position) : ldr;
+    let dataValue = position > 0 ? ldr.substring(position + 1).trim() : '';
+
     let canonicDataLabel = dataLabel.replace(/[_ -]/g, '').toUpperCase();
 
     if (canonicDataLabel === 'DATATABLE') {
-      endLine = dataValue.indexOf('\n');
+      let endLine = dataValue.indexOf('\n');
       if (endLine === -1) endLine = dataValue.indexOf('\r');
       if (endLine > 0) {
         let xIndex = -1;
