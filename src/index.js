@@ -36,6 +36,8 @@ function getConverter() {
 
     let start = Date.now();
 
+    let ntupleLevel = 0;
+
     let ntuples = {};
     let ldr, dataValue, ldrs;
     let position, endLine, infos;
@@ -206,6 +208,7 @@ function getConverter() {
           result.twoD = true;
         }
       } else if (canonicDataLabel === 'NTUPLES') {
+        ntupleLevel++;
         if (dataValue.indexOf('nD') > -1) {
           result.twoD = true;
         }
@@ -309,7 +312,13 @@ function getConverter() {
         spectrum[convertMSFieldToLabel(canonicDataLabel)] = dataValue;
       } else if (canonicDataLabel === 'SAMPLEDESCRIPTION') {
         spectrum.sampleDescription = dataValue;
+      } else if (canonicDataLabel === 'END') {
       }
+
+      if (canonicDataLabel === 'END' && ntupleLevel > 0) {
+        ntupleLevel--;
+      }
+
       if (canonicDataLabel.match(options.keepRecordsRegExp)) {
         let label = options.canonicDataLabels ? canonicDataLabel : dataLabel;
         let value = dataValue.trim();
@@ -914,7 +923,10 @@ function getConverter() {
     let lines = value.split(/,? *,?[;\r\n]+ */);
 
     for (let i = 1; i < lines.length; i++) {
-      values = lines[i].trim().replace(removeSymbolRegExp, '').split(',');
+      values = lines[i]
+        .trim()
+        .replace(removeSymbolRegExp, '')
+        .split(',');
       currentData.push(parseFloat(values[0]));
       currentData.push(parseFloat(values[1]));
     }
@@ -954,56 +966,8 @@ function getConverter() {
 
 let convert = getConverter();
 
-function JcampConverter(input, options, useWorker) {
-  if (typeof options === 'boolean') {
-    useWorker = options;
-    options = {};
-  }
-  if (useWorker) {
-    return postToWorker(input, options);
-  } else {
-    return convert(input, options);
-  }
-}
-
-let stamps = {};
-let worker;
-
-function postToWorker(input, options) {
-  if (!worker) {
-    createWorker();
-  }
-  return new Promise(function (resolve) {
-    let stamp = `${Date.now()}${Math.random()}`;
-    stamps[stamp] = resolve;
-    worker.postMessage(
-      JSON.stringify({
-        stamp: stamp,
-        input: input,
-        options: options,
-      }),
-    );
-  });
-}
-
-function createWorker() {
-  let workerURL = URL.createObjectURL(
-    new Blob(
-      [
-        `var getConverter =${getConverter.toString()};var convert = getConverter(); onmessage = function (event) { var data = JSON.parse(event.data); postMessage(JSON.stringify({stamp: data.stamp, output: convert(data.input, data.options)})); };`,
-      ],
-      { type: 'application/javascript' },
-    ),
-  );
-  worker = new Worker(workerURL);
-  URL.revokeObjectURL(workerURL);
-  worker.addEventListener('message', function (event) {
-    let data = JSON.parse(event.data);
-    let stamp = data.stamp;
-    if (stamps[stamp]) {
-      stamps[stamp](data.output);
-    }
-  });
+function JcampConverter(input, options = {}) {
+  return convert(input, options);
 }
 
 function createTree(jcamp, options = {}) {
