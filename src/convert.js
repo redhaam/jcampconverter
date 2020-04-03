@@ -36,8 +36,8 @@ export default function convert(jcamp, options) {
   let wantXY = !options.withoutXY;
   let start = Date.now();
 
-  let entriesFalt = [];
-  let spectraStack = [];
+  let entriesFlat = [];
+  let entriesStack = [];
   let ntupleLevel = 0;
 
   let ntuples = {};
@@ -47,8 +47,7 @@ export default function convert(jcamp, options) {
   let result = {};
   result.profiling = options.profiling ? [] : false;
   result.logs = [];
-  let currentSpectra = [];
-  result.spectra = currentSpectra;
+  result.spectra = [];
   result.info = {};
   let spectrum = new Spectrum();
 
@@ -174,7 +173,7 @@ export default function convert(jcamp, options) {
         } else {
           parsePeakTable(spectrum, dataValue, result);
         }
-        currentSpectra.push(spectrum);
+        result.spectra.push(spectrum);
         spectrum = new Spectrum();
       }
       continue;
@@ -182,7 +181,7 @@ export default function convert(jcamp, options) {
       if (wantXY) {
         prepareSpectrum(spectrum);
         parsePeakTable(spectrum, dataValue, result);
-        currentSpectra.push(spectrum);
+        result.spectra.push(spectrum);
         spectrum = new Spectrum();
       }
       continue;
@@ -193,7 +192,7 @@ export default function convert(jcamp, options) {
           // ex: (XYA)
           parseXYA(spectrum, dataValue);
         }
-        currentSpectra.push(spectrum);
+        result.spectra.push(spectrum);
         spectrum = new Spectrum();
       }
       continue;
@@ -376,9 +375,8 @@ export default function convert(jcamp, options) {
 
   if (options.xy && wantXY) {
     // the spectraData should not be a oneD array but an object with x and y
-    if (currentSpectra.length > 0) {
-      for (let i = 0; i < currentSpectra.length; i++) {
-        spectrum = currentSpectra[i];
+    if (result.spectra && result.spectra.length > 0) {
+      for (let spectrum of result.spectra) {
         if (spectrum.data && spectrum.data.length > 0) {
           for (let j = 0; j < spectrum.data.length; j++) {
             let data = spectrum.data[j];

@@ -31,7 +31,6 @@ describe('Test various jcamp structures', () => {
     let result = convert(
       readFileSync(join(__dirname, '/data/structure/reim.jdx'), 'utf8'),
     );
-    console.log(result.spectra[0]);
     expect(result.spectra.length).toBe(2);
     expect(result.spectra[0].data[0]).toStrictEqual({
       x: [1, 2, 3],
@@ -43,12 +42,11 @@ describe('Test various jcamp structures', () => {
     });
   });
 
-  it.only('ntuples', () => {
+  it.skip('ntuples', () => {
     let result = convert(
       readFileSync(join(__dirname, '/data/structure/ntuples.jdx'), 'utf8'),
       { noContour: true, keepSpectra: true },
     );
-    console.log(result);
     expect(result.spectra.length).toBe(2);
     expect(result.spectra[0].data[0]).toStrictEqual({
       x: [1, 2, 3],
@@ -64,6 +62,6 @@ describe('Test various jcamp structures', () => {
     let result = convert(
       readFileSync(join(__dirname, '/data/structure/tree.jdx'), 'utf8'),
     );
-    console.log(result);
+    // console.log(result);
   });
 });
