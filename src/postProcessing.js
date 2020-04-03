@@ -3,13 +3,13 @@ import { complexChromatogram } from './complexChromatogram';
 import simpleChromatogram from './simpleChromatogram';
 import profiling from './profiling';
 
-export default function postProcessing(result, ntuples, options) {
-  if (Object.keys(ntuples).length > 0) {
+export default function postProcessing(result, options) {
+  if (Object.keys(result.ntuples).length > 0) {
     let newNtuples = [];
-    let keys = Object.keys(ntuples);
+    let keys = Object.keys(result.ntuples);
     for (let i = 0; i < keys.length; i++) {
       let key = keys[i];
-      let values = ntuples[key];
+      let values = result.ntuples[key];
       for (let j = 0; j < values.length; j++) {
         if (!newNtuples[j]) newNtuples[j] = {};
         newNtuples[j][key] = values[j];

@@ -35,13 +35,12 @@ export default function convert(jcamp, options) {
   let entriesStack = [];
   let ntupleLevel = 0;
 
-  let ntuples = {};
-  let infos;
-
   let result = {};
+
   result.profiling = options.profiling ? [] : false;
   result.logs = [];
   result.spectra = [];
+  result.ntuples = {};
   result.info = {};
   let spectrum = new Spectrum();
 
@@ -74,53 +73,53 @@ export default function convert(jcamp, options) {
         // ##DATA TABLE= (X++(I..I)), XYDATA
         // We need to find the variables
 
-        infos = dataValue.substring(0, endLine).split(/[ ,;\t]+/);
+        let infos = dataValue.substring(0, endLine).split(/[ ,;\t]+/);
         if (infos[0].indexOf('++') > 0) {
           let firstVariable = infos[0].replace(
             /.*\(([a-zA-Z0-9]+)\+\+.*/,
             '$1',
           );
           let secondVariable = infos[0].replace(/.*\.\.([a-zA-Z0-9]+).*/, '$1');
-          xIndex = ntuples.symbol.indexOf(firstVariable);
-          yIndex = ntuples.symbol.indexOf(secondVariable);
+          xIndex = result.ntuples.symbol.indexOf(firstVariable);
+          yIndex = result.ntuples.symbol.indexOf(secondVariable);
         }
 
         if (xIndex === -1) xIndex = 0;
         if (yIndex === -1) yIndex = 0;
 
-        if (ntuples.first) {
-          if (ntuples.first.length > xIndex) {
-            spectrum.firstX = ntuples.first[xIndex];
+        if (result.ntuples.first) {
+          if (result.ntuples.first.length > xIndex) {
+            spectrum.firstX = result.ntuples.first[xIndex];
           }
-          if (ntuples.first.length > yIndex) {
-            spectrum.firstY = ntuples.first[yIndex];
-          }
-        }
-        if (ntuples.last) {
-          if (ntuples.last.length > xIndex) {
-            spectrum.lastX = ntuples.last[xIndex];
-          }
-          if (ntuples.last.length > yIndex) {
-            spectrum.lastY = ntuples.last[yIndex];
+          if (result.ntuples.first.length > yIndex) {
+            spectrum.firstY = result.ntuples.first[yIndex];
           }
         }
-        if (ntuples.vardim && ntuples.vardim.length > xIndex) {
-          spectrum.nbPoints = ntuples.vardim[xIndex];
-        }
-        if (ntuples.factor) {
-          if (ntuples.factor.length > xIndex) {
-            spectrum.xFactor = ntuples.factor[xIndex];
+        if (result.ntuples.last) {
+          if (result.ntuples.last.length > xIndex) {
+            spectrum.lastX = result.ntuples.last[xIndex];
           }
-          if (ntuples.factor.length > yIndex) {
-            spectrum.yFactor = ntuples.factor[yIndex];
+          if (result.ntuples.last.length > yIndex) {
+            spectrum.lastY = result.ntuples.last[yIndex];
           }
         }
-        if (ntuples.units) {
-          if (ntuples.units.length > xIndex) {
-            spectrum.xUnit = ntuples.units[xIndex];
+        if (result.ntuples.vardim && result.ntuples.vardim.length > xIndex) {
+          spectrum.nbPoints = result.ntuples.vardim[xIndex];
+        }
+        if (result.ntuples.factor) {
+          if (result.ntuples.factor.length > xIndex) {
+            spectrum.xFactor = result.ntuples.factor[xIndex];
           }
-          if (ntuples.units.length > yIndex) {
-            spectrum.yUnit = ntuples.units[yIndex];
+          if (result.ntuples.factor.length > yIndex) {
+            spectrum.yFactor = result.ntuples.factor[yIndex];
+          }
+        }
+        if (result.ntuples.units) {
+          if (result.ntuples.units.length > xIndex) {
+            spectrum.xUnit = result.ntuples.units[xIndex];
+          }
+          if (result.ntuples.units.length > yIndex) {
+            spectrum.yUnit = result.ntuples.units[yIndex];
           }
         }
         spectrum.datatable = infos[0];
@@ -245,27 +244,39 @@ export default function convert(jcamp, options) {
       //                 result.shiftOffsetNum = parseInt(parts[2].trim());
       //                 spectrum.shiftOffsetVal = parseFloat(parts[3].trim());
     } else if (canonicDataLabel === 'VARNAME') {
-      ntuples.varname = dataValue.split(ntuplesSeparator);
+      result.ntuples.varname = dataValue.split(ntuplesSeparator);
     } else if (canonicDataLabel === 'SYMBOL') {
-      ntuples.symbol = dataValue.split(ntuplesSeparator);
+      result.ntuples.symbol = dataValue.split(ntuplesSeparator);
     } else if (canonicDataLabel === 'VARTYPE') {
-      ntuples.vartype = dataValue.split(ntuplesSeparator);
+      result.ntuples.vartype = dataValue.split(ntuplesSeparator);
     } else if (canonicDataLabel === 'VARFORM') {
-      ntuples.varform = dataValue.split(ntuplesSeparator);
+      result.ntuples.varform = dataValue.split(ntuplesSeparator);
     } else if (canonicDataLabel === 'VARDIM') {
-      ntuples.vardim = convertToFloatArray(dataValue.split(ntuplesSeparator));
+      result.ntuples.vardim = convertToFloatArray(
+        dataValue.split(ntuplesSeparator),
+      );
     } else if (canonicDataLabel === 'UNITS') {
-      ntuples.units = dataValue.split(ntuplesSeparator);
+      result.ntuples.units = dataValue.split(ntuplesSeparator);
     } else if (canonicDataLabel === 'FACTOR') {
-      ntuples.factor = convertToFloatArray(dataValue.split(ntuplesSeparator));
+      result.ntuples.factor = convertToFloatArray(
+        dataValue.split(ntuplesSeparator),
+      );
     } else if (canonicDataLabel === 'FIRST') {
-      ntuples.first = convertToFloatArray(dataValue.split(ntuplesSeparator));
+      result.ntuples.first = convertToFloatArray(
+        dataValue.split(ntuplesSeparator),
+      );
     } else if (canonicDataLabel === 'LAST') {
-      ntuples.last = convertToFloatArray(dataValue.split(ntuplesSeparator));
+      result.ntuples.last = convertToFloatArray(
+        dataValue.split(ntuplesSeparator),
+      );
     } else if (canonicDataLabel === 'MIN') {
-      ntuples.min = convertToFloatArray(dataValue.split(ntuplesSeparator));
+      result.ntuples.min = convertToFloatArray(
+        dataValue.split(ntuplesSeparator),
+      );
     } else if (canonicDataLabel === 'MAX') {
-      ntuples.max = convertToFloatArray(dataValue.split(ntuplesSeparator));
+      result.ntuples.max = convertToFloatArray(
+        dataValue.split(ntuplesSeparator),
+      );
     } else if (canonicDataLabel === '.NUCLEUS') {
       if (result.twoD) {
         result.yType = dataValue.split(ntuplesSeparator)[0];
@@ -274,10 +285,10 @@ export default function convert(jcamp, options) {
       spectrum.page = dataValue.trim();
       spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ''));
       spectrum.pageSymbol = spectrum.page.replace(/[=].*/, '');
-      let pageSymbolIndex = ntuples.symbol.indexOf(spectrum.pageSymbol);
+      let pageSymbolIndex = result.ntuples.symbol.indexOf(spectrum.pageSymbol);
       let unit = '';
-      if (ntuples.units && ntuples.units[pageSymbolIndex]) {
-        unit = ntuples.units[pageSymbolIndex];
+      if (result.ntuples.units && result.ntuples.units[pageSymbolIndex]) {
+        unit = result.ntuples.units[pageSymbolIndex];
       }
       if (result.indirectFrequency && unit !== 'PPM') {
         spectrum.pageValue /= result.indirectFrequency;
@@ -315,7 +326,7 @@ export default function convert(jcamp, options) {
 
   profiling(result, 'Finished parsing', options);
 
-  postProcessing(result, ntuples, options);
+  postProcessing(result, options);
 
   profiling(result, 'Total time', options);
 
