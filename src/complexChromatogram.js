@@ -34,7 +34,7 @@ export function complexChromatogram(result) {
       );
     }
     if (spectrum.data) {
-      chromatogram.series.ms.data[i] = [spectrum.data[0].x, spectrum.data[0].y];
+      chromatogram.series.ms.data[i] = [spectrum.data.x, spectrum.data.y];
     }
   }
   result.chromatogram = chromatogram;

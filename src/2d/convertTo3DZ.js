@@ -1,14 +1,14 @@
 import getMedian from 'ml-array-median';
 
 export default function convertTo3DZ(spectra) {
-  let minZ = spectra[0].data[0][0];
+  let minZ = spectra[0].data[0];
   let maxZ = minZ;
   let ySize = spectra.length;
-  let xSize = spectra[0].data[0].length / 2;
+  let xSize = spectra[0].data.length / 2;
   let z = new Array(ySize);
   for (let i = 0; i < ySize; i++) {
     z[i] = new Array(xSize);
-    let xVector = spectra[i].data[0];
+    let xVector = spectra[i].data;
     for (let j = 0; j < xSize; j++) {
       let value = xVector[j * 2 + 1];
       z[i][j] = value;
@@ -17,8 +17,8 @@ export default function convertTo3DZ(spectra) {
     }
   }
 
-  const firstX = spectra[0].data[0][0];
-  const lastX = spectra[0].data[0][spectra[0].data[0].length - 2]; // has to be -2 because it is a 1D array [x,y,x,y,...]
+  const firstX = spectra[0].data[0];
+  const lastX = spectra[0].data[spectra[0].data[0].length - 2]; // has to be -2 because it is a 1D array [x,y,x,y,...]
   const firstY = spectra[0].pageValue;
   const lastY = spectra[ySize - 1].pageValue;
 

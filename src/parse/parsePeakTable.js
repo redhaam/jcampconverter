@@ -5,7 +5,7 @@ export default function parsePeakTable(spectrum, value, result) {
   spectrum.isPeaktable = true;
   let values;
   let currentData = [];
-  spectrum.data = [currentData];
+  spectrum.data = currentData;
 
   // counts for around 20% of the time
   let lines = value.split(/,? *,?[;\r\n]+ */);

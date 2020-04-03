@@ -37,19 +37,17 @@ export default function postProcessing(entriesFlat, result, options) {
       // the spectraData should not be a oneD array but an object with x and y
       if (entry.spectra && entry.spectra.length > 0) {
         for (let spectrum of entry.spectra) {
-          if (spectrum.data && spectrum.data.length > 0) {
-            for (let j = 0; j < spectrum.data.length; j++) {
-              let data = spectrum.data[j];
-              let newData = {
-                x: new Array(data.length / 2),
-                y: new Array(data.length / 2),
-              };
-              for (let k = 0; k < data.length; k = k + 2) {
-                newData.x[k / 2] = data[k];
-                newData.y[k / 2] = data[k + 1];
-              }
-              spectrum.data[j] = newData;
+          if (spectrum.data) {
+            let data = spectrum.data;
+            let newData = {
+              x: new Array(data.length / 2),
+              y: new Array(data.length / 2),
+            };
+            for (let k = 0; k < data.length; k = k + 2) {
+              newData.x[k / 2] = data[k];
+              newData.y[k / 2] = data[k + 1];
             }
+            spectrum.data = newData;
           }
         }
       }

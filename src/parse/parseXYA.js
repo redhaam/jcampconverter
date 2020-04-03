@@ -4,7 +4,7 @@ export default function parseXYA(spectrum, value) {
   spectrum.isXYAdata = true;
   let values;
   let currentData = [];
-  spectrum.data = [currentData];
+  spectrum.data = currentData;
 
   let lines = value.split(/,? *,?[;\r\n]+ */);
 

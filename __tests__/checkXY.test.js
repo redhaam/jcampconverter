@@ -8,8 +8,8 @@ describe('Test conversion option for jcamp', () => {
   it('1H NMR ethyl vinyl ether', () => {
     let result = convert(jcamp, { xy: true });
 
-    let x = result.spectra[0].data[0].x;
-    let y = result.spectra[0].data[0].y;
+    let x = result.spectra[0].data.x;
+    let y = result.spectra[0].data.y;
 
     // Check X and Y length
     expect(x).toHaveLength(302);
