@@ -1,11 +1,9 @@
-'use strict';
-
-const Converter = require('..');
+import { convert } from '../src';
 
 describe('Test JCAMP converter for wrong inputs', () => {
   it('throws error', () => {
     const target = 1;
-    const result = () => Converter.convert(target);
+    const result = () => convert(target);
     expect(result).toThrow(TypeError);
   });
 });

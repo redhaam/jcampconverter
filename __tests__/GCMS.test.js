@@ -1,17 +1,13 @@
-'use strict';
+import { readFileSync } from 'fs';
 
-const fs = require('fs');
+import { convert } from '../src';
 
-const Converter = require('..');
-
-const gcms = fs.readFileSync(`${__dirname}/data/misc/gcms.jdx`).toString();
-const chromTest = fs
-  .readFileSync(`${__dirname}/data/misc/chrom.jdx`)
-  .toString();
+const gcms = readFileSync(`${__dirname}/data/misc/gcms.jdx`).toString();
+const chromTest = readFileSync(`${__dirname}/data/misc/chrom.jdx`).toString();
 
 describe('Test JCAMP converter of GCMS', () => {
   it('complex chromatogram', () => {
-    let result = Converter.convert(gcms, { chromatogram: true });
+    let result = convert(gcms, { chromatogram: true });
     let chrom = result.chromatogram;
 
     // Check content
@@ -25,7 +21,7 @@ describe('Test JCAMP converter of GCMS', () => {
   });
 
   it('simple chromatogram', () => {
-    let result = Converter.convert(chromTest, { chromatogram: true });
+    let result = convert(chromTest, { chromatogram: true });
     let chrom = result.chromatogram;
 
     // Check content

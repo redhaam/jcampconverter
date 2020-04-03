@@ -1,4 +1,4 @@
-function createTree(jcamp, options = {}) {
+export default function createTree(jcamp, options = {}) {
   const { flatten = false } = options;
   if (typeof jcamp !== 'string') {
     throw new TypeError('the JCAMP should be a string');

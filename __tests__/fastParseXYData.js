@@ -1,30 +1,28 @@
-'use strict';
+import { readFileSync } from 'fs';
 
-const fs = require('fs');
-
-const Converter = require('..');
+import { convert } from '../src';
 
 const options = {
   fastParse: true,
 };
-let result = Converter.convert(
-  fs.readFileSync(`${__dirname}/data/compression/jcamp-fix.dx`).toString(),
+let result = convert(
+  readFileSync(`${__dirname}/data/compression/jcamp-fix.dx`).toString(),
   options,
 );
-let result2 = Converter.convert(
-  fs.readFileSync(`${__dirname}/data/compression/jcamp-packed.dx`).toString(),
+let result2 = convert(
+  readFileSync(`${__dirname}/data/compression/jcamp-packed.dx`).toString(),
   options,
 );
-let result3 = Converter.convert(
-  fs.readFileSync(`${__dirname}/data/compression/jcamp-packed.dx`).toString(),
+let result3 = convert(
+  readFileSync(`${__dirname}/data/compression/jcamp-packed.dx`).toString(),
   options,
 );
-let result4 = Converter.convert(
-  fs.readFileSync(`${__dirname}/data/compression/jcamp-difdup.dx`).toString(),
+let result4 = convert(
+  readFileSync(`${__dirname}/data/compression/jcamp-difdup.dx`).toString(),
   options,
 );
-let result5 = Converter.convert(
-  fs.readFileSync(`${__dirname}/data/compression/jcamp-difdup.dx`).toString(),
+let result5 = convert(
+  readFileSync(`${__dirname}/data/compression/jcamp-difdup.dx`).toString(),
 );
 
 describe('Test fastParseXYData', () => {

@@ -1,6 +1,4 @@
-'use strict';
-
-function parseXYA(spectrum, value) {
+export default function parseXYA(spectrum, value) {
   let removeSymbolRegExp = /(\(+|\)+|<+|>+|\s+)/g;
 
   spectrum.isXYAdata = true;
@@ -16,5 +14,3 @@ function parseXYA(spectrum, value) {
     currentData.push(parseFloat(values[1]));
   }
 }
-
-module.exports = parseXYA;

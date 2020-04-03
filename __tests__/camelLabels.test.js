@@ -1,21 +1,19 @@
-'use strict';
+import { readFileSync } from 'fs';
 
-const fs = require('fs');
+import { convert } from '../src';
 
-const Converter = require('../src');
-
-describe('camelLabelsl', () => {
+describe('camelLabels', () => {
   it('canonized data labels', () => {
-    let result = Converter.convert(
-      fs.readFileSync(`${__dirname}/data/misc/camelLabels.jdx`, 'utf8'),
+    let result = convert(
+      readFileSync(`${__dirname}/data/misc/camelLabels.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/ },
     );
     expect(result.info.$TEST).toStrictEqual('abc');
   });
 
   it('non-canonized data labels', () => {
-    let result = Converter.convert(
-      fs.readFileSync(`${__dirname}/data/misc/camelLabels.jdx`, 'utf8'),
+    let result = convert(
+      readFileSync(`${__dirname}/data/misc/camelLabels.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/, canonicDataLabels: false },
     );
     expect(result.info.$test).toStrictEqual('abc');

@@ -1,13 +1,11 @@
-'use strict';
+import { readFileSync } from 'fs';
 
-const fs = require('fs');
-
-const Converter = require('..');
+import { convert } from '../src';
 
 describe('Test from ACD Jcamp generator', () => {
   it('COSY simulated spectrum', () => {
-    let result = Converter.convert(
-      fs.readFileSync(`${__dirname}/data/acd/test1_cosy.jdx`).toString(),
+    let result = convert(
+      readFileSync(`${__dirname}/data/acd/test1_cosy.jdx`).toString(),
       { xy: true },
     );
     expect(result.ntuples).toHaveLength(3);

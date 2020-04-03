@@ -1,5 +1,3 @@
-'use strict';
-
 const { readFileSync } = require('fs');
 const { join } = require('path');
 const convert = require('../src').convert;

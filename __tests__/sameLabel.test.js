@@ -1,13 +1,11 @@
-'use strict';
+import { readFileSync } from 'fs';
 
-const fs = require('fs');
-
-const Converter = require('../src');
+import { convert } from '../src';
 
 describe('Test same label', () => {
   it('array if many times same label', () => {
-    let result = Converter.convert(
-      fs.readFileSync(`${__dirname}/data/misc/sameLabel.jdx`, 'utf8'),
+    let result = convert(
+      readFileSync(`${__dirname}/data/misc/sameLabel.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/ },
     );
     expect(result.info.$TEST).toStrictEqual(['abc', 'bcd', 'def']);

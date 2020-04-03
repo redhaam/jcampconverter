@@ -1,13 +1,11 @@
-'use strict';
+import { readFileSync } from 'fs';
 
-const fs = require('fs');
-
-const Converter = require('../src');
+import { convert } from '../src';
 
 describe('camelLabelsl', () => {
   it('canonized data labels', () => {
-    let result = Converter.convert(
-      fs.readFileSync(`${__dirname}/data/misc/dynamicTyping.jdx`, 'utf8'),
+    let result = convert(
+      readFileSync(`${__dirname}/data/misc/dynamicTyping.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/, dynamicTyping: true },
     );
     expect(result.info.$STRING).toStrictEqual('abc');

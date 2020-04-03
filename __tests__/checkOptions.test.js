@@ -1,13 +1,11 @@
-'use strict';
+import { readFileSync } from 'fs';
 
-const fs = require('fs');
-
-const Converter = require('..');
+import { convert } from '../src';
 
 describe('Test JCAMP options', () => {
   it('1H NMR ethyl vinyl ether', () => {
-    let result = Converter.convert(
-      fs.readFileSync(`${__dirname}/data/ethylvinylether/1h.jdx`).toString(),
+    let result = convert(
+      readFileSync(`${__dirname}/data/ethylvinylether/1h.jdx`).toString(),
       { keepRecordsRegExp: /^.+$/ },
     );
 
@@ -17,16 +15,16 @@ describe('Test JCAMP options', () => {
 });
 
 const checkOptions = (filename, options, goal, label) => {
-  const target = fs.readFileSync(`${__dirname}/data${filename}`).toString();
+  const target = readFileSync(`${__dirname}/data${filename}`).toString();
 
   describe(`Test ${label}`, () => {
     it('disables profiling by default', () => {
-      const result = Converter.convert(target);
+      const result = convert(target);
       expect(result.profiling).toBe(false);
     });
 
     it('enables profiling to return Goal', () => {
-      const result = Converter.convert(target, options);
+      const result = convert(target, options);
       const actions = result.profiling.map((p) => p.action);
       const isGoalInActs = actions.indexOf(goal) >= 0;
       expect(isGoalInActs).toBe(true);
@@ -35,21 +33,21 @@ const checkOptions = (filename, options, goal, label) => {
 };
 
 describe('Test JCAMP converter Options for NMR 13C_DEPT', () => {
-  const target = fs
-    .readFileSync(`${__dirname}/data/misc/nmr_13c_dept.dx`)
-    .toString();
+  const target = readFileSync(
+    `${__dirname}/data/misc/nmr_13c_dept.dx`,
+  ).toString();
 
   const options = {
     profiling: true,
   };
 
   it('disables profiling by default', () => {
-    const result = Converter.convert(target);
+    const result = convert(target);
     expect(result.profiling).toBe(false);
   });
 
   it('enables profiling to return array', () => {
-    const result = Converter.convert(target, options);
+    const result = convert(target, options);
     expect(result.profiling).toBeInstanceOf(Array);
   });
 });

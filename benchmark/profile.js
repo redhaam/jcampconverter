@@ -1,5 +1,3 @@
-'use strict';
-
 var profiler = require('v8-profiler');
 var fs = require('fs');
 
@@ -9,4 +7,4 @@ profiler.startProfiling('jcamp');
 convert();
 var profile = profiler.stopProfiling('jcamp');
 
-fs.writeFileSync('./jcamp.cpuprofile', JSON.stringify(profile));
+writeFileSync('./jcamp.cpuprofile', JSON.stringify(profile));

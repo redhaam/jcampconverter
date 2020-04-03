@@ -1,12 +1,10 @@
-'use strict';
+import { readFileSync } from 'fs';
 
-let fs = require('fs');
-
-let Converter = require('..');
+import { convert } from '../src';
 
 function checkJcamp(filename, label, data) {
-  const result = Converter.convert(
-    fs.readFileSync(`${__dirname}/data${filename}`).toString(),
+  const result = convert(
+    readFileSync(`${__dirname}/data${filename}`).toString(),
   );
   describe(`Test ${label}`, () => {
     it('xAxis type', () => {

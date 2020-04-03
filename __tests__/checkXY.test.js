@@ -1,14 +1,12 @@
-'use strict';
+import { readFileSync } from 'fs';
 
-const fs = require('fs');
+import { convert } from '../src';
 
-const Converter = require('..');
-
-let jcamp = fs.readFileSync(`${__dirname}/data/misc/iv.jdx`).toString();
+let jcamp = readFileSync(`${__dirname}/data/misc/iv.jdx`).toString();
 
 describe('Test conversion option for jcamp', () => {
   it('1H NMR ethyl vinyl ether', () => {
-    let result = Converter.convert(jcamp, { xy: true });
+    let result = convert(jcamp, { xy: true });
 
     let x = result.spectra[0].data[0].x;
     let y = result.spectra[0].data[0].y;
@@ -24,7 +22,7 @@ describe('Test conversion option for jcamp', () => {
   });
 
   it('withoutXY', () => {
-    let result = Converter.convert(jcamp, {
+    let result = convert(jcamp, {
       withoutXY: true,
       keepRecordsRegExp: /.*/,
     });
