@@ -1,13 +1,13 @@
-import add2D from './add2D';
+import add2D from './2d/add2D';
 import {
   complexChromatogram,
   isMSField,
   convertMSFieldToLabel,
 } from './complexChromatogram';
 import convertToFloatArray from './convertToFloatArray';
-import fastParseXYData from './fastParseXYData';
-import parsePeakTable from './parsePeakTable';
-import parseXYA from './parseXYA';
+import fastParseXYData from './parse/fastParseXYData';
+import parsePeakTable from './parse/parsePeakTable';
+import parseXYA from './parse/parseXYA';
 import prepareSpectrum from './prepareSpectrum';
 import simpleChromatogram from './simpleChromatogram';
 
@@ -21,7 +21,7 @@ function getConverter() {
     keepRecordsRegExp: /^$/,
     canonicDataLabels: true,
     dynamicTyping: false,
-    xy: false,
+    xy: true,
     withoutXY: false,
     chromatogram: false,
     keepSpectra: false,
