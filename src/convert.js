@@ -39,9 +39,15 @@ export default function convert(jcamp, options) {
 
   result.profiling = options.profiling ? [] : false;
   result.logs = [];
-  result.spectra = [];
-  result.ntuples = {};
-  result.info = {};
+
+  let currentEntry = {
+    spectra: [],
+    ntuples: {},
+    info: {},
+  };
+  entriesStack.push(currentEntry);
+  entriesFlat.push(currentEntry);
+
   let spectrum = new Spectrum();
 
   if (!(typeof jcamp === 'string')) {
@@ -80,46 +86,49 @@ export default function convert(jcamp, options) {
             '$1',
           );
           let secondVariable = infos[0].replace(/.*\.\.([a-zA-Z0-9]+).*/, '$1');
-          xIndex = result.ntuples.symbol.indexOf(firstVariable);
-          yIndex = result.ntuples.symbol.indexOf(secondVariable);
+          xIndex = currentEntry.ntuples.symbol.indexOf(firstVariable);
+          yIndex = currentEntry.ntuples.symbol.indexOf(secondVariable);
         }
 
         if (xIndex === -1) xIndex = 0;
         if (yIndex === -1) yIndex = 0;
 
-        if (result.ntuples.first) {
-          if (result.ntuples.first.length > xIndex) {
-            spectrum.firstX = result.ntuples.first[xIndex];
+        if (currentEntry.ntuples.first) {
+          if (currentEntry.ntuples.first.length > xIndex) {
+            spectrum.firstX = currentEntry.ntuples.first[xIndex];
           }
-          if (result.ntuples.first.length > yIndex) {
-            spectrum.firstY = result.ntuples.first[yIndex];
-          }
-        }
-        if (result.ntuples.last) {
-          if (result.ntuples.last.length > xIndex) {
-            spectrum.lastX = result.ntuples.last[xIndex];
-          }
-          if (result.ntuples.last.length > yIndex) {
-            spectrum.lastY = result.ntuples.last[yIndex];
+          if (currentEntry.ntuples.first.length > yIndex) {
+            spectrum.firstY = currentEntry.ntuples.first[yIndex];
           }
         }
-        if (result.ntuples.vardim && result.ntuples.vardim.length > xIndex) {
-          spectrum.nbPoints = result.ntuples.vardim[xIndex];
-        }
-        if (result.ntuples.factor) {
-          if (result.ntuples.factor.length > xIndex) {
-            spectrum.xFactor = result.ntuples.factor[xIndex];
+        if (currentEntry.ntuples.last) {
+          if (currentEntry.ntuples.last.length > xIndex) {
+            spectrum.lastX = currentEntry.ntuples.last[xIndex];
           }
-          if (result.ntuples.factor.length > yIndex) {
-            spectrum.yFactor = result.ntuples.factor[yIndex];
+          if (currentEntry.ntuples.last.length > yIndex) {
+            spectrum.lastY = currentEntry.ntuples.last[yIndex];
           }
         }
-        if (result.ntuples.units) {
-          if (result.ntuples.units.length > xIndex) {
-            spectrum.xUnit = result.ntuples.units[xIndex];
+        if (
+          currentEntry.ntuples.vardim &&
+          currentEntry.ntuples.vardim.length > xIndex
+        ) {
+          spectrum.nbPoints = currentEntry.ntuples.vardim[xIndex];
+        }
+        if (currentEntry.ntuples.factor) {
+          if (currentEntry.ntuples.factor.length > xIndex) {
+            spectrum.xFactor = currentEntry.ntuples.factor[xIndex];
           }
-          if (result.ntuples.units.length > yIndex) {
-            spectrum.yUnit = result.ntuples.units[yIndex];
+          if (currentEntry.ntuples.factor.length > yIndex) {
+            spectrum.yFactor = currentEntry.ntuples.factor[yIndex];
+          }
+        }
+        if (currentEntry.ntuples.units) {
+          if (currentEntry.ntuples.units.length > xIndex) {
+            spectrum.xUnit = currentEntry.ntuples.units[xIndex];
+          }
+          if (currentEntry.ntuples.units.length > yIndex) {
+            spectrum.yUnit = currentEntry.ntuples.units[yIndex];
           }
         }
         spectrum.datatable = infos[0];
@@ -150,7 +159,7 @@ export default function convert(jcamp, options) {
         } else {
           parsePeakTable(spectrum, dataValue, result);
         }
-        result.spectra.push(spectrum);
+        currentEntry.spectra.push(spectrum);
         spectrum = new Spectrum();
       }
       continue;
@@ -158,7 +167,7 @@ export default function convert(jcamp, options) {
       if (options.wantXY) {
         prepareSpectrum(spectrum);
         parsePeakTable(spectrum, dataValue, result);
-        result.spectra.push(spectrum);
+        currentEntry.spectra.push(spectrum);
         spectrum = new Spectrum();
       }
       continue;
@@ -169,7 +178,7 @@ export default function convert(jcamp, options) {
           // ex: (XYA)
           parseXYA(spectrum, dataValue);
         }
-        result.spectra.push(spectrum);
+        currentEntry.spectra.push(spectrum);
         spectrum = new Spectrum();
       }
       continue;
@@ -180,12 +189,12 @@ export default function convert(jcamp, options) {
     } else if (canonicDataLabel === 'DATATYPE') {
       spectrum.dataType = dataValue;
       if (dataValue.indexOf('nD') > -1) {
-        result.twoD = true;
+        currentEntry.twoD = true;
       }
     } else if (canonicDataLabel === 'NTUPLES') {
       ntupleLevel++;
       if (dataValue.indexOf('nD') > -1) {
-        result.twoD = true;
+        currentEntry.twoD = true;
       }
     } else if (canonicDataLabel === 'XUNITS') {
       spectrum.xUnit = dataValue;
@@ -224,15 +233,15 @@ export default function convert(jcamp, options) {
       }
     } else if (canonicDataLabel === '.OBSERVENUCLEUS') {
       if (!spectrum.xType) {
-        result.xType = dataValue.replace(/[^a-zA-Z0-9]/g, '');
+        currentEntry.xType = dataValue.replace(/[^a-zA-Z0-9]/g, '');
       }
     } else if (canonicDataLabel === '$SFO2') {
-      if (!result.indirectFrequency) {
-        result.indirectFrequency = parseFloat(dataValue);
+      if (!currentEntry.indirectFrequency) {
+        currentEntry.indirectFrequency = parseFloat(dataValue);
       }
     } else if (canonicDataLabel === '$OFFSET') {
       // OFFSET for Bruker spectra
-      result.shiftOffsetNum = 0;
+      currentEntry.shiftOffsetNum = 0;
       if (!spectrum.shiftOffsetVal) {
         spectrum.shiftOffsetVal = parseFloat(dataValue);
       }
@@ -241,57 +250,62 @@ export default function convert(jcamp, options) {
       // if we activate this part it does not work for ACD specmanager
       //         } else if (canonicDataLabel=='.SHIFTREFERENCE') {   // OFFSET FOR Bruker Spectra
       //                 var parts = dataValue.split(/ *, */);
-      //                 result.shiftOffsetNum = parseInt(parts[2].trim());
+      //                 currentEntry.shiftOffsetNum = parseInt(parts[2].trim());
       //                 spectrum.shiftOffsetVal = parseFloat(parts[3].trim());
     } else if (canonicDataLabel === 'VARNAME') {
-      result.ntuples.varname = dataValue.split(ntuplesSeparator);
+      currentEntry.ntuples.varname = dataValue.split(ntuplesSeparator);
     } else if (canonicDataLabel === 'SYMBOL') {
-      result.ntuples.symbol = dataValue.split(ntuplesSeparator);
+      currentEntry.ntuples.symbol = dataValue.split(ntuplesSeparator);
     } else if (canonicDataLabel === 'VARTYPE') {
-      result.ntuples.vartype = dataValue.split(ntuplesSeparator);
+      currentEntry.ntuples.vartype = dataValue.split(ntuplesSeparator);
     } else if (canonicDataLabel === 'VARFORM') {
-      result.ntuples.varform = dataValue.split(ntuplesSeparator);
+      currentEntry.ntuples.varform = dataValue.split(ntuplesSeparator);
     } else if (canonicDataLabel === 'VARDIM') {
-      result.ntuples.vardim = convertToFloatArray(
+      currentEntry.ntuples.vardim = convertToFloatArray(
         dataValue.split(ntuplesSeparator),
       );
     } else if (canonicDataLabel === 'UNITS') {
-      result.ntuples.units = dataValue.split(ntuplesSeparator);
+      currentEntry.ntuples.units = dataValue.split(ntuplesSeparator);
     } else if (canonicDataLabel === 'FACTOR') {
-      result.ntuples.factor = convertToFloatArray(
+      currentEntry.ntuples.factor = convertToFloatArray(
         dataValue.split(ntuplesSeparator),
       );
     } else if (canonicDataLabel === 'FIRST') {
-      result.ntuples.first = convertToFloatArray(
+      currentEntry.ntuples.first = convertToFloatArray(
         dataValue.split(ntuplesSeparator),
       );
     } else if (canonicDataLabel === 'LAST') {
-      result.ntuples.last = convertToFloatArray(
+      currentEntry.ntuples.last = convertToFloatArray(
         dataValue.split(ntuplesSeparator),
       );
     } else if (canonicDataLabel === 'MIN') {
-      result.ntuples.min = convertToFloatArray(
+      currentEntry.ntuples.min = convertToFloatArray(
         dataValue.split(ntuplesSeparator),
       );
     } else if (canonicDataLabel === 'MAX') {
-      result.ntuples.max = convertToFloatArray(
+      currentEntry.ntuples.max = convertToFloatArray(
         dataValue.split(ntuplesSeparator),
       );
     } else if (canonicDataLabel === '.NUCLEUS') {
-      if (result.twoD) {
-        result.yType = dataValue.split(ntuplesSeparator)[0];
+      if (currentEntry.twoD) {
+        currentEntry.yType = dataValue.split(ntuplesSeparator)[0];
       }
     } else if (canonicDataLabel === 'PAGE') {
       spectrum.page = dataValue.trim();
       spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ''));
       spectrum.pageSymbol = spectrum.page.replace(/[=].*/, '');
-      let pageSymbolIndex = result.ntuples.symbol.indexOf(spectrum.pageSymbol);
+      let pageSymbolIndex = currentEntry.ntuples.symbol.indexOf(
+        spectrum.pageSymbol,
+      );
       let unit = '';
-      if (result.ntuples.units && result.ntuples.units[pageSymbolIndex]) {
-        unit = result.ntuples.units[pageSymbolIndex];
+      if (
+        currentEntry.ntuples.units &&
+        currentEntry.ntuples.units[pageSymbolIndex]
+      ) {
+        unit = currentEntry.ntuples.units[pageSymbolIndex];
       }
-      if (result.indirectFrequency && unit !== 'PPM') {
-        spectrum.pageValue /= result.indirectFrequency;
+      if (currentEntry.indirectFrequency && unit !== 'PPM') {
+        spectrum.pageValue /= currentEntry.indirectFrequency;
       }
     } else if (canonicDataLabel === 'RETENTIONTIME') {
       spectrum.pageValue = parseFloat(dataValue);
@@ -313,22 +327,24 @@ export default function convert(jcamp, options) {
       if (options.dynamicTyping && !isNaN(value)) {
         value = Number(value);
       }
-      if (result.info[label]) {
-        if (!Array.isArray(result.info[label])) {
-          result.info[label] = [result.info[label]];
+      if (currentEntry.info[label]) {
+        if (!Array.isArray(currentEntry.info[label])) {
+          currentEntry.info[label] = [currentEntry.info[label]];
         }
-        result.info[label].push(value);
+        currentEntry.info[label].push(value);
       } else {
-        result.info[label] = value;
+        currentEntry.info[label] = value;
       }
     }
   }
 
   profiling(result, 'Finished parsing', options);
 
-  postProcessing(result, options);
+  postProcessing(entriesFlat, result, options);
 
   profiling(result, 'Total time', options);
+
+  result = { ...result, ...currentEntry };
 
   return result;
 }
