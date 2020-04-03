@@ -1,8 +1,9 @@
 import add2D from './2d/add2D';
 import { complexChromatogram } from './complexChromatogram';
 import simpleChromatogram from './simpleChromatogram';
+import profiling from './profiling';
 
-export default function postProcessing(result, profiling, ntuples, options) {
+export default function postProcessing(result, ntuples, options) {
   if (Object.keys(ntuples).length > 0) {
     let newNtuples = [];
     let keys = Object.keys(ntuples);
@@ -19,12 +20,9 @@ export default function postProcessing(result, profiling, ntuples, options) {
 
   if (result.twoD && options.wantXY) {
     add2D(result, options);
-    if (profiling) {
-      profiling.push({
-        action: 'Finished countour plot calculation',
-        time: Date.now() - options.start,
-      });
-    }
+
+    profiling(result, 'Finished countour plot calculation', options);
+
     if (!options.keepSpectra) {
       delete result.spectra;
     }
@@ -63,18 +61,6 @@ export default function postProcessing(result, profiling, ntuples, options) {
     } else {
       simpleChromatogram(result);
     }
-    if (profiling) {
-      profiling.push({
-        action: 'Finished chromatogram calculation',
-        time: Date.now() - options.start,
-      });
-    }
-  }
-
-  if (profiling) {
-    profiling.push({
-      action: 'Total time',
-      time: Date.now() - options.start,
-    });
+    profiling(result, 'Finished chromatogram calculation', options);
   }
 }

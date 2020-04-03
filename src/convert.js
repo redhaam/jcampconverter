@@ -4,7 +4,7 @@ import fastParseXYData from './parse/fastParseXYData';
 import parsePeakTable from './parse/parsePeakTable';
 import parseXYA from './parse/parseXYA';
 import prepareSpectrum from './prepareSpectrum';
-
+import profiling from './profiling';
 import postProcessing from './postProcessing';
 
 // the following RegExp can only be used for XYdata, some peakTables have values with a "E-5" ...
@@ -50,21 +50,11 @@ export default function convert(jcamp, options) {
     throw new TypeError('the JCAMP should be a string');
   }
 
-  if (result.profiling) {
-    result.profiling.push({
-      action: 'Before split to LDRS',
-      time: Date.now() - options.start,
-    });
-  }
+  profiling(result, 'Before split to LDRS', options);
 
   ldrs = jcamp.split(/[\r\n]+##/);
 
-  if (result.profiling) {
-    result.profiling.push({
-      action: 'Split to LDRS',
-      time: Date.now() - options.start,
-    });
-  }
+  profiling(result, 'Split to LDRS', options);
 
   if (ldrs[0]) ldrs[0] = ldrs[0].replace(/^[\r\n ]*##/, '');
 
@@ -330,14 +320,11 @@ export default function convert(jcamp, options) {
     }
   }
 
-  if (result.profiling) {
-    result.profiling.push({
-      action: 'Finished parsing',
-      time: Date.now() - options.start,
-    });
-  }
+  profiling(result, 'Finished parsing', options);
 
-  postProcessing(result, result.profiling, ntuples, options);
+  postProcessing(result, ntuples, options);
+
+  profiling(result, 'Total time', options);
 
   return result;
 }
