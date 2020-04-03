@@ -1,0 +1,23 @@
+##TITLE=tree
+##DATA TYPE= LINK
+##BLOCKS=   2
+##TITLE=child 1
+##DATA TYPE=type 1
+##PEAK TABLE= (XY..XY)
+1 2
+2 3
+##END=
+##TITLE=re im ntuples
+##DATA TYPE=RE IM
+##SYMBOL=    X,        R,        I,        N
+##VAR_DIM=   3,        3,        3,        2
+##FIRST=     1,        0,        0,        1
+##LAST=      3,        0,        0,        2
+##PAGE= N=1
+##DATA TABLE=(X++(R..R)), XYDATA
+1 2 3 4
+##PAGE= N=2
+##DATA TABLE=(X++(I..I)), XYDATA
+1 3 4 5
+##END=
+##END=
