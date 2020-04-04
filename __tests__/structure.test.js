@@ -8,7 +8,7 @@ describe('Test various jcamp structures', () => {
     let result = convert(
       readFileSync(join(__dirname, '/data/structure/normal.jdx'), 'utf8'),
     );
-    expect(result.spectra.length).toBe(1);
+    expect(result.spectra).toHaveLength(1);
     expect(result.spectra[0].title).toBe('1 2 3');
     expect(result.spectra[0].dataType).toBe('type 1');
     expect(result.spectra[0].data[0]).toStrictEqual({ x: [1, 2], y: [2, 3] });
@@ -18,7 +18,7 @@ describe('Test various jcamp structures', () => {
     let result = convert(
       readFileSync(join(__dirname, '/data/structure/two.jdx'), 'utf8'),
     );
-    expect(result.spectra.length).toBe(2);
+    expect(result.spectra).toHaveLength(2);
     expect(result.spectra[0].title).toBe('1 2 3');
     expect(result.spectra[0].dataType).toBe('type 1');
     expect(result.spectra[0].data[0]).toStrictEqual({ x: [1, 2], y: [2, 3] });
@@ -31,7 +31,7 @@ describe('Test various jcamp structures', () => {
     let result = convert(
       readFileSync(join(__dirname, '/data/structure/reim.jdx'), 'utf8'),
     );
-    expect(result.spectra.length).toBe(2);
+    expect(result.spectra).toHaveLength(2);
     expect(result.spectra[0].data[0]).toStrictEqual({
       x: [1, 2, 3],
       y: [2, 3, 4],
@@ -47,7 +47,7 @@ describe('Test various jcamp structures', () => {
       readFileSync(join(__dirname, '/data/structure/ntuples.jdx'), 'utf8'),
       { noContour: true, keepSpectra: true },
     );
-    expect(result.spectra.length).toBe(2);
+    expect(result.spectra).toHaveLength(2);
     expect(result.spectra[0].data[0]).toStrictEqual({
       x: [1, 2, 3],
       y: [2, 3, 4],
