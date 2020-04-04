@@ -9,7 +9,7 @@ export default function fastParseXYData(spectrum, value) {
   spectrum.isXYdata = true;
   // TODO to be improved using 2 array {x:[], y:[]}
   let currentData = [];
-  spectrum.data = [currentData];
+  spectrum.data = currentData;
 
   let currentX = spectrum.firstX;
   let currentY = spectrum.firstY;

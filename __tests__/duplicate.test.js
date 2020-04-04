@@ -10,7 +10,18 @@ describe('Test same label', () => {
 ##END=`;
     let result = convert(jcamp, { xy: false });
     expect(result.spectra[0].data).toStrictEqual([
-      [10, 1, 11, 1, 12, 1, 13, 1, 14, 1, 15, 1],
+      10,
+      1,
+      11,
+      1,
+      12,
+      1,
+      13,
+      1,
+      14,
+      1,
+      15,
+      1,
     ]);
   });
 
@@ -23,7 +34,18 @@ describe('Test same label', () => {
 ##END=`;
     let result = convert(jcamp, { xy: false });
     expect(result.spectra[0].data).toStrictEqual([
-      [10, -1, 11, -1, 12, -1, 13, -1, 14, -1, 15, -1],
+      10,
+      -1,
+      11,
+      -1,
+      12,
+      -1,
+      13,
+      -1,
+      14,
+      -1,
+      15,
+      -1,
     ]);
   });
 });

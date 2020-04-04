@@ -28,12 +28,12 @@ describe('Test JCAMP converter of NMR with peak assignments', () => {
 
   it('has data from (XYA)', () => {
     // http://www.jcamp-dx.org/protocols/dxnmr01.pdf (Example 3)
-    expect(paTarget.data[0][0]).toBe(118.93612601748676);
-    expect(paTarget.data[0][1]).toBe(246226528.0);
-    expect(paTarget.data[0][2]).toBe(119.12759305537116);
-    expect(paTarget.data[0][3]).toBe(266635237.0);
+    expect(paTarget.data[0]).toBe(118.93612601748676);
+    expect(paTarget.data[1]).toBe(246226528.0);
+    expect(paTarget.data[2]).toBe(119.12759305537116);
+    expect(paTarget.data[3]).toBe(266635237.0);
 
-    expect(paTarget.data[0].length / 2).toBe(2);
+    expect(paTarget.data.length / 2).toBe(2);
   });
 
   it('has a shiftOffsetVal parameter for "NMR SPECTRUM"', () => {
