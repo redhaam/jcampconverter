@@ -71,6 +71,21 @@ describe('Test various jcamp structures', () => {
       readFileSync(join(__dirname, '/data/structure/ntuples.jdx'), 'utf8'),
       { noContour: true, keepSpectra: true },
     );
+    expect(result.entries[0].minMax).toStrictEqual({
+      z: [
+        [2, 3, 4],
+        [3, 4, 5],
+        [4, 5, 6],
+        [5, 6, 7],
+      ],
+      minX: 4,
+      maxX: 6,
+      minY: 0,
+      maxY: 3,
+      minZ: 2,
+      maxZ: 7,
+      noise: 3,
+    });
     expect(result.entries).toHaveLength(1);
     expect(result.entries[0].spectra).toHaveLength(4);
     expect(result.entries[0].spectra[0].data).toStrictEqual({

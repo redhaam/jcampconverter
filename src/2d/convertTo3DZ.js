@@ -18,7 +18,7 @@ export default function convertTo3DZ(spectra) {
   }
 
   const firstX = spectra[0].data[0];
-  const lastX = spectra[0].data[spectra[0].data[0].length - 2]; // has to be -2 because it is a 1D array [x,y,x,y,...]
+  const lastX = spectra[0].data[spectra[0].data.length - 2]; // has to be -2 because it is a 1D array [x,y,x,y,...]
   const firstY = spectra[0].pageValue;
   const lastY = spectra[ySize - 1].pageValue;
 
