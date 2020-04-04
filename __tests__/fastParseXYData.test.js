@@ -27,9 +27,9 @@ let result5 = convert(
 
 describe('Test fastParseXYData', () => {
   it('should yield exactly the same data', () => {
-    expect(result.spectra).toStrictEqual(result2.spectra);
-    expect(result.spectra).toStrictEqual(result3.spectra);
-    expect(result.spectra).toStrictEqual(result4.spectra);
-    expect(result.spectra).toStrictEqual(result5.spectra);
+    expect(result.entries[0].spectra).toStrictEqual(result2.entries[0].spectra);
+    expect(result.entries[0].spectra).toStrictEqual(result3.entries[0].spectra);
+    expect(result.entries[0].spectra).toStrictEqual(result4.entries[0].spectra);
+    expect(result.entries[0].spectra).toStrictEqual(result5.entries[0].spectra);
   });
 });

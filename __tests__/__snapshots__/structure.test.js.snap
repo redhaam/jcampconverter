@@ -1,0 +1,340 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test various jcamp structures assigned 1`] = `
+Object {
+  "entries": Array [
+    Object {
+      "children": Array [
+        Object {
+          "children": Array [
+            Object {
+              "info": Object {
+                "ATOMLIST": "$$ AN	AS	NH
+	1	C	 
+	2	C",
+                "BONDLIST": "$$ AN1	AN2	BT
+	1	2	D
+	2	3	S",
+                "TITLE": "Molecule",
+              },
+              "ntuples": Object {},
+              "spectra": Array [],
+              "title": "Molecule",
+            },
+            Object {
+              "dataClass": "ASSIGNMENTS",
+              "dataType": "NMR PEAK ASSIGNMENTS",
+              "info": Object {
+                "DATACLASS": "ASSIGNMENTS",
+                "DATATYPE": "NMR PEAK ASSIGNMENTS",
+                "TITLE": "Assignment",
+              },
+              "ntuples": Object {},
+              "spectra": Array [
+                Spectrum {},
+              ],
+              "title": "Assignment",
+            },
+          ],
+          "dataType": "LINK 2",
+          "info": Object {
+            "DATATYPE": "LINK 2",
+            "END": "",
+            "TITLE": "title link 2",
+          },
+          "ntuples": Object {},
+          "spectra": Array [],
+          "title": "title link 2",
+        },
+        Object {
+          "dataType": "type 1",
+          "info": Object {
+            "$META": "META",
+            "DATATYPE": "type 1",
+            "NPOINTS": "2",
+            "TITLE": "1 2 3",
+          },
+          "ntuples": Object {},
+          "spectra": Array [
+            Spectrum {
+              "data": Object {
+                "x": Array [
+                  1,
+                  2,
+                ],
+                "y": Array [
+                  2,
+                  3,
+                ],
+              },
+              "isPeaktable": true,
+              "nbPoints": 2,
+              "xFactor": 1,
+              "yFactor": 1,
+            },
+          ],
+          "title": "1 2 3",
+        },
+        Object {
+          "dataType": "type 2",
+          "info": Object {
+            "DATATYPE": "type 2",
+            "TITLE": "peaks",
+          },
+          "ntuples": Object {},
+          "spectra": Array [
+            Spectrum {
+              "data": Object {
+                "x": Array [],
+                "y": Array [],
+              },
+              "isPeaktable": true,
+              "xFactor": 1,
+              "yFactor": 1,
+            },
+          ],
+          "title": "peaks",
+        },
+      ],
+      "dataType": "LINK 1",
+      "info": Object {
+        "DATATYPE": "LINK 1",
+        "END": "",
+        "TITLE": "title link 1",
+      },
+      "ntuples": Object {},
+      "spectra": Array [],
+      "title": "title link 1",
+    },
+  ],
+  "flatten": Array [
+    Object {
+      "children": Array [
+        Object {
+          "children": Array [
+            Object {
+              "info": Object {
+                "ATOMLIST": "$$ AN	AS	NH
+	1	C	 
+	2	C",
+                "BONDLIST": "$$ AN1	AN2	BT
+	1	2	D
+	2	3	S",
+                "TITLE": "Molecule",
+              },
+              "ntuples": Object {},
+              "spectra": Array [],
+              "title": "Molecule",
+            },
+            Object {
+              "dataClass": "ASSIGNMENTS",
+              "dataType": "NMR PEAK ASSIGNMENTS",
+              "info": Object {
+                "DATACLASS": "ASSIGNMENTS",
+                "DATATYPE": "NMR PEAK ASSIGNMENTS",
+                "TITLE": "Assignment",
+              },
+              "ntuples": Object {},
+              "spectra": Array [
+                Spectrum {},
+              ],
+              "title": "Assignment",
+            },
+          ],
+          "dataType": "LINK 2",
+          "info": Object {
+            "DATATYPE": "LINK 2",
+            "END": "",
+            "TITLE": "title link 2",
+          },
+          "ntuples": Object {},
+          "spectra": Array [],
+          "title": "title link 2",
+        },
+        Object {
+          "dataType": "type 1",
+          "info": Object {
+            "$META": "META",
+            "DATATYPE": "type 1",
+            "NPOINTS": "2",
+            "TITLE": "1 2 3",
+          },
+          "ntuples": Object {},
+          "spectra": Array [
+            Spectrum {
+              "data": Object {
+                "x": Array [
+                  1,
+                  2,
+                ],
+                "y": Array [
+                  2,
+                  3,
+                ],
+              },
+              "isPeaktable": true,
+              "nbPoints": 2,
+              "xFactor": 1,
+              "yFactor": 1,
+            },
+          ],
+          "title": "1 2 3",
+        },
+        Object {
+          "dataType": "type 2",
+          "info": Object {
+            "DATATYPE": "type 2",
+            "TITLE": "peaks",
+          },
+          "ntuples": Object {},
+          "spectra": Array [
+            Spectrum {
+              "data": Object {
+                "x": Array [],
+                "y": Array [],
+              },
+              "isPeaktable": true,
+              "xFactor": 1,
+              "yFactor": 1,
+            },
+          ],
+          "title": "peaks",
+        },
+      ],
+      "dataType": "LINK 1",
+      "info": Object {
+        "DATATYPE": "LINK 1",
+        "END": "",
+        "TITLE": "title link 1",
+      },
+      "ntuples": Object {},
+      "spectra": Array [],
+      "title": "title link 1",
+    },
+    Object {
+      "children": Array [
+        Object {
+          "info": Object {
+            "ATOMLIST": "$$ AN	AS	NH
+	1	C	 
+	2	C",
+            "BONDLIST": "$$ AN1	AN2	BT
+	1	2	D
+	2	3	S",
+            "TITLE": "Molecule",
+          },
+          "ntuples": Object {},
+          "spectra": Array [],
+          "title": "Molecule",
+        },
+        Object {
+          "dataClass": "ASSIGNMENTS",
+          "dataType": "NMR PEAK ASSIGNMENTS",
+          "info": Object {
+            "DATACLASS": "ASSIGNMENTS",
+            "DATATYPE": "NMR PEAK ASSIGNMENTS",
+            "TITLE": "Assignment",
+          },
+          "ntuples": Object {},
+          "spectra": Array [
+            Spectrum {},
+          ],
+          "title": "Assignment",
+        },
+      ],
+      "dataType": "LINK 2",
+      "info": Object {
+        "DATATYPE": "LINK 2",
+        "END": "",
+        "TITLE": "title link 2",
+      },
+      "ntuples": Object {},
+      "spectra": Array [],
+      "title": "title link 2",
+    },
+    Object {
+      "info": Object {
+        "ATOMLIST": "$$ AN	AS	NH
+	1	C	 
+	2	C",
+        "BONDLIST": "$$ AN1	AN2	BT
+	1	2	D
+	2	3	S",
+        "TITLE": "Molecule",
+      },
+      "ntuples": Object {},
+      "spectra": Array [],
+      "title": "Molecule",
+    },
+    Object {
+      "dataClass": "ASSIGNMENTS",
+      "dataType": "NMR PEAK ASSIGNMENTS",
+      "info": Object {
+        "DATACLASS": "ASSIGNMENTS",
+        "DATATYPE": "NMR PEAK ASSIGNMENTS",
+        "TITLE": "Assignment",
+      },
+      "ntuples": Object {},
+      "spectra": Array [
+        Spectrum {},
+      ],
+      "title": "Assignment",
+    },
+    Object {
+      "dataType": "type 1",
+      "info": Object {
+        "$META": "META",
+        "DATATYPE": "type 1",
+        "NPOINTS": "2",
+        "TITLE": "1 2 3",
+      },
+      "ntuples": Object {},
+      "spectra": Array [
+        Spectrum {
+          "data": Object {
+            "x": Array [
+              1,
+              2,
+            ],
+            "y": Array [
+              2,
+              3,
+            ],
+          },
+          "isPeaktable": true,
+          "nbPoints": 2,
+          "xFactor": 1,
+          "yFactor": 1,
+        },
+      ],
+      "title": "1 2 3",
+    },
+    Object {
+      "dataType": "type 2",
+      "info": Object {
+        "DATATYPE": "type 2",
+        "TITLE": "peaks",
+      },
+      "ntuples": Object {},
+      "spectra": Array [
+        Spectrum {
+          "data": Object {
+            "x": Array [],
+            "y": Array [],
+          },
+          "isPeaktable": true,
+          "xFactor": 1,
+          "yFactor": 1,
+        },
+      ],
+      "title": "peaks",
+    },
+  ],
+  "logs": Array [
+    "Format error: 1,2,3",
+    "Format error: 2,3,4",
+    "Format error: 3,4,5",
+  ],
+  "profiling": false,
+}
+`;

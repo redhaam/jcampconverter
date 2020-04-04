@@ -8,15 +8,15 @@ describe('Test conversion option for jcamp', () => {
   it('1H NMR ethyl vinyl ether', () => {
     let result = convert(jcamp, { xy: true });
 
-    let x = result.spectra[0].data.x;
-    let y = result.spectra[0].data.y;
+    let x = result.entries[0].spectra[0].data.x;
+    let y = result.entries[0].spectra[0].data.y;
 
     // Check X and Y length
     expect(x).toHaveLength(302);
     expect(y).toHaveLength(302);
 
     // Check type is peak table
-    let type = result.spectra[0];
+    let type = result.entries[0].spectra[0];
     expect(type).not.toHaveProperty('isXYdata');
     expect(type.isPeaktable).toBe(true);
   });
@@ -26,7 +26,7 @@ describe('Test conversion option for jcamp', () => {
       withoutXY: true,
       keepRecordsRegExp: /.*/,
     });
-    expect(result.info.TITLE).toBe('abc');
-    expect(result.info).not.toHaveProperty('PEAKTABLE');
+    expect(result.entries[0].info.TITLE).toBe('abc');
+    expect(result.entries[0].info).not.toHaveProperty('PEAKTABLE');
   });
 });

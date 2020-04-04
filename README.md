@@ -58,6 +58,12 @@ var jcamp = require("fs")
   .toString();
 
 var result = converter.convert(jcamp);
+
+// if there is only one spectrum it will be in
+console.log(result.flatten[0]);
+
+// the converter will also keep the full jcamp tree
+
 ```
 
 #### AMD

@@ -32,25 +32,20 @@ export default function convert(jcamp, options) {
   options.start = Date.now();
 
   let entriesFlat = [];
-  let entriesStack = [];
-  let ntupleLevel = 0;
 
-  let result = {};
-
-  result.profiling = options.profiling ? [] : false;
-  result.logs = [];
-
-  let currentEntry = {
-    spectra: [],
-    ntuples: {},
-    info: {},
+  let result = {
+    profiling: options.profiling ? [] : false,
+    logs: [],
+    entries: [],
   };
-  entriesStack.push(currentEntry);
-  entriesFlat.push(currentEntry);
+
+  let tmpResult = { children: [] };
+  let currentEntry = tmpResult;
+  let parentsStack = [];
 
   let spectrum = new Spectrum();
 
-  if (!(typeof jcamp === 'string')) {
+  if (typeof jcamp !== 'string') {
     throw new TypeError('the JCAMP should be a string');
   }
 
@@ -185,17 +180,30 @@ export default function convert(jcamp, options) {
     }
 
     if (canonicDataLabel === 'TITLE') {
-      spectrum.title = dataValue;
+      let parentEntry = currentEntry;
+      if (!parentEntry.children) {
+        parentEntry.children = [];
+      }
+      currentEntry = {
+        spectra: [],
+        ntuples: {},
+        info: {},
+      };
+      parentEntry.children.push(currentEntry);
+      parentsStack.push(parentEntry);
+      entriesFlat.push(currentEntry);
+      currentEntry.title = dataValue;
     } else if (canonicDataLabel === 'DATATYPE') {
-      spectrum.dataType = dataValue;
+      currentEntry.dataType = dataValue;
       if (dataValue.indexOf('nD') > -1) {
         currentEntry.twoD = true;
       }
     } else if (canonicDataLabel === 'NTUPLES') {
-      ntupleLevel++;
       if (dataValue.indexOf('nD') > -1) {
         currentEntry.twoD = true;
       }
+    } else if (canonicDataLabel === 'DATACLASS') {
+      currentEntry.dataClass = dataValue;
     } else if (canonicDataLabel === 'XUNITS') {
       spectrum.xUnit = dataValue;
     } else if (canonicDataLabel === 'YUNITS') {
@@ -314,14 +322,14 @@ export default function convert(jcamp, options) {
     } else if (canonicDataLabel === 'SAMPLEDESCRIPTION') {
       spectrum.sampleDescription = dataValue;
     } else if (canonicDataLabel === 'END') {
-      // todo
+      currentEntry = parentsStack.pop();
     }
 
-    if (canonicDataLabel === 'END' && ntupleLevel > 0) {
-      ntupleLevel--;
-    }
-
-    if (canonicDataLabel.match(options.keepRecordsRegExp)) {
+    if (
+      currentEntry &&
+      currentEntry.info &&
+      canonicDataLabel.match(options.keepRecordsRegExp)
+    ) {
       let label = options.canonicDataLabels ? canonicDataLabel : dataLabel;
       let value = dataValue.trim();
       if (options.dynamicTyping && !isNaN(value)) {
@@ -344,7 +352,13 @@ export default function convert(jcamp, options) {
 
   profiling(result, 'Total time', options);
 
-  result = { ...result, ...currentEntry };
+  /*
+  if (result.children && result.children.length>0) {
+    result = { ...result, ...result.children[0] };
+  }
+  */
+  result.entries = tmpResult.children;
+  result.flatten = entriesFlat;
 
   return result;
 }

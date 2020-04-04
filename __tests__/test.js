@@ -8,16 +8,16 @@ function checkJcamp(filename, label, data) {
   );
   describe(`Test ${label}`, () => {
     it('xAxis type', () => {
-      expect(result.xType).toStrictEqual(data.xType);
+      expect(result.entries[0].xType).toStrictEqual(data.xType);
     });
 
-    if (result.spectra) {
+    if (result.entries[0].spectra) {
       it('Number of spectra present', () => {
-        expect(result.spectra).toHaveLength(data.nbSpectra);
+        expect(result.entries[0].spectra).toHaveLength(data.nbSpectra);
       });
 
       it('Spectrum data', () => {
-        let spectrum = result.spectra[0];
+        let spectrum = result.entries[0].spectra[0];
         expect(spectrum.observeFrequency).toStrictEqual(data.observeFrequency);
         expect(spectrum.nbPoints).toStrictEqual(data.nbPoints);
         expect(spectrum.nbPoints).toStrictEqual(spectrum.data.x.length);

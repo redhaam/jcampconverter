@@ -8,8 +8,8 @@ describe('Test from ACD Jcamp generator', () => {
       readFileSync(`${__dirname}/data/acd/test1_cosy.jdx`).toString(),
       { xy: true },
     );
-    expect(result.ntuples).toHaveLength(3);
-    expect(result.twoD).toBe(true);
-    expect(result.contourLines).toBeInstanceOf(Object);
+    expect(result.entries[0].ntuples).toHaveLength(3);
+    expect(result.entries[0].twoD).toBe(true);
+    expect(result.entries[0].contourLines).toBeInstanceOf(Object);
   });
 });

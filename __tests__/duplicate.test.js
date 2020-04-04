@@ -9,7 +9,7 @@ describe('Test same label', () => {
 10 AX
 ##END=`;
     let result = convert(jcamp, { xy: false });
-    expect(result.spectra[0].data).toStrictEqual([
+    expect(result.entries[0].spectra[0].data).toStrictEqual([
       10,
       1,
       11,
@@ -33,7 +33,7 @@ describe('Test same label', () => {
 10 aX
 ##END=`;
     let result = convert(jcamp, { xy: false });
-    expect(result.spectra[0].data).toStrictEqual([
+    expect(result.entries[0].spectra[0].data).toStrictEqual([
       10,
       -1,
       11,

@@ -8,7 +8,7 @@ describe('camelLabels', () => {
       readFileSync(`${__dirname}/data/misc/camelLabels.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/ },
     );
-    expect(result.info.$TEST).toStrictEqual('abc');
+    expect(result.entries[0].info.$TEST).toStrictEqual('abc');
   });
 
   it('non-canonized data labels', () => {
@@ -16,6 +16,6 @@ describe('camelLabels', () => {
       readFileSync(`${__dirname}/data/misc/camelLabels.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/, canonicDataLabels: false },
     );
-    expect(result.info.$test).toStrictEqual('abc');
+    expect(result.entries[0].info.$test).toStrictEqual('abc');
   });
 });

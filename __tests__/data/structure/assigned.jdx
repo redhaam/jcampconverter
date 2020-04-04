@@ -1,0 +1,38 @@
+##TITLE=title link 1
+##DATA TYPE=	LINK 1
+##TITLE=title link 2
+##DATA TYPE=	LINK 2
+##TITLE=Molecule
+##ATOMLIST=	
+$$ AN	AS	NH
+	1	C	 
+	2	C	  
+##BONDLIST=	
+$$ AN1	AN2	BT
+	1	2	D
+	2	3	S
+##END=	
+##TITLE=Assignment
+##DATA TYPE=	NMR PEAK ASSIGNMENTS
+##DATA CLASS=	ASSIGNMENTS
+##PEAKASSIGNMENTS=	(XYWA)
+(1, 2, 3, <3>)
+(2, 3, 4, <5>)
+##END=	
+##END=	
+##TITLE=1 2 3
+##DATA TYPE=type 1
+##NPOINTS=2
+##$META=META
+##PEAK TABLE= (XY..XY)
+1 2
+2 3
+##END
+##TITLE=peaks
+##DATA TYPE=type 2
+##PEAK TABLE=(XYW..XYW)
+1,2,3
+2,3,4
+3,4,5
+##END=	
+##END=	
