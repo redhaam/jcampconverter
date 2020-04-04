@@ -5,7 +5,6 @@ const config = {
     format: 'cjs',
     exports: 'named',
   },
-  external: ['ml-array-median'],
 };
 
 export default config;
