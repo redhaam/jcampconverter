@@ -2,11 +2,12 @@ import { readFileSync } from 'fs';
 
 import { convert } from '../src';
 
-const gcms = readFileSync(`${__dirname}/data/misc/gcms.jdx`).toString();
-const chromTest = readFileSync(`${__dirname}/data/misc/chrom.jdx`).toString();
+
+
 
 describe('Test JCAMP converter of GCMS', () => {
   it('complex chromatogram', () => {
+    const gcms = readFileSync(`${__dirname}/data/misc/gcms.jdx`).toString();
     let result = convert(gcms, { chromatogram: true });
     let chrom = result.chromatogram;
 
@@ -21,6 +22,7 @@ describe('Test JCAMP converter of GCMS', () => {
   });
 
   it('simple chromatogram', () => {
+    const chromTest = readFileSync(`${__dirname}/data/misc/chrom.jdx`).toString();
     let result = convert(chromTest, { chromatogram: true });
     let chrom = result.chromatogram;
 
