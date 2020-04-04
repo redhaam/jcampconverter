@@ -1,3 +1,12 @@
+# [5.0.0](https://github.com/cheminfo-js/jcampconverter/compare/v4.1.1...v5.0.0) (2020-04-04)
+
+
+### Bug Fixes
+
+* rollup and build ([eef5d66](https://github.com/cheminfo-js/jcampconverter/commit/eef5d66dbeccdfd907dc86ce1cd8aa1429a544f3))
+
+
+
 ## [4.1.1](https://github.com/cheminfo-js/jcampconverter/compare/v4.1.0...v4.1.1) (2020-04-02)
 
 
