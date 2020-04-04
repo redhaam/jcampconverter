@@ -4,13 +4,13 @@ import createTree from '../src/createTree';
 
 const route = `${__dirname}/data/mestrec/`;
 
-describe('Test from Mestrec Jcamp generator with assignment', function() {
-  it('real example', function() {
+describe('Test from Mestrec Jcamp generator with assignment', function () {
+  it('real example', function () {
     let result = createTree(readFileSync(`${route}mestrec.jdx`, 'utf8'));
     expect(result).toHaveLength(1);
   });
 
-  it('simple case', function() {
+  it('simple case', function () {
     let result = createTree(readFileSync(`${route}simple.jdx`, 'utf8'));
     expect(result).toStrictEqual([
       {
@@ -47,7 +47,7 @@ describe('Test from Mestrec Jcamp generator with assignment', function() {
     ]);
   });
 
-  it('simple case with flatten', function() {
+  it('simple case with flatten', function () {
     let result = createTree(readFileSync(`${route}simple.jdx`, 'utf8'), {
       flatten: true,
     });
@@ -85,7 +85,7 @@ describe('Test from Mestrec Jcamp generator with assignment', function() {
     ]);
   });
 
-  it('simple case with mulfiline', function() {
+  it('simple case with mulfiline', function () {
     let result = createTree(readFileSync(`${route}verySimple.jdx`, 'utf8'));
 
     expect(result).toStrictEqual([
@@ -104,7 +104,7 @@ describe('Test from Mestrec Jcamp generator with assignment', function() {
     ]);
   });
 
-  it('test with bruker FID / FT combined file', function() {
+  it('test with bruker FID / FT combined file', function () {
     let result = createTree(
       readFileSync(`${__dirname}/data/bruker_fid_ft.jdx`, 'utf8'),
     );
@@ -113,7 +113,7 @@ describe('Test from Mestrec Jcamp generator with assignment', function() {
   });
 });
 
-test('from UV Jcamp with tree', function() {
+test('from UV Jcamp with tree', function () {
   let result = createTree(
     readFileSync(`${__dirname}/data/tree-uv.jdx`, 'latin1'),
   );

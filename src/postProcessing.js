@@ -1,7 +1,7 @@
 import add2D from './2d/add2D';
 import { complexChromatogram } from './complexChromatogram';
-import simpleChromatogram from './simpleChromatogram';
 import profiling from './profiling';
+import simpleChromatogram from './simpleChromatogram';
 
 export default function postProcessing(entriesFlat, result, options) {
   for (let entry of entriesFlat) {

@@ -2,8 +2,8 @@ import { readFileSync } from 'fs';
 
 import { convert } from '../src';
 
-describe('Test from Mestrec Jcamp generator', function() {
-  it('NMR 1H spectrum 256', function() {
+describe('Test from Mestrec Jcamp generator', function () {
+  it('NMR 1H spectrum 256', function () {
     let result = convert(
       readFileSync(`${__dirname}/data/mestrec/jcamp-256.jdx`).toString(),
       { xy: true },
@@ -13,7 +13,7 @@ describe('Test from Mestrec Jcamp generator', function() {
     expect(data.y).toHaveLength(256);
   });
 
-  it('NMR 1H spectrum 1024', function() {
+  it('NMR 1H spectrum 1024', function () {
     let result = convert(
       readFileSync(`${__dirname}/data/mestrec/jcamp-1024.jdx`).toString(),
       { xy: true },
@@ -23,7 +23,7 @@ describe('Test from Mestrec Jcamp generator', function() {
     expect(data.y).toHaveLength(1024);
   });
 
-  it('NMR 1H spectrum difdup', function() {
+  it('NMR 1H spectrum difdup', function () {
     let result = convert(
       readFileSync(`${__dirname}/data/mestrec/jcamp-difdup.jdx`).toString(),
       { xy: true },
