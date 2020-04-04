@@ -1,3 +1,12 @@
+## [5.0.1](https://github.com/cheminfo-js/jcampconverter/compare/v5.0.0...v5.0.1) (2020-04-04)
+
+
+### Bug Fixes
+
+* 2d matrix minX / maxX ([447606d](https://github.com/cheminfo-js/jcampconverter/commit/447606df8a952d3c19dec3306d8aa2f09ee402b0))
+
+
+
 # [5.0.0](https://github.com/cheminfo-js/jcampconverter/compare/v4.1.1...v5.0.0) (2020-04-04)
 
 
