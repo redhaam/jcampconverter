@@ -51,7 +51,7 @@ export default function convert(jcamp, options) {
 
   profiling(result, 'Before split to LDRS', options);
 
-  let ldrs = jcamp.split(/[\r\n]+##/);
+  let ldrs = jcamp.replace(/[\r\n]+##/g, '\n##').split('\n##');
 
   profiling(result, 'Split to LDRS', options);
 
