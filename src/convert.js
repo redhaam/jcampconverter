@@ -26,7 +26,24 @@ const defaultOptions = {
   profiling: false,
 };
 
-export default function convert(jcamp, options) {
+/**
+ *
+ * @param {text} jcamp
+ * @param {object} [options]
+ * @param {number} [options.keepRecordsRegExp=/^$/] By default we don't keep meta information
+ * @param {number} [options.canonicDataLabels=true] Canonize the Labels (uppercase with symbol)
+ * @param {number} [options.dynamicTyping=false] Convert numbers to Number
+ * @param {number} [options.xy=true] Data are returned as {x:[],y:[]} instead of [x1,y1,x2,y2,...]
+ * @param {number} [options.withoutXY=false] Remove the XY data
+ * @param {number} [options.chromatogram=false] Special post-processing for GC / HPLC / MS
+ * @param {number} [options.keepSpectra=false] Force to keep the spectra in case of 2D
+ * @param {number} [options.noContour=false] Don't calculate countour in case of 2D
+ * @param {number} [options.nbContourLevels=7] Number of positive / negative contour levels to calculate
+ * @param {number} [options.noiseMultiplier=5] Define for 2D the level as 5 times the median as default
+ * @param {number} [options.profiling=false] Add profiling information
+ */
+
+export default function convert(jcamp, options = {}) {
   options = Object.assign({}, defaultOptions, options);
   options.wantXY = !options.withoutXY;
   options.start = Date.now();
