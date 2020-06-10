@@ -1,3 +1,12 @@
+# [6.0.0](https://github.com/cheminfo-js/jcampconverter/compare/v5.0.2...v6.0.0) (2020-06-10)
+
+
+### Features
+
+* add parsing of multivariable NTUPLE PEAKS ([872a43f](https://github.com/cheminfo-js/jcampconverter/commit/872a43fa9867b84247138bd939cd455c386e7e46))
+
+
+
 ## [5.0.2](https://github.com/cheminfo-js/jcampconverter/compare/v5.0.1...v5.0.2) (2020-04-08)
 
 
