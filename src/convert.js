@@ -9,7 +9,7 @@ import prepareSpectrum from './prepareSpectrum';
 import profiling from './profiling';
 
 // the following RegExp can only be used for XYdata, some peakTables have values with a "E-5" ...
-const ntuplesSeparator = /[, \t]+/;
+const ntuplesSeparator = /[ \t]*,[ \t]*/;
 
 class Spectrum {}
 
