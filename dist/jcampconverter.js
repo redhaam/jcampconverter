@@ -351,17 +351,15 @@
 
                 continue;
               }
-
               if (canonicDataLabel === 'TITLE') {
                 spectrum.title = dataValue;
               } else if (canonicDataLabel === 'DATATYPE') {
                 spectrum.dataType = dataValue;
-
-                if (dataValue.indexOf('nD') > -1) {
+                if (dataValue.toLowerCase().indexOf('nd') > -1) {
                   result.twoD = true;
                 }
               } else if (canonicDataLabel === 'NTUPLES') {
-                if (dataValue.indexOf('nD') > -1) {
+                if (dataValue.toLowerCase().indexOf('nd') > -1) {
                   result.twoD = true;
                 }
               } else if (canonicDataLabel === 'XUNITS') {
