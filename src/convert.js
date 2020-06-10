@@ -4,9 +4,9 @@ import fastParseXYData from './parse/fastParseXYData';
 import parsePeakTable from './parse/parsePeakTable';
 import parseXYA from './parse/parseXYA';
 import postProcessing from './postProcessing';
+import prepareNtuplesDatatable from './prepareNtuplesDatatable';
 import prepareSpectrum from './prepareSpectrum';
 import profiling from './profiling';
-import prepareNtuplesDatatable from './prepareNtuplesDatatable';
 
 // the following RegExp can only be used for XYdata, some peakTables have values with a "E-5" ...
 const ntuplesSeparator = /[, \t]+/;

@@ -13,11 +13,13 @@ export default function prepareNtuplesDatatable(currentEntry, spectrum, kind) {
     spectrum.variables = {};
     for (let symbol of kind) {
       let index = currentEntry.ntuples.symbol.indexOf(symbol);
-      if (index === -1) throw Error('Symbol undefined: ' + symbol);
-      spectrum.variables[symbol] = {};
+      if (index === -1) throw Error(`Symbol undefined: ${symbol}`);
+      let lowercaseSymbol = symbol.toLowerCase();
+      spectrum.variables[lowercaseSymbol] = {};
       for (let key in currentEntry.ntuples) {
         if (currentEntry.ntuples[key][index]) {
-          spectrum.variables[symbol][key] = currentEntry.ntuples[key][index];
+          spectrum.variables[lowercaseSymbol][key] =
+            currentEntry.ntuples[key][index];
         }
       }
     }

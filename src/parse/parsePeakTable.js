@@ -12,36 +12,14 @@ export default function parsePeakTable(spectrum, value, result) {
 }
 
 function parseXY(spectrum, value, result) {
-  // counts for around 20% of the time
-  let lines = value.split(/,? *,?[;\r\n]+ */);
-  let values;
-  for (let i = 1; i < lines.length; i++) {
-    values = lines[i]
-      .trim()
-      .replace(removeCommentRegExp, '')
-      .split(peakTableSplitRegExp);
-    if (values.length % 2 === 0) {
-      for (let j = 0; j < values.length; j = j + 2) {
-        // takes around 40% of the time to add and parse the 2 values nearly exclusively because of parseFloat
-        currentData.push(parseFloat(values[j]) * spectrum.xFactor);
-        currentData.push(parseFloat(values[j + 1]) * spectrum.yFactor);
-      }
-    } else {
-      result.logs.push(`Format error: ${values}`);
-    }
-  }
-}
-
-function parseXYZ(spectrum, value, result) {
-  let currentData = [];
+  let currentData = { x: [], y: [] };
   spectrum.data = currentData;
 
   // counts for around 20% of the time
   let lines = value.split(/,? *,?[;\r\n]+ */);
 
-  let values;
   for (let i = 1; i < lines.length; i++) {
-    values = lines[i]
+    let values = lines[i]
       .trim()
       .replace(removeCommentRegExp, '')
       .split(peakTableSplitRegExp);
@@ -50,6 +28,36 @@ function parseXYZ(spectrum, value, result) {
         // takes around 40% of the time to add and parse the 2 values nearly exclusively because of parseFloat
         currentData.x.push(parseFloat(values[j]) * spectrum.xFactor);
         currentData.y.push(parseFloat(values[j + 1]) * spectrum.yFactor);
+      }
+    } else {
+      result.logs.push(`Format error: ${values}`);
+    }
+  }
+}
+
+function parseXYZ(spectrum, value, result) {
+  let currentData = {};
+  let variables = Object.keys(spectrum.variables).map((variable) =>
+    variable.toLowerCase(),
+  );
+  let numberOfVariables = variables.length;
+  variables.forEach((variable) => (currentData[variable] = []));
+  spectrum.data = currentData;
+
+  // counts for around 20% of the time
+  let lines = value.split(/,? *,?[;\r\n]+ */);
+
+  for (let i = 1; i < lines.length; i++) {
+    let values = lines[i]
+      .trim()
+      .replace(removeCommentRegExp, '')
+      .split(peakTableSplitRegExp);
+    if (values.length % numberOfVariables === 0) {
+      for (let j = 0; j < values.length; j++) {
+        // todo should try to find a xFactor (y, ...)
+        currentData[variables[j % numberOfVariables]].push(
+          parseFloat(values[j]),
+        );
       }
     } else {
       result.logs.push(`Format error: ${values}`);

@@ -34,7 +34,7 @@ describe('Test JCAMP converter of NMR with peak assignments', () => {
     expect(peakAssignment.data.y[0]).toBeCloseTo(246226528.0, 0);
     expect(peakAssignment.data.x[1]).toBeCloseTo(119.12759305537116, 5);
     expect(peakAssignment.data.y[1]).toBeCloseTo(266635237.0, 0);
-    expect(peakAssignment.data.x.length).toBe(2);
+    expect(peakAssignment.data.x).toHaveLength(2);
   });
 
   it('has a sampleDescription', () => {
