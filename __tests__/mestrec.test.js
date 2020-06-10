@@ -1,6 +1,10 @@
 import { readFileSync } from 'fs';
 
+import { toBeDeepCloseTo, toMatchCloseTo } from 'jest-matcher-deep-close-to';
+
 import { convert } from '../src';
+
+expect.extend({ toBeDeepCloseTo, toMatchCloseTo });
 
 describe('Test from Mestrec Jcamp generator', function () {
   it('NMR 1H spectrum 256', function () {
@@ -30,5 +34,24 @@ describe('Test from Mestrec Jcamp generator', function () {
     expect(data.y).toHaveLength(16384);
     // console.log(data.x.length, Math.max(...data.x), Math.min(...data.x));
     // console.log(data.y.length, Math.max(...data.y), Math.min(...data.y));
+  });
+
+  it('cosy', function () {
+    let result = convert(
+      readFileSync(`${__dirname}/data/mestrec/cosy-clean.jdx`).toString(),
+    );
+
+    expect(result.flatten[0].minMax).toMatchCloseTo(
+      {
+        minX: -1,
+        maxX: 15,
+        minY: -10203.106874996587,
+        maxY: 9008.88230769571,
+        minZ: 0,
+        maxZ: 64196813.529800005,
+        noise: 0,
+      },
+      1,
+    );
   });
 });
