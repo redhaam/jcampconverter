@@ -6,6 +6,7 @@ import parseXYA from './parse/parseXYA';
 import postProcessing from './postProcessing';
 import prepareSpectrum from './prepareSpectrum';
 import profiling from './profiling';
+import prepareNtuplesDatatable from './prepareNtuplesDatatable';
 
 // the following RegExp can only be used for XYdata, some peakTables have values with a "E-5" ...
 const ntuplesSeparator = /[, \t]+/;
@@ -84,63 +85,12 @@ export default function convert(jcamp, options = {}) {
       let endLine = dataValue.indexOf('\n');
       if (endLine === -1) endLine = dataValue.indexOf('\r');
       if (endLine > 0) {
-        let xIndex = -1;
-        let yIndex = -1;
         // ##DATA TABLE= (X++(I..I)), XYDATA
         // We need to find the variables
 
         let infos = dataValue.substring(0, endLine).split(/[ ,;\t]+/);
-        if (infos[0].indexOf('++') > 0) {
-          let firstVariable = infos[0].replace(
-            /.*\(([a-zA-Z0-9]+)\+\+.*/,
-            '$1',
-          );
-          let secondVariable = infos[0].replace(/.*\.\.([a-zA-Z0-9]+).*/, '$1');
-          xIndex = currentEntry.ntuples.symbol.indexOf(firstVariable);
-          yIndex = currentEntry.ntuples.symbol.indexOf(secondVariable);
-        }
+        prepareNtuplesDatatable(currentEntry, spectrum, infos[0]);
 
-        if (xIndex === -1) xIndex = 0;
-        if (yIndex === -1) yIndex = 0;
-
-        if (currentEntry.ntuples.first) {
-          if (currentEntry.ntuples.first.length > xIndex) {
-            spectrum.firstX = currentEntry.ntuples.first[xIndex];
-          }
-          if (currentEntry.ntuples.first.length > yIndex) {
-            spectrum.firstY = currentEntry.ntuples.first[yIndex];
-          }
-        }
-        if (currentEntry.ntuples.last) {
-          if (currentEntry.ntuples.last.length > xIndex) {
-            spectrum.lastX = currentEntry.ntuples.last[xIndex];
-          }
-          if (currentEntry.ntuples.last.length > yIndex) {
-            spectrum.lastY = currentEntry.ntuples.last[yIndex];
-          }
-        }
-        if (
-          currentEntry.ntuples.vardim &&
-          currentEntry.ntuples.vardim.length > xIndex
-        ) {
-          spectrum.nbPoints = currentEntry.ntuples.vardim[xIndex];
-        }
-        if (currentEntry.ntuples.factor) {
-          if (currentEntry.ntuples.factor.length > xIndex) {
-            spectrum.xFactor = currentEntry.ntuples.factor[xIndex];
-          }
-          if (currentEntry.ntuples.factor.length > yIndex) {
-            spectrum.yFactor = currentEntry.ntuples.factor[yIndex];
-          }
-        }
-        if (currentEntry.ntuples.units) {
-          if (currentEntry.ntuples.units.length > xIndex) {
-            spectrum.xUnit = currentEntry.ntuples.units[xIndex];
-          }
-          if (currentEntry.ntuples.units.length > yIndex) {
-            spectrum.yUnit = currentEntry.ntuples.units[yIndex];
-          }
-        }
         spectrum.datatable = infos[0];
         if (infos[1] && infos[1].indexOf('PEAKS') > -1) {
           canonicDataLabel = 'PEAKTABLE';
