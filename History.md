@@ -1,3 +1,14 @@
+## [6.0.1](https://github.com/cheminfo-js/jcampconverter/compare/v6.0.0...v6.0.1) (2020-06-10)
+
+
+### Bug Fixes
+
+* improve 2d spectra discovery ([5a7c15a](https://github.com/cheminfo-js/jcampconverter/commit/5a7c15afbadb133d3ecb89d5e816354c0d207441))
+* improve detection of 2d spectra ([02e966f](https://github.com/cheminfo-js/jcampconverter/commit/02e966f108578578fe717d259b16a7c933a0db44))
+* ntuples separator must contain a comma ([3bbf182](https://github.com/cheminfo-js/jcampconverter/commit/3bbf1829acffeeed4a888fd502afdd6637d070b8))
+
+
+
 # [6.0.0](https://github.com/cheminfo-js/jcampconverter/compare/v5.0.2...v6.0.0) (2020-06-10)
 
 
