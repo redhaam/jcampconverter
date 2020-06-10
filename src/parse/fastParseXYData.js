@@ -8,7 +8,7 @@ export default function fastParseXYData(spectrum, value) {
 
   spectrum.isXYdata = true;
   // TODO to be improved using 2 array {x:[], y:[]}
-  let currentData = [];
+  let currentData = { x: [], y: [] };
   spectrum.data = currentData;
 
   let currentX = spectrum.firstX;
@@ -95,8 +95,8 @@ export default function fastParseXYData(spectrum, value) {
                 } else {
                   currentY = lastValue;
                 }
-                currentData.push(currentX);
-                currentData.push(currentY * yFactor);
+                currentData.x.push(currentX);
+                currentData.y.push(currentY * yFactor);
                 currentX += deltaX;
               }
             }

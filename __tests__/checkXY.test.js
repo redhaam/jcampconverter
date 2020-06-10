@@ -6,7 +6,7 @@ let jcamp = readFileSync(`${__dirname}/data/misc/iv.jdx`).toString();
 
 describe('Test conversion option for jcamp', () => {
   it('1H NMR ethyl vinyl ether', () => {
-    let result = convert(jcamp, { xy: true });
+    let result = convert(jcamp);
 
     let x = result.entries[0].spectra[0].data.x;
     let y = result.entries[0].spectra[0].data.y;

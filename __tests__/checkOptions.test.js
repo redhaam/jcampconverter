@@ -67,7 +67,6 @@ describe('Test JCAMP converter Options', () => {
     '/acd/test1_cosy.jdx',
     {
       profiling: true,
-      xy: true,
     },
     'Finished countour plot calculation',
     '2D',

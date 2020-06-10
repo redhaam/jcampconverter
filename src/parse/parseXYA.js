@@ -3,14 +3,14 @@ export default function parseXYA(spectrum, value) {
 
   spectrum.isXYAdata = true;
   let values;
-  let currentData = [];
+  let currentData = { x: [], y: [] };
   spectrum.data = currentData;
 
   let lines = value.split(/,? *,?[;\r\n]+ */);
 
   for (let i = 1; i < lines.length; i++) {
     values = lines[i].trim().replace(removeSymbolRegExp, '').split(',');
-    currentData.push(parseFloat(values[0]));
-    currentData.push(parseFloat(values[1]));
+    currentData.x.push(parseFloat(values[0]));
+    currentData.y.push(parseFloat(values[1]));
   }
 }

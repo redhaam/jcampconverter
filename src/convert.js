@@ -16,7 +16,6 @@ const defaultOptions = {
   keepRecordsRegExp: /^$/,
   canonicDataLabels: true,
   dynamicTyping: false,
-  xy: true,
   withoutXY: false,
   chromatogram: false,
   keepSpectra: false,
@@ -33,7 +32,6 @@ const defaultOptions = {
  * @param {number} [options.keepRecordsRegExp=/^$/] By default we don't keep meta information
  * @param {number} [options.canonicDataLabels=true] Canonize the Labels (uppercase with symbol)
  * @param {number} [options.dynamicTyping=false] Convert numbers to Number
- * @param {number} [options.xy=true] Data are returned as {x:[],y:[]} instead of [x1,y1,x2,y2,...]
  * @param {number} [options.withoutXY=false] Remove the XY data
  * @param {number} [options.chromatogram=false] Special post-processing for GC / HPLC / MS
  * @param {number} [options.keepSpectra=false] Force to keep the spectra in case of 2D

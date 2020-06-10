@@ -7,7 +7,7 @@ describe('Test JCAMP converter of NMR with peak assignments', () => {
     `${__dirname}/data/misc/nmr_13c_dept.dx`,
   ).toString();
 
-  const result = convert(target, { xy: false });
+  const result = convert(target);
 
   const peakEntry = result.entries[0].children[2];
   const peakAssignment = peakEntry.spectra[0];
@@ -30,11 +30,11 @@ describe('Test JCAMP converter of NMR with peak assignments', () => {
 
   it('has data from (XYA)', () => {
     // http://www.jcamp-dx.org/protocols/dxnmr01.pdf (Example 3)
-    expect(peakAssignment.data[0]).toBe(118.93612601748676);
-    expect(peakAssignment.data[1]).toBe(246226528.0);
-    expect(peakAssignment.data[2]).toBe(119.12759305537116);
-    expect(peakAssignment.data[3]).toBe(266635237.0);
-    expect(peakAssignment.data.length / 2).toBe(2);
+    expect(peakAssignment.data.x[0]).toBeCloseTo(118.93612601748676, 5);
+    expect(peakAssignment.data.y[0]).toBeCloseTo(246226528.0, 0);
+    expect(peakAssignment.data.x[1]).toBeCloseTo(119.12759305537116, 5);
+    expect(peakAssignment.data.y[1]).toBeCloseTo(266635237.0, 0);
+    expect(peakAssignment.data.x.length).toBe(2);
   });
 
   it('has a sampleDescription', () => {

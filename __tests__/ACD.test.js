@@ -6,7 +6,6 @@ describe('Test from ACD Jcamp generator', () => {
   it('COSY simulated spectrum', () => {
     let result = convert(
       readFileSync(`${__dirname}/data/acd/test1_cosy.jdx`).toString(),
-      { xy: true },
     );
     expect(result.entries[0].ntuples).toHaveLength(3);
     expect(result.entries[0].twoD).toBe(true);

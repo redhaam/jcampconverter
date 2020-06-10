@@ -29,30 +29,6 @@ export default function postProcessing(entriesFlat, result, options) {
       }
     }
 
-    if (options.chromatogram) {
-      options.xy = true;
-    }
-
-    if (options.xy && options.wantXY) {
-      // the spectraData should not be a oneD array but an object with x and y
-      if (entry.spectra && entry.spectra.length > 0) {
-        for (let spectrum of entry.spectra) {
-          if (spectrum.data) {
-            let data = spectrum.data;
-            let newData = {
-              x: new Array(data.length / 2),
-              y: new Array(data.length / 2),
-            };
-            for (let k = 0; k < data.length; k = k + 2) {
-              newData.x[k / 2] = data[k];
-              newData.y[k / 2] = data[k + 1];
-            }
-            spectrum.data = newData;
-          }
-        }
-      }
-    }
-
     // maybe it is a GC (HPLC) / MS. In this case we add a new format
     if (options.chromatogram) {
       if (entry.spectra.length > 1) {
