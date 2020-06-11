@@ -16,7 +16,8 @@ class Spectrum {}
 const defaultOptions = {
   keepRecordsRegExp: /^$/,
   canonicDataLabels: true,
-  dynamicTyping: false,
+  canonicMetadataLabels: false,
+  dynamicTyping: true,
   withoutXY: false,
   chromatogram: false,
   keepSpectra: false,
@@ -31,7 +32,8 @@ const defaultOptions = {
  * @param {text} jcamp
  * @param {object} [options]
  * @param {number} [options.keepRecordsRegExp=/^$/] By default we don't keep meta information
- * @param {number} [options.canonicDataLabels=true] Canonize the Labels (uppercase with symbol)
+ * @param {number} [options.canonicDataLabels=true] Canonize the Labels (uppercase without symbol)
+ * @param {number} [options.canonicMetadataLabels=false] Canonize the metadata Labels (uppercase without symbol)
  * @param {number} [options.dynamicTyping=false] Convert numbers to Number
  * @param {number} [options.withoutXY=false] Remove the XY data
  * @param {number} [options.chromatogram=false] Special post-processing for GC / HPLC / MS
@@ -153,6 +155,7 @@ export default function convert(jcamp, options = {}) {
         spectra: [],
         ntuples: {},
         info: {},
+        meta: {},
       };
       parentEntry.children.push(currentEntry);
       parentsStack.push(parentEntry);
@@ -293,20 +296,32 @@ export default function convert(jcamp, options = {}) {
     if (
       currentEntry &&
       currentEntry.info &&
+      currentEntry.meta &&
       canonicDataLabel.match(options.keepRecordsRegExp)
     ) {
-      let label = options.canonicDataLabels ? canonicDataLabel : dataLabel;
       let value = dataValue.trim();
-      if (options.dynamicTyping && !isNaN(value)) {
-        value = Number(value);
-      }
-      if (currentEntry.info[label]) {
-        if (!Array.isArray(currentEntry.info[label])) {
-          currentEntry.info[label] = [currentEntry.info[label]];
-        }
-        currentEntry.info[label].push(value);
+      let target, label;
+      if (dataLabel.startsWith('$')) {
+        label = options.canonicMetadataLabels
+          ? canonicDataLabel.substring(1)
+          : dataLabel.substring(1);
+        target = currentEntry.meta;
       } else {
-        currentEntry.info[label] = value;
+        label = options.canonicDataLabels ? canonicDataLabel : dataLabel;
+        target = currentEntry.info;
+      }
+
+      if (options.dynamicTyping) {
+        let parsedValue = Number.parseFloat(value);
+        if (!Number.isNaN(parsedValue)) value = parsedValue;
+      }
+      if (target[label]) {
+        if (!Array.isArray(target[label])) {
+          target[label] = [target[label]];
+        }
+        target[label].push(value);
+      } else {
+        target[label] = value;
       }
     }
   }

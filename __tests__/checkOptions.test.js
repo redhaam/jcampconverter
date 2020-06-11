@@ -9,8 +9,9 @@ describe('Test JCAMP options', () => {
       { keepRecordsRegExp: /^.+$/ },
     );
 
-    expect(Object.keys(result.entries[0].info)).toHaveLength(384);
-    expect(result.entries[0].info.$SOLVENT).toBe('<DMSO>');
+    expect(Object.keys(result.entries[0].info)).toHaveLength(26);
+    expect(Object.keys(result.entries[0].meta)).toHaveLength(358);
+    expect(result.entries[0].meta.SOLVENT).toBe('<DMSO>');
   });
 });
 

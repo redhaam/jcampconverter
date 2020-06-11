@@ -34,11 +34,11 @@ Returns an object with information about the converted file and uncompressed spe
 **Options**
 
 - keepRecordsRegExp - regexp to select which records should be placed in the info field. By default: :/^\$/} (nothing is kept)
-- xy - instead of creating a 1D array containing [x1,y1,x2,y2, ...] create an object: {x:[], y:[]}
 - withoutXY - do not parse XYDATA or PEAKTABLE fields. Useful to only extract metadata fields (combine this option with `keepRecordsRegExp`)
 - chromatogram - use the new GC/MS data format output (default: false)
 - canonicDataLabels - canonize data labels (uppercase) (default: true).
-- dynamicTyping - When parsing field convert to number if a number
+- canonicMetadataLabels - canonize data labels (uppercase) (default: false).
+- dynamicTyping - When parsing field convert to number if a number (default: true)
 
 2D NMR options:
 

@@ -23,7 +23,7 @@ $$ AN1	AN2	BT
 ##TITLE=1 2 3
 ##DATA TYPE=type 1
 ##NPOINTS=2
-##$META=META
+##$meta info=META
 ##PEAK TABLE= (XY..XY)
 1 2
 2 3

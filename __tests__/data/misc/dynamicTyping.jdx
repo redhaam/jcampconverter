@@ -13,8 +13,8 @@
 ##LASTX= -0.6
 ##MINY= -0.03986466
 ##MAXY= 0.04990306
-##$string=abc
-##$number=123
+##$STRING=abc
+##$NUMBER=123
 ##NPOINTS=302
 ##PEAK TABLE= (XY..XY)
 0.905 -0.00499031
