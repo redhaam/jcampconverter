@@ -1,3 +1,19 @@
+# [7.1.0](https://github.com/cheminfo-js/jcampconverter/compare/v7.0.0...v7.1.0) (2020-06-11)
+
+
+### Bug Fixes
+
+* rename xUnit and yUnit to xUnits and yUnits ([d50c6fe](https://github.com/cheminfo-js/jcampconverter/commit/d50c6feb0db96e2bd10bdae70b6fead0b30ea1c3))
+
+
+### BREAKING CHANGES
+
+* In the returned value the variables has been
+renamed to xUnits and yUnits to keep the LDR of
+the jcamp
+
+
+
 # [7.0.0](https://github.com/cheminfo-js/jcampconverter/compare/v6.0.1...v7.0.0) (2020-06-11)
 
 
