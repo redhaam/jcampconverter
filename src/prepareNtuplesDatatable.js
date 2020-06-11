@@ -62,10 +62,10 @@ export default function prepareNtuplesDatatable(currentEntry, spectrum, kind) {
   }
   if (currentEntry.ntuples.units) {
     if (currentEntry.ntuples.units.length > xIndex) {
-      spectrum.xUnit = currentEntry.ntuples.units[xIndex];
+      spectrum.xUnits = currentEntry.ntuples.units[xIndex];
     }
     if (currentEntry.ntuples.units.length > yIndex) {
-      spectrum.yUnit = currentEntry.ntuples.units[yIndex];
+      spectrum.yUnits = currentEntry.ntuples.units[yIndex];
     }
   }
 }

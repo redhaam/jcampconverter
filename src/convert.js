@@ -173,9 +173,9 @@ export default function convert(jcamp, options = {}) {
     } else if (canonicDataLabel === 'DATACLASS') {
       currentEntry.dataClass = dataValue;
     } else if (canonicDataLabel === 'XUNITS') {
-      spectrum.xUnit = dataValue;
+      spectrum.xUnits = dataValue;
     } else if (canonicDataLabel === 'YUNITS') {
-      spectrum.yUnit = dataValue;
+      spectrum.yUnits = dataValue;
     } else if (canonicDataLabel === 'FIRSTX') {
       spectrum.firstX = parseFloat(dataValue);
     } else if (canonicDataLabel === 'LASTX') {
