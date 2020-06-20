@@ -1,6 +1,6 @@
 {
   "name": "jcampconverter",
-  "version": "7.1.0",
+  "version": "7.2.0",
   "description": "Parse and convert JCAMP data",
   "main": "lib/index.js",
   "module": "src/index.js",

@@ -1,3 +1,12 @@
+# [7.2.0](https://github.com/cheminfo-js/jcampconverter/compare/v7.1.0...v7.2.0) (2020-06-20)
+
+
+### Features
+
+* change xUnits for ntuples to add varname + unit ([92eae09](https://github.com/cheminfo-js/jcampconverter/commit/92eae094aedaf911a5437c8578a76679d6bb3ae9))
+
+
+
 # [7.1.0](https://github.com/cheminfo-js/jcampconverter/compare/v7.0.0...v7.1.0) (2020-06-11)
 
 
