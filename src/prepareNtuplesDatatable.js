@@ -62,10 +62,24 @@ export default function prepareNtuplesDatatable(currentEntry, spectrum, kind) {
   }
   if (currentEntry.ntuples.units) {
     if (currentEntry.ntuples.units.length > xIndex) {
-      spectrum.xUnits = currentEntry.ntuples.units[xIndex];
+      if (
+        currentEntry.ntuples.varname &&
+        currentEntry.ntuples.varname[xIndex]
+      ) {
+        spectrum.xUnits = `${currentEntry.ntuples.varname[xIndex]} [${currentEntry.ntuples.units[xIndex]}]`;
+      } else {
+        spectrum.xUnits = currentEntry.ntuples.units[xIndex];
+      }
     }
     if (currentEntry.ntuples.units.length > yIndex) {
-      spectrum.yUnits = currentEntry.ntuples.units[yIndex];
+      if (
+        currentEntry.ntuples.varname &&
+        currentEntry.ntuples.varname[yIndex]
+      ) {
+        spectrum.yUnits = `${currentEntry.ntuples.varname[yIndex]} [${currentEntry.ntuples.units[yIndex]}]`;
+      } else {
+        spectrum.yUnits = currentEntry.ntuples.units[yIndex];
+      }
     }
   }
 }

@@ -35,6 +35,9 @@ test('Multivariate', () => {
     },
   });
 
+  expect(firstSpectrum.xUnits).toBe('Weight [mg]');
+  expect(firstSpectrum.yUnits).toBe('Temperature [°C]');
+
   expect(firstSpectrum.data).toStrictEqual({
     x: [100, 90, 80, 70, 60, 50],
     y: [20, 30, 40, 50, 60, 70],
