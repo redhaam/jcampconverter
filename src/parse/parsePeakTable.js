@@ -9,6 +9,13 @@ export default function parsePeakTable(spectrum, value, result) {
   } else {
     parseXYZ(spectrum, value, result);
   }
+
+  // we will add the data in the variables
+  if (spectrum.variables) {
+    for (let key in spectrum.variables) {
+      spectrum.variables[key].data = spectrum.data[key];
+    }
+  }
 }
 
 function parseXY(spectrum, value, result) {
@@ -37,9 +44,7 @@ function parseXY(spectrum, value, result) {
 
 function parseXYZ(spectrum, value, result) {
   let currentData = {};
-  let variables = Object.keys(spectrum.variables).map((variable) =>
-    variable.toLowerCase(),
-  );
+  let variables = Object.keys(spectrum.variables);
   let numberOfVariables = variables.length;
   variables.forEach((variable) => (currentData[variable] = []));
   spectrum.data = currentData;
