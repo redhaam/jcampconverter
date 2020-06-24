@@ -211,10 +211,6 @@ export default function convert(jcamp, options = {}) {
       if (!spectrum.xType) {
         currentEntry.xType = dataValue.replace(/[^a-zA-Z0-9]/g, '');
       }
-    } else if (canonicDataLabel === '$SFO2') {
-      if (!currentEntry.indirectFrequency) {
-        currentEntry.indirectFrequency = parseFloat(dataValue);
-      }
     } else if (canonicDataLabel === '$OFFSET') {
       // OFFSET for Bruker spectra
       currentEntry.shiftOffsetNum = 0;
@@ -263,6 +259,9 @@ export default function convert(jcamp, options = {}) {
         dataValue.split(ntuplesSeparator),
       );
     } else if (canonicDataLabel === '.NUCLEUS') {
+      if (currentEntry.ntuples) {
+        currentEntry.ntuples.nucleus = dataValue.split(ntuplesSeparator);
+      }
       if (currentEntry.twoD) {
         currentEntry.yType = dataValue.split(ntuplesSeparator)[0];
       }
@@ -270,19 +269,6 @@ export default function convert(jcamp, options = {}) {
       spectrum.page = dataValue.trim();
       spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ''));
       spectrum.pageSymbol = spectrum.page.replace(/[=].*/, '');
-      let pageSymbolIndex = currentEntry.ntuples.symbol.indexOf(
-        spectrum.pageSymbol,
-      );
-      let unit = '';
-      if (
-        currentEntry.ntuples.units &&
-        currentEntry.ntuples.units[pageSymbolIndex]
-      ) {
-        unit = currentEntry.ntuples.units[pageSymbolIndex];
-      }
-      if (currentEntry.indirectFrequency && unit !== 'PPM') {
-        spectrum.pageValue /= currentEntry.indirectFrequency;
-      }
     } else if (canonicDataLabel === 'RETENTIONTIME') {
       spectrum.pageValue = parseFloat(dataValue);
     } else if (isMSField(canonicDataLabel)) {

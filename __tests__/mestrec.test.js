@@ -36,22 +36,40 @@ describe('Test from Mestrec Jcamp generator', function () {
     // console.log(data.y.length, Math.max(...data.y), Math.min(...data.y));
   });
 
-  it('cosy', function () {
+  it('clean cosy', function () {
     let result = convert(
-      readFileSync(`${__dirname}/data/mestrec/cosy-clean.jdx`).toString(),
+      readFileSync(`${__dirname}/data/mestrec/clean/cosy.jcamp`).toString(),
     );
 
     expect(result.flatten[0].minMax).toMatchCloseTo(
       {
-        minX: -1,
-        maxX: 15,
-        minY: -10203.106874996587,
-        maxY: 9008.88230769571,
+        minX: -1.0139981026183167,
+        maxX: 14.991345966320113,
+        minY: -1.013998102618189,
+        maxY: 14.991345966320113,
         minZ: 0,
-        maxZ: 64196813.529800005,
+        maxZ: 24654532,
         noise: 0,
       },
-      1,
+      5,
+    );
+  });
+
+  it('clean hsqc', function () {
+    let result = convert(
+      readFileSync(`${__dirname}/data/mestrec/clean/hsqc.jcamp`).toString(),
+    );
+    expect(result.flatten[0].minMax).toMatchCloseTo(
+      {
+        minX: -0.9947678573314193,
+        maxX: 14.994945992789406,
+        minY: -8.596750090464695,
+        maxY: 171.07589553953267,
+        minZ: -653471.28665,
+        maxZ: 16896266.794025,
+        noise: 1478.441825,
+      },
+      3,
     );
   });
 });

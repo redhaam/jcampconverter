@@ -2,8 +2,12 @@ import add2D from './2d/add2D';
 import { complexChromatogram } from './complexChromatogram';
 import profiling from './profiling';
 import simpleChromatogram from './simpleChromatogram';
+import postProcessingNMR from './postProcessingNMR';
 
 export default function postProcessing(entriesFlat, result, options) {
+  // converting Hz to ppm
+  postProcessingNMR(entriesFlat);
+
   for (let entry of entriesFlat) {
     if (Object.keys(entry.ntuples).length > 0) {
       let newNtuples = [];
