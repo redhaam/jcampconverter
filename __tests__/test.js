@@ -2,6 +2,10 @@ import { readFileSync } from 'fs';
 
 import { convert } from '../src';
 
+import { toBeDeepCloseTo, toMatchCloseTo } from 'jest-matcher-deep-close-to';
+
+expect.extend({ toBeDeepCloseTo, toMatchCloseTo });
+
 function checkJcamp(filename, label, data) {
   const result = convert(
     readFileSync(`${__dirname}/data${filename}`).toString(),
@@ -22,8 +26,8 @@ function checkJcamp(filename, label, data) {
         expect(spectrum.nbPoints).toStrictEqual(data.nbPoints);
         expect(spectrum.nbPoints).toStrictEqual(spectrum.data.x.length);
         expect(spectrum.nbPoints).toStrictEqual(spectrum.data.y.length);
-        expect(spectrum.firstX).toStrictEqual(data.firstX);
-        expect(spectrum.lastX).toStrictEqual(data.lastX);
+        expect(spectrum.firstX).toBeCloseTo(data.firstX, 5);
+        expect(spectrum.lastX).toBeCloseTo(data.lastX, 5);
         expect(
           spectrum.data.x.reduce((a, b) => a + b) +
             spectrum.data.y.reduce((a, b) => a + b),

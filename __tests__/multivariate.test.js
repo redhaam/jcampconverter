@@ -12,7 +12,7 @@ test('Multivariate', () => {
   const firstSpectrum = result.flatten[0].spectra[0];
 
   expect(firstSpectrum.variables).toStrictEqual({
-    X: {
+    x: {
       name: 'Weight',
       symbol: 'X',
       type: 'INDEPENDENT',
@@ -20,7 +20,7 @@ test('Multivariate', () => {
       units: 'mg',
       data: [100, 90, 80, 70, 60, 50],
     },
-    Y: {
+    y: {
       name: 'Temperature',
       symbol: 'Y',
       type: 'DEPENDENT',
@@ -28,7 +28,7 @@ test('Multivariate', () => {
       units: '°C',
       data: [20, 30, 40, 50, 60, 70],
     },
-    T: {
+    t: {
       name: 'Time',
       symbol: 'T',
       type: 'DEPENDENT',
@@ -42,8 +42,8 @@ test('Multivariate', () => {
   expect(firstSpectrum.yUnits).toBe('Temperature [°C]');
 
   expect(firstSpectrum.data).toStrictEqual({
-    X: [100, 90, 80, 70, 60, 50],
-    Y: [20, 30, 40, 50, 60, 70],
-    T: [1, 2, 3, 4, 5, 6],
+    x: [100, 90, 80, 70, 60, 50],
+    y: [20, 30, 40, 50, 60, 70],
+    t: [1, 2, 3, 4, 5, 6],
   });
 });
