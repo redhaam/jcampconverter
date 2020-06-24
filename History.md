@@ -1,3 +1,18 @@
+## [7.3.1](https://github.com/cheminfo-js/jcampconverter/compare/v7.2.0...v7.3.1) (2020-06-24)
+
+
+### Bug Fixes
+
+* variables has always lowercase property ([32bc505](https://github.com/cheminfo-js/jcampconverter/commit/32bc505c61645430270b2a0eb09e7bff01460bf6))
+
+
+### Features
+
+* add data in variables ([dcd2966](https://github.com/cheminfo-js/jcampconverter/commit/dcd2966ed0de32e6e63207593c1a52bdc5986e49))
+* apply NMR conversion to ppm as a postProcessing process ([dcd0ea9](https://github.com/cheminfo-js/jcampconverter/commit/dcd0ea96b63241afb11ffc5dea779571c4e4650b))
+
+
+
 # [7.2.0](https://github.com/cheminfo-js/jcampconverter/compare/v7.1.0...v7.2.0) (2020-06-20)
 
 
