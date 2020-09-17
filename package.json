@@ -49,7 +49,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.10.4",
     "@types/jest": "^26.0.7",
     "benchmark": "^2.1.4",
-    "cheminfo-build": "^1.1.2",
+    "cheminfo-build": "^1.1.4",
     "eslint": "^7.5.0",
     "eslint-config-cheminfo": "^5.0.0",
     "eslint-plugin-import": "^2.22.0",
