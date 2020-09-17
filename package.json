@@ -1,6 +1,6 @@
 {
   "name": "jcampconverter",
-  "version": "7.3.1",
+  "version": "7.3.2",
   "description": "Parse and convert JCAMP data",
   "main": "lib/index.js",
   "module": "src/index.js",
@@ -56,9 +56,9 @@
     "eslint-plugin-jest": "^23.19.0",
     "eslint-plugin-prettier": "^3.1.4",
     "esm": "^3.2.25",
-    "jest": "^26.1.0",
+    "jest": "^26.4.2",
     "jest-matcher-deep-close-to": "^2.0.1",
-    "prettier": "^2.0.5",
+    "prettier": "^2.1.2",
     "rollup": "^2.23.0"
   },
   "dependencies": {
