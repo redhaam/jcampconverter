@@ -1,8 +1,8 @@
 import { readFileSync } from 'fs';
 
-import { convert } from '../src';
-
 import { toBeDeepCloseTo, toMatchCloseTo } from 'jest-matcher-deep-close-to';
+
+import { convert } from '../src';
 
 expect.extend({ toBeDeepCloseTo, toMatchCloseTo });
 
