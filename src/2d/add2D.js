@@ -1,5 +1,5 @@
-import convertTo3DZ from './convertTo3DZ';
-import generateContourLines from './generateContourLines';
+import convertTo3DZ from './convertTo3DZ.js';
+import generateContourLines from './generateContourLines.js';
 
 export default function add2D(result, options) {
   let zData = convertTo3DZ(result.spectra);

@@ -1,12 +1,12 @@
-import { isMSField, convertMSFieldToLabel } from './complexChromatogram';
-import convertToFloatArray from './convertToFloatArray';
-import fastParseXYData from './parse/fastParseXYData';
-import parsePeakTable from './parse/parsePeakTable';
-import parseXYA from './parse/parseXYA';
-import postProcessing from './postProcessing';
-import prepareNtuplesDatatable from './prepareNtuplesDatatable';
-import prepareSpectrum from './prepareSpectrum';
-import profiling from './profiling';
+import { isMSField, convertMSFieldToLabel } from './complexChromatogram.js';
+import convertToFloatArray from './convertToFloatArray.js';
+import fastParseXYData from './parse/fastParseXYData.js';
+import parsePeakTable from './parse/parsePeakTable.js';
+import parseXYA from './parse/parseXYA.js';
+import postProcessing from './postProcessing.js';
+import prepareNtuplesDatatable from './prepareNtuplesDatatable.js';
+import prepareSpectrum from './prepareSpectrum.js';
+import profiling from './profiling.js';
 
 // the following RegExp can only be used for XYdata, some peakTables have values with a "E-5" ...
 const ntuplesSeparator = /[ \t]*,[ \t]*/;

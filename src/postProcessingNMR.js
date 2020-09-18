@@ -1,4 +1,6 @@
-import { gyromagneticRatio } from 'nmr-processing';
+import NMRProcessing from 'nmr-processing';
+
+const { gyromagneticRatio } = NMRProcessing;
 
 export default function postProcessingNMR(entriesFlat) {
   // specific NMR functions

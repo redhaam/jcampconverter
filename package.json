@@ -4,6 +4,7 @@
   "description": "Parse and convert JCAMP data",
   "main": "lib/index.js",
   "module": "src/index.js",
+  "type": "module",
   "files": [
     "lib",
     "src"

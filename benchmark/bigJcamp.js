@@ -1,6 +1,10 @@
+import { fileURLToPath } from 'url';
+
 import { readFileSync } from 'fs';
-import { join } from 'path';
-import convert from '../src/convert';
+import { join, dirname } from 'path';
+import convert from '../src/convert.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const file = join(__dirname, '../__tests__/data/cytisine/HMBC-ft.dx');
 

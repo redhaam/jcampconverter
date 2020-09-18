@@ -1,8 +1,8 @@
-import add2D from './2d/add2D';
-import { complexChromatogram } from './complexChromatogram';
-import postProcessingNMR from './postProcessingNMR';
-import profiling from './profiling';
-import simpleChromatogram from './simpleChromatogram';
+import add2D from './2d/add2D.js';
+import { complexChromatogram } from './complexChromatogram.js';
+import postProcessingNMR from './postProcessingNMR.js';
+import profiling from './profiling.js';
+import simpleChromatogram from './simpleChromatogram.js';
 
 export default function postProcessing(entriesFlat, result, options) {
   // converting Hz to ppm
