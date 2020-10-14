@@ -1,3 +1,5 @@
+### [7.6.2](https://github.com/cheminfo-js/jcampconverter/compare/v7.6.1...v7.6.2) (2020-10-14)
+
 ## [7.3.1](https://github.com/cheminfo-js/jcampconverter/compare/v7.2.0...v7.3.1) (2020-06-24)
 
 
