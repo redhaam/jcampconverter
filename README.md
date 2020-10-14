@@ -20,7 +20,7 @@ Parse and convert JCAMP data
 
 ## Methods
 
-### convert(jcamp, [options], [useWorker])
+### convert(jcamp, [options])
 
 Converts the `jcamp` using `options`.  
 Returns an object with information about the converted file and uncompressed spectra data.
@@ -29,7 +29,6 @@ Returns an object with information about the converted file and uncompressed spe
 
 - `jcamp` - String containing the JCAMP data
 - `options` - Object with options to pass to the converter
-- `useWorker` - Browser only: convert in a web worker (default: false). If this option is set to true, it will return a [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
 **Options**
 
@@ -64,17 +63,6 @@ console.log(result.flatten[0]);
 
 // the converter will also keep the full jcamp tree
 
-```
-
-#### AMD
-
-```javascript
-require(["jcampconverter"], function(JcampConverter) {
-  // Use the worker
-  JcampConverter.convert(jcamp, true).then(function(result) {
-    // Do something with result
-  });
-});
 ```
 
 ## Testing and build
