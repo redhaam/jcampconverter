@@ -1,5 +1,12 @@
 # Changelog
 
+### [7.6.3](https://www.github.com/cheminfo/jcampconverter/compare/v7.6.2...v7.6.3) (2020-10-14)
+
+
+### Bug Fixes
+
+* remove worker from documentation ([9c47fe3](https://www.github.com/cheminfo/jcampconverter/commit/9c47fe31a7d3944fb17c01677f6e58be679cc474))
+
 ### [7.6.2](https://github.com/cheminfo-js/jcampconverter/compare/v7.6.1...v7.6.2) (2020-10-14)
 
 ## [7.3.1](https://github.com/cheminfo-js/jcampconverter/compare/v7.2.0...v7.3.1) (2020-06-24)
@@ -283,6 +290,3 @@ the jcamp
 
 <a name="1.0.0"></a>
 # 1.0.0 (2014-10-06)
-
-
-
