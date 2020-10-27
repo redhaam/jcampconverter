@@ -1,5 +1,12 @@
 # Changelog
 
+### [7.6.5](https://www.github.com/cheminfo/jcampconverter/compare/v7.6.4...v7.6.5) (2020-10-27)
+
+
+### Bug Fixes
+
+* correct dynamic typing ([bdd061f](https://www.github.com/cheminfo/jcampconverter/commit/bdd061ff2fc2c905122ba0bb677891b47265c527))
+
 ### [7.6.4](https://www.github.com/cheminfo/jcampconverter/compare/v7.6.3...v7.6.4) (2020-10-27)
 
 
