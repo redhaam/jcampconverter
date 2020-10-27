@@ -1,5 +1,12 @@
 # Changelog
 
+### [7.6.4](https://www.github.com/cheminfo/jcampconverter/compare/v7.6.3...v7.6.4) (2020-10-27)
+
+
+### Bug Fixes
+
+* nmr-processing dependency ([797bc76](https://www.github.com/cheminfo/jcampconverter/commit/797bc767cc129ec6bdf16f74635cd2bd6fc28a41))
+
 ### [7.6.3](https://www.github.com/cheminfo/jcampconverter/compare/v7.6.2...v7.6.3) (2020-10-14)
 
 
