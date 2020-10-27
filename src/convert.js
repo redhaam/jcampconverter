@@ -9,7 +9,8 @@ import prepareSpectrum from './prepareSpectrum';
 import profiling from './profiling';
 
 // the following RegExp can only be used for XYdata, some peakTables have values with a "E-5" ...
-const ntuplesSeparator = /[ \t]*,[ \t]*/;
+const ntuplesSeparatorRegExp = /[ \t]*,[ \t]*/;
+const numberRegExp = /^[-+]?[0-9]*\.?[0-9]+(e[-+]?[0-9]+)?$/;
 
 class Spectrum {}
 
@@ -225,45 +226,45 @@ export default function convert(jcamp, options = {}) {
       //                 currentEntry.shiftOffsetNum = parseInt(parts[2].trim());
       //                 spectrum.shiftOffsetVal = parseFloat(parts[3].trim());
     } else if (canonicDataLabel === 'VARNAME') {
-      currentEntry.ntuples.varname = dataValue.split(ntuplesSeparator);
+      currentEntry.ntuples.varname = dataValue.split(ntuplesSeparatorRegExp);
     } else if (canonicDataLabel === 'SYMBOL') {
-      currentEntry.ntuples.symbol = dataValue.split(ntuplesSeparator);
+      currentEntry.ntuples.symbol = dataValue.split(ntuplesSeparatorRegExp);
     } else if (canonicDataLabel === 'VARTYPE') {
-      currentEntry.ntuples.vartype = dataValue.split(ntuplesSeparator);
+      currentEntry.ntuples.vartype = dataValue.split(ntuplesSeparatorRegExp);
     } else if (canonicDataLabel === 'VARFORM') {
-      currentEntry.ntuples.varform = dataValue.split(ntuplesSeparator);
+      currentEntry.ntuples.varform = dataValue.split(ntuplesSeparatorRegExp);
     } else if (canonicDataLabel === 'VARDIM') {
       currentEntry.ntuples.vardim = convertToFloatArray(
-        dataValue.split(ntuplesSeparator),
+        dataValue.split(ntuplesSeparatorRegExp),
       );
     } else if (canonicDataLabel === 'UNITS') {
-      currentEntry.ntuples.units = dataValue.split(ntuplesSeparator);
+      currentEntry.ntuples.units = dataValue.split(ntuplesSeparatorRegExp);
     } else if (canonicDataLabel === 'FACTOR') {
       currentEntry.ntuples.factor = convertToFloatArray(
-        dataValue.split(ntuplesSeparator),
+        dataValue.split(ntuplesSeparatorRegExp),
       );
     } else if (canonicDataLabel === 'FIRST') {
       currentEntry.ntuples.first = convertToFloatArray(
-        dataValue.split(ntuplesSeparator),
+        dataValue.split(ntuplesSeparatorRegExp),
       );
     } else if (canonicDataLabel === 'LAST') {
       currentEntry.ntuples.last = convertToFloatArray(
-        dataValue.split(ntuplesSeparator),
+        dataValue.split(ntuplesSeparatorRegExp),
       );
     } else if (canonicDataLabel === 'MIN') {
       currentEntry.ntuples.min = convertToFloatArray(
-        dataValue.split(ntuplesSeparator),
+        dataValue.split(ntuplesSeparatorRegExp),
       );
     } else if (canonicDataLabel === 'MAX') {
       currentEntry.ntuples.max = convertToFloatArray(
-        dataValue.split(ntuplesSeparator),
+        dataValue.split(ntuplesSeparatorRegExp),
       );
     } else if (canonicDataLabel === '.NUCLEUS') {
       if (currentEntry.ntuples) {
-        currentEntry.ntuples.nucleus = dataValue.split(ntuplesSeparator);
+        currentEntry.ntuples.nucleus = dataValue.split(ntuplesSeparatorRegExp);
       }
       if (currentEntry.twoD) {
-        currentEntry.yType = dataValue.split(ntuplesSeparator)[0];
+        currentEntry.yType = dataValue.split(ntuplesSeparatorRegExp)[0];
       }
     } else if (canonicDataLabel === 'PAGE') {
       spectrum.page = dataValue.trim();
@@ -298,8 +299,9 @@ export default function convert(jcamp, options = {}) {
       }
 
       if (options.dynamicTyping) {
-        let parsedValue = Number.parseFloat(value);
-        if (!Number.isNaN(parsedValue)) value = parsedValue;
+        if (value.match(numberRegExp)) {
+          value = Number.parseFloat(value);
+        }
       }
       if (target[label]) {
         if (!Array.isArray(target[label])) {
