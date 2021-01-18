@@ -1,5 +1,12 @@
 # Changelog
 
+### [7.6.6](https://www.github.com/cheminfo/jcampconverter/compare/v7.6.5...v7.6.6) (2021-01-18)
+
+
+### Bug Fixes
+
+* deal with 2D jcamp without all .nucleus ([3cf7cc0](https://www.github.com/cheminfo/jcampconverter/commit/3cf7cc0907866505f430f4cf359d3b6e0f711878))
+
 ### [7.6.5](https://www.github.com/cheminfo/jcampconverter/compare/v7.6.4...v7.6.5) (2020-10-27)
 
 
