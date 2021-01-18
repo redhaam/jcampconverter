@@ -1,9 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<!-- saved from url=(0088)http://morsua104.agfa.be/wbtp/ws/spec/dba/specfile/Blob?w=NATIVE%28%27ID+%3D+33012%27%29 -->
-<HTML><HEAD>
-<META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 6.00.2800.1400" name=GENERATOR></HEAD>
-<BODY><PRE>##TITLE=      340343 V123413/A1A
+##TITLE=      340343 V123413/A1A
 ##JCAMP-DX=   4.24
 $$ Varian Associates, Inc., VNMR Software
 $$ VNMR Version 6.1 Revision B, December 4, 1998
@@ -3310,4 +3305,3 @@ $$solvent=CDCL3
 16375  0.000188545  0.000430254  0.000653161  0.000331101 -0.000064356 
 16380  0.000045291  0.000271347  0.000097066  0.000453211 
 ##END=
-</PRE></BODY></HTML>
