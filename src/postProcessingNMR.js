@@ -40,6 +40,21 @@ export default function postProcessingNMR(entriesFlat) {
         }
       }
 
+      // we will check if some nucleus are missing ...
+      if (entry.ntuples && entry.ntuples.nucleus && entry.ntuples.symbol) {
+        for (let i = 0; i < entry.ntuples.nucleus.length; i++) {
+          let symbol = entry.ntuples.symbol[i];
+          let nucleus = entry.ntuples.nucleus[i];
+          if (symbol.startsWith('F') && !nucleus) {
+            if (symbol === 'F1') entry.ntuples.nucleus[i] = entry.tmp.$NUC2;
+            if (symbol === 'F2') entry.ntuples.nucleus[i] = entry.tmp.$NUC1;
+          }
+          if (symbol === 'F2') {
+            entry.yType = entry.ntuples.nucleus[0];
+          }
+        }
+      }
+
       if (
         observeFrequency &&
         entry.ntuples &&

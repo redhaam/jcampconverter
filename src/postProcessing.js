@@ -42,5 +42,6 @@ export default function postProcessing(entriesFlat, result, options) {
       }
       profiling(result, 'Finished chromatogram calculation', options);
     }
+    delete entry.tmp;
   }
 }

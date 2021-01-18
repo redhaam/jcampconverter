@@ -12,7 +12,7 @@ import profiling from './profiling';
 const ntuplesSeparatorRegExp = /[ \t]*,[ \t]*/;
 const numberRegExp = /^[-+]?[0-9]*\.?[0-9]+(e[-+]?[0-9]+)?$/;
 
-class Spectrum {}
+class Spectrum { }
 
 const defaultOptions = {
   keepRecordsRegExp: /^$/,
@@ -157,6 +157,7 @@ export default function convert(jcamp, options = {}) {
         ntuples: {},
         info: {},
         meta: {},
+        tmp: {}, // tmp information we need to keep for postprocessing
       };
       parentEntry.children.push(currentEntry);
       parentsStack.push(parentEntry);
@@ -263,9 +264,6 @@ export default function convert(jcamp, options = {}) {
       if (currentEntry.ntuples) {
         currentEntry.ntuples.nucleus = dataValue.split(ntuplesSeparatorRegExp);
       }
-      if (currentEntry.twoD) {
-        currentEntry.yType = dataValue.split(ntuplesSeparatorRegExp)[0];
-      }
     } else if (canonicDataLabel === 'PAGE') {
       spectrum.page = dataValue.trim();
       spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ''));
@@ -276,6 +274,10 @@ export default function convert(jcamp, options = {}) {
       spectrum[convertMSFieldToLabel(canonicDataLabel)] = dataValue;
     } else if (canonicDataLabel === 'SAMPLEDESCRIPTION') {
       spectrum.sampleDescription = dataValue;
+    } else if (canonicDataLabel.startsWith('$NUC')) {
+      if (!currentEntry.tmp[canonicDataLabel] && !dataValue.includes('off')) {
+        currentEntry.tmp[canonicDataLabel] = dataValue.replace(/[<>]/g, '');
+      }
     } else if (canonicDataLabel === 'END') {
       currentEntry = parentsStack.pop();
     }
