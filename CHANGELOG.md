@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.7.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.6.6...v7.7.0) (2021-02-10)
+
+
+### Features
+
+* ignore deltaX and calculate firstX-lastX / npoints ([8aff051](https://www.github.com/cheminfo/jcampconverter/commit/8aff051d7c095933e0f01ae171801a871a1e27cf))
+
 ### [7.6.6](https://www.github.com/cheminfo/jcampconverter/compare/v7.6.5...v7.6.6) (2021-01-18)
 
 
