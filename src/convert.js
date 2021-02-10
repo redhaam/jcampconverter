@@ -12,7 +12,7 @@ import profiling from './profiling';
 const ntuplesSeparatorRegExp = /[ \t]*,[ \t]*/;
 const numberRegExp = /^[-+]?[0-9]*\.?[0-9]+(e[-+]?[0-9]+)?$/;
 
-class Spectrum { }
+class Spectrum {}
 
 const defaultOptions = {
   keepRecordsRegExp: /^$/,
