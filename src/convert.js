@@ -12,7 +12,7 @@ import profiling from './profiling';
 const ntuplesSeparatorRegExp = /[ \t]*,[ \t]*/;
 const numberRegExp = /^[-+]?[0-9]*\.?[0-9]+(e[-+]?[0-9]+)?$/;
 
-class Spectrum {}
+class Spectrum { }
 
 const defaultOptions = {
   keepRecordsRegExp: /^$/,
@@ -114,10 +114,9 @@ export default function convert(jcamp, options = {}) {
         // well apparently we should still consider it is a PEAK TABLE if there are no '++' after
         if (dataValue.match(/.*\+\+.*/)) {
           // ex: (X++(Y..Y))
-          if (!spectrum.deltaX) {
-            spectrum.deltaX =
-              (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
-          }
+          spectrum.deltaX =
+            (spectrum.lastX - spectrum.firstX) / (spectrum.nbPoints - 1);
+
           fastParseXYData(spectrum, dataValue, result);
         } else {
           parsePeakTable(spectrum, dataValue, result);

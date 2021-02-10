@@ -4,7 +4,9 @@ describe('Test same label', () => {
   it('array if many times same label', () => {
     const jcamp = `##TITLE=
 ##FIRSTX= 10
+##LASTX=15
 ##DELTAX= 1
+##NPOINTS=6
 ##XYDATA= (X++(Y..Y))
 10 AX
 ##END=`;
@@ -18,7 +20,9 @@ describe('Test same label', () => {
   it('array if many times same label with negative values', () => {
     const jcamp = `##TITLE=
 ##FIRSTX= 10
+##LASTX=15
 ##DELTAX= 1
+##NPOINTS=6
 ##XYDATA= (X++(Y..Y))
 10 aX
 ##END=`;

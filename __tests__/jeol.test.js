@@ -8,4 +8,5 @@ test('JEOL', () => {
 
   expect(spectrum.firstX).toBeCloseTo(15.1029, 3);
   expect(spectrum.lastX).toBeCloseTo(-4.88666, 4);
+  expect(spectrum.deltaX).toBeCloseTo(-0.0012201, 4);
 });
