@@ -1,24 +1,16 @@
-var Converter = require('..');
-var fs = require('fs');
+import fs from 'fs';
+
+import { convert } from '../src/index.js';
 
 function checkJcamp(filename, label, options) {
-  var result = convert(
-    readFileSync(__dirname + '/../__tests__' + filename).toString(),
-    options,
+  let result = convert(
+    fs.readFileSync(`${__dirname}/../__tests__${filename}`).toString(),
+    { noContour: true },
   );
-
-  console.log('===================', label);
-  console.log(result.profiling);
+}
+console.time('time');
+for (let i = 0; i < 20; i++) {
+  checkJcamp('/data/indometacin/hmbc.dx', 'HMBC');
 }
 
-var options = {
-  fastParse: true,
-};
-
-//checkJcamp('/data/compression/jcamp-fix.dx', "Compression fixed", options);
-//checkJcamp('/data/compression/jcamp-packed.dx', "Compression packed", options);
-//checkJcamp('/data/compression/jcamp-squeezed.dx', "Compression squeezed", options);
-//checkJcamp('/data/compression/jcamp-difdup.dx', "Compression difdup", options);
-//for (var i=0; i<5; i++) {
-checkJcamp('/data/indometacin/hmbc.dx', 'HMBC', options);
-//}
+console.timeEnd('time');
