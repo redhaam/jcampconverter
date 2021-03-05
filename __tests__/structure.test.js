@@ -84,7 +84,7 @@ describe('Test various jcamp structures', () => {
       maxY: 3,
       minZ: 2,
       maxZ: 7,
-      noise: 3,
+      noise: 4,
     });
     expect(result.entries).toHaveLength(1);
     expect(result.entries[0].spectra).toHaveLength(4);

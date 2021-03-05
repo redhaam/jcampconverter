@@ -22,7 +22,7 @@ describe('2D spectra', () => {
         maxY: 13.427171028086525,
         minZ: -452502,
         maxZ: 425754929,
-        noise: 2797,
+        noise: 3041,
       },
       3,
     );
@@ -43,7 +43,7 @@ describe('2D spectra', () => {
         maxY: 169.9934958572927,
         minZ: -18314706,
         maxZ: 335826203,
-        noise: 281769,
+        noise: 263279,
       },
       1,
     );

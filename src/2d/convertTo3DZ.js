@@ -32,6 +32,16 @@ export default function convertTo3DZ(spectra) {
     z.reverse();
   }
 
+  const medians = [];
+  for (let i = 0; i < z.length; i++) {
+    const row = Float64Array.from(z[i]);
+    for (let i = 0; i < row.length; i++) {
+      if (row[i] < 0) row[i] = -row[i];
+    }
+    medians.push(getMedian(row));
+  }
+  const median = getMedian(medians);
+
   return {
     z: z,
     minX: Math.min(firstX, lastX),
@@ -40,6 +50,6 @@ export default function convertTo3DZ(spectra) {
     maxY: Math.max(firstY, lastY),
     minZ: minZ,
     maxZ: maxZ,
-    noise: getMedian(z[0].map(Math.abs)),
+    noise: median,
   };
 }
