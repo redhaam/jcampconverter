@@ -1,9 +1,8 @@
 # JCAMP converter
 
 [![NPM version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
+[![build status][ci-image]][ci-url]
 [![Test coverage][codecov-image]][codecov-url]
-[![David deps][david-image]][david-url]
 [![npm download][download-image]][download-url]
 
 Parse and convert JCAMP data
@@ -51,10 +50,8 @@ Returns an object with information about the converted file and uncompressed spe
 #### Node.JS
 
 ```javascript
-var converter = require("jcampconverter");
-var jcamp = require("fs")
-  .readFileSync("path/to/jcamp.dx")
-  .toString();
+var converter = require('jcampconverter');
+var jcamp = require('fs').readFileSync('path/to/jcamp.dx').toString();
 
 var result = converter.convert(jcamp);
 
@@ -62,12 +59,11 @@ var result = converter.convert(jcamp);
 console.log(result.flatten[0]);
 
 // the converter will also keep the full jcamp tree
-
 ```
 
 ## Testing and build
 
-```
+```console
 npm install
 npm test
 npm run build
@@ -75,7 +71,7 @@ npm run build
 
 ## Benchmark
 
-```
+```console
 npm run benchmark
 ```
 
@@ -83,13 +79,11 @@ npm run benchmark
 
 [MIT](./LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/jcampconverter.svg?style=flat-square
-[npm-url]: https://www.npmjs.com/package/jcampconverter
-[travis-image]: https://img.shields.io/travis/cheminfo-js/jcampconverter/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/cheminfo-js/jcampconverter
-[codecov-image]: https://img.shields.io/codecov/c/github/cheminfo-js/jcampconverter.svg?style=flat-square
-[codecov-url]: https://codecov.io/gh/cheminfo-js/jcampconverter
-[david-image]: https://img.shields.io/david/cheminfo-js/jcampconverter.svg?style=flat-square
-[david-url]: https://david-dm.org/cheminfo-js/jcampconverter
-[download-image]: https://img.shields.io/npm/dm/jcampconverter.svg?style=flat-square
-[download-url]: https://www.npmjs.com/package/jcampconverter
+[npm-image]: https://img.shields.io/npm/v/jcampconverter.svg
+[npm-url]: https://npmjs.org/package/jcampconverter
+[codecov-image]: https://img.shields.io/codecov/c/github/mljs/jcampconverter.svg
+[codecov-url]: https://codecov.io/gh/mljs/jcampconverter
+[ci-image]: https://github.com/mljs/jcampconverter/workflows/Node.js%20CI/badge.svg?branch=master
+[ci-url]: https://github.com/mljs/jcampconverter/actions?query=workflow%3A%22Node.js+CI%22
+[download-image]: https://img.shields.io/npm/dm/jcampconverter.svg
+[download-url]: https://npmjs.org/package/jcampconverter
