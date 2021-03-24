@@ -81,9 +81,9 @@ npm run benchmark
 
 [npm-image]: https://img.shields.io/npm/v/jcampconverter.svg
 [npm-url]: https://npmjs.org/package/jcampconverter
-[codecov-image]: https://img.shields.io/codecov/c/github/mljs/jcampconverter.svg
-[codecov-url]: https://codecov.io/gh/mljs/jcampconverter
-[ci-image]: https://github.com/mljs/jcampconverter/workflows/Node.js%20CI/badge.svg?branch=master
-[ci-url]: https://github.com/mljs/jcampconverter/actions?query=workflow%3A%22Node.js+CI%22
+[codecov-image]: https://img.shields.io/codecov/c/github/cheminfo/jcampconverter.svg
+[codecov-url]: https://codecov.io/gh/cheminfo/jcampconverter
+[ci-image]: https://github.com/cheminfo/jcampconverter/workflows/Node.js%20CI/badge.svg?branch=master
+[ci-url]: https://github.com/cheminfo/jcampconverter/actions?query=workflow%3A%22Node.js+CI%22
 [download-image]: https://img.shields.io/npm/dm/jcampconverter.svg
 [download-url]: https://npmjs.org/package/jcampconverter
