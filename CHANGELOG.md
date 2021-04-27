@@ -1,26 +1,24 @@
 # Changelog
 
+## [8.0.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.10.0...v8.0.0) (2021-04-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* matrix for node CI 12, 14 and 16 and remove node 10 support
+
+### Features
+
+* jcamp may also be an ArrayBuffer and not only a string ([58b2a38](https://www.github.com/cheminfo/jcampconverter/commit/58b2a3813b8b368d4f72f13f65f086b1f321ce43))
+
 ## [7.10.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.9.0...v7.10.0) (2021-04-27)
 
 
 ### Features
 
-* simplify ORG.CHEMINFO comment. Iif ##$cheminfo parsed the JSON in meta.cheminfo property ([2c65658](https://www.github.com/cheminfo/jcampconverter/commit/2c65658331103f4552ffa7def310e695911424c3))
-
-
-### Bug Fixes
-
-* remote ORG.CHEMINFO.META LDR from meta ([20c5467](https://www.github.com/cheminfo/jcampconverter/commit/20c54673a9d5f8dd666ed4dd58f460002bd405b8))
-
-## [7.9.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.8.0...v7.9.0) (2021-04-27)
-
-
-### Features
-
-* parse special 'org.cheminfo.meta' LDR as a JSON ([2fe8d53](https://www.github.com/cheminfo/jcampconverter/commit/2fe8d539afaf35b69e6cef89431ab05beb5da5ea))
+* If ##$cheminfo LDR, parsed the value as a JSON ([2c65658](https://www.github.com/cheminfo/jcampconverter/commit/2c65658331103f4552ffa7def310e695911424c3))
 
 ## [7.8.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.7.0...v7.8.0) (2021-03-24)
-
 
 ### Features
 
