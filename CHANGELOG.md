@@ -1,5 +1,12 @@
 # Changelog
 
+### [7.9.1](https://www.github.com/cheminfo/jcampconverter/compare/v7.9.0...v7.9.1) (2021-04-27)
+
+
+### Bug Fixes
+
+* remote ORG.CHEMINFO.META LDR from meta ([20c5467](https://www.github.com/cheminfo/jcampconverter/commit/20c54673a9d5f8dd666ed4dd58f460002bd405b8))
+
 ## [7.9.0](https://www.github.com/cheminfo/jcampconverter/compare/v7.8.0...v7.9.0) (2021-04-27)
 
 
