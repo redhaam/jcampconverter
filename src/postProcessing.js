@@ -47,7 +47,6 @@ export default function postProcessing(entriesFlat, result, options) {
         if (!entry.cheminfo) entry.cheminfo = {};
         try {
           entry.cheminfo.meta = JSON.parse(entry.meta[key]);
-          delete entry.meta[key];
         } catch (e) {
           //do nothing
         }
