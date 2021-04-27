@@ -32,7 +32,7 @@ const defaultOptions = {
 
 /**
  *
- * @param {text} jcamp
+ * @param {string|ArrayBuffer} jcamp
  * @param {object} [options]
  * @param {number} [options.keepRecordsRegExp=/^$/] By default we don't keep meta information
  * @param {number} [options.canonicDataLabels=true] Canonize the Labels (uppercase without symbol)
