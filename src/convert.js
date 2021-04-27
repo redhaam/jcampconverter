@@ -1,3 +1,5 @@
+import { ensureString } from 'ensure-string';
+
 import { isMSField, convertMSFieldToLabel } from './complexChromatogram';
 import convertToFloatArray from './convertToFloatArray';
 import fastParseXYData from './parse/fastParseXYData';
@@ -46,7 +48,8 @@ const defaultOptions = {
  */
 
 export default function convert(jcamp, options = {}) {
-  options = Object.assign({}, defaultOptions, options);
+  jcamp = ensureString(jcamp);
+  options = { ...defaultOptions, ...options };
   options.wantXY = !options.withoutXY;
   options.start = Date.now();
 

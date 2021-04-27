@@ -1,4 +1,7 @@
+import { ensureString } from 'ensure-string';
+
 export default function createTree(jcamp, options = {}) {
+  jcamp = ensureString(jcamp);
   const { flatten = false } = options;
   if (typeof jcamp !== 'string') {
     throw new TypeError('the JCAMP should be a string');
