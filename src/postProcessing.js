@@ -42,6 +42,17 @@ export default function postProcessing(entriesFlat, result, options) {
       }
       profiling(result, 'Finished chromatogram calculation', options);
     }
+    for (let key in entry.meta) {
+      if (key.toLocaleLowerCase() === 'org.cheminfo.meta') {
+        if (!entry.cheminfo) entry.cheminfo = {};
+        try {
+          entry.cheminfo.meta = JSON.parse(entry.meta[key]);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    }
+
     delete entry.tmp;
   }
 }
