@@ -8,6 +8,6 @@ describe('Check for special org.cheminfo.meta LDR', () => {
       readFileSync(`${__dirname}/data/misc/cheminfo-meta.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/ },
     );
-    expect(result.flatten[0].cheminfo.meta).toStrictEqual('def');
+    expect(result.flatten[0].meta.cheminfo).toStrictEqual('def');
   });
 });

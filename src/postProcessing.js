@@ -43,10 +43,11 @@ export default function postProcessing(entriesFlat, result, options) {
       profiling(result, 'Finished chromatogram calculation', options);
     }
     for (let key in entry.meta) {
-      if (key.toLocaleLowerCase() === 'org.cheminfo.meta') {
-        if (!entry.cheminfo) entry.cheminfo = {};
+      if (key.toLowerCase() === 'cheminfo') {
         try {
-          entry.cheminfo.meta = JSON.parse(entry.meta[key]);
+          let parsed = JSON.parse(entry.meta[key]);
+          delete entry.meta[key];
+          entry.meta.cheminfo = parsed;
         } catch (e) {
           //do nothing
         }
