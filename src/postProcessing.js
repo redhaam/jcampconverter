@@ -48,7 +48,7 @@ export default function postProcessing(entriesFlat, result, options) {
         try {
           entry.cheminfo.meta = JSON.parse(entry.meta[key]);
         } catch (e) {
-          console.log(e);
+          //do nothing
         }
       }
     }
