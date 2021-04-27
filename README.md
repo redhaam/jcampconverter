@@ -63,7 +63,7 @@ Returns an object with information about the converted file and uncompressed spe
 
 ```javascript
 var converter = require('jcampconverter');
-var jcamp = require('fs').readFileSync('path/to/jcamp.dx').toString();
+var jcamp = require('fs').readFileSync('path/to/jcamp.dx', 'utf8');
 
 var result = converter.convert(jcamp);
 
