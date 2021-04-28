@@ -1,4 +1,14 @@
+import { ensureString } from 'ensure-string';
+
+/**
+ * Parse the jcamp to extract the structure as a tree
+ * @param {string|ArrayBuffer jcamp
+ * @param {object} [options={}]
+ * @param {boolean} [options.flatten=false]
+ * @returns
+ */
 export default function createTree(jcamp, options = {}) {
+  jcamp = ensureString(jcamp);
   const { flatten = false } = options;
   if (typeof jcamp !== 'string') {
     throw new TypeError('the JCAMP should be a string');

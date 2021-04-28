@@ -12,10 +12,10 @@ Parse and convert JCAMP data
     Maintained by <a href="https://www.zakodium.com">Zakodium</a>
   </p>
 
-  [![NPM version][npm-image]][npm-url]
-  [![build status][ci-image]][ci-url]
-  [![Test coverage][codecov-image]][codecov-url]
-  [![npm download][download-image]][download-url]
+[![NPM version][npm-image]][npm-url]
+[![build status][ci-image]][ci-url]
+[![Test coverage][codecov-image]][codecov-url]
+[![npm download][download-image]][download-url]
 
 </h3>
 
@@ -38,7 +38,7 @@ Returns an object with information about the converted file and uncompressed spe
 
 **Arguments**
 
-- `jcamp` - String containing the JCAMP data
+- `jcamp` - String or ArrayBuffer containing the JCAMP data
 - `options` - Object with options to pass to the converter
 
 **Options**
@@ -63,7 +63,7 @@ Returns an object with information about the converted file and uncompressed spe
 
 ```javascript
 var converter = require('jcampconverter');
-var jcamp = require('fs').readFileSync('path/to/jcamp.dx').toString();
+var jcamp = require('fs').readFileSync('path/to/jcamp.dx', 'utf8');
 
 var result = converter.convert(jcamp);
 
