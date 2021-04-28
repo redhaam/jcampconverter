@@ -46,7 +46,17 @@ export default function postProcessingNMR(entriesFlat) {
           let symbol = entry.ntuples.symbol[i];
           let nucleus = entry.ntuples.nucleus[i];
           if (symbol.startsWith('F') && !nucleus) {
-            if (symbol === 'F1') entry.ntuples.nucleus[i] = entry.tmp.$NUC2;
+            if (symbol === 'F1') {
+              // if F1 is defined we will use F2
+              if (entry.tmp.$NUC2) {
+                entry.ntuples.nucleus[i] = entry.tmp.$NUC2;
+              } else {
+                let f2index = entry.ntuples.symbol.indexOf('F2');
+                if (f2index && entry.ntuples.nucleus[f2index]) {
+                  entry.ntuples.nucleus[i] = entry.ntuples.nucleus[f2index];
+                }
+              }
+            }
             if (symbol === 'F2') entry.ntuples.nucleus[i] = entry.tmp.$NUC1;
           }
           if (symbol === 'F2') {
