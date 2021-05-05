@@ -42,17 +42,6 @@ export default function postProcessing(entriesFlat, result, options) {
       }
       profiling(result, 'Finished chromatogram calculation', options);
     }
-    for (let key in entry.meta) {
-      if (key.toLowerCase() === 'cheminfo') {
-        try {
-          let parsed = JSON.parse(entry.meta[key]);
-          delete entry.meta[key];
-          entry.meta.cheminfo = parsed;
-        } catch (e) {
-          //do nothing
-        }
-      }
-    }
 
     delete entry.tmp;
   }
