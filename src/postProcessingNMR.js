@@ -2,10 +2,10 @@ import { gyromagneticRatio } from 'nmr-processing';
 
 export default function postProcessingNMR(entriesFlat) {
   // specific NMR functions
-  let observeFrequency = 0;
-  let shiftOffsetVal = 0;
 
   for (let entry of entriesFlat) {
+    let observeFrequency = 0;
+    let shiftOffsetVal = 0;
     for (let spectrum of entry.spectra) {
       if (entry.ntuples && entry.ntuples.symbol) {
         if (!observeFrequency && spectrum.observeFrequency) {
