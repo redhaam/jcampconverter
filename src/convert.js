@@ -167,11 +167,11 @@ export default function convert(jcamp, options = {}) {
       currentEntry.title = dataValue;
     } else if (canonicDataLabel === 'DATATYPE') {
       currentEntry.dataType = dataValue;
-      if (dataValue.toLowerCase().indexOf('nd') > -1) {
+      if (dataValue.match(/(^nd|\snd\s)/i)) {
         currentEntry.twoD = true;
       }
     } else if (canonicDataLabel === 'NTUPLES') {
-      if (dataValue.toLowerCase().indexOf('nd') > -1) {
+      if (dataValue.match(/(^nd|\snd\s)/i)) {
         currentEntry.twoD = true;
       }
     } else if (canonicDataLabel === 'DATACLASS') {
