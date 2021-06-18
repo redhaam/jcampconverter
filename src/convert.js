@@ -12,7 +12,6 @@ import profiling from './profiling';
 
 // the following RegExp can only be used for XYdata, some peakTables have values with a "E-5" ...
 const ntuplesSeparatorRegExp = /[ \t]*,[ \t]*/;
-const numberRegExp = /^[-+]?[0-9]*\.?[0-9]+(e[-+]?[0-9]+)?$/;
 
 class Spectrum {}
 
@@ -303,8 +302,12 @@ export default function convert(jcamp, options = {}) {
       }
 
       if (options.dynamicTyping) {
-        if (value.match(numberRegExp)) {
-          value = Number.parseFloat(value);
+        if (value === 'true' || value === 'TRUE') {
+          value = true;
+        } else if (value === 'false' || value === 'FALSE') {
+          value = false;
+        } else if (value !== '' && !isNaN(value)) {
+          value = parseFloat(value);
         }
       }
       if (target[label]) {

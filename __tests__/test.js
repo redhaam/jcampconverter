@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import { join } from 'path';
 
 import { toBeDeepCloseTo, toMatchCloseTo } from 'jest-matcher-deep-close-to';
 
@@ -36,6 +37,22 @@ function checkJcamp(filename, label, data) {
     }
   });
 }
+
+test('dynamicTyping', () => {
+  const arrayBuffer = readFileSync(
+    join(__dirname, 'data/ethylvinylether/1h.jdx'),
+  );
+  let result = convert(arrayBuffer, {
+    dynamicTyping: false,
+    keepRecordsRegExp: /.*/,
+  }).flatten[0];
+  expect(result.meta.O4).toStrictEqual('100020000');
+  result = convert(arrayBuffer, {
+    dynamicTyping: true,
+    keepRecordsRegExp: /.*/,
+  }).flatten[0];
+  expect(result.meta.O4).toStrictEqual(100020000);
+});
 
 describe('Test JCAMP converter', () => {
   checkJcamp('/ethylvinylether/1h.jdx', '1H NMR Ethyl vinyl ether', {
