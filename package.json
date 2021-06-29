@@ -46,20 +46,20 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.14.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.14.5",
     "@types/jest": "^26.0.23",
     "benchmark": "^2.1.4",
-    "cheminfo-build": "^1.1.10",
-    "eslint": "^7.27.0",
+    "cheminfo-build": "^1.1.11",
+    "eslint": "^7.29.0",
     "eslint-config-cheminfo": "^5.2.4",
-    "eslint-plugin-import": "^2.23.3",
+    "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jest": "^24.3.6",
     "eslint-plugin-prettier": "^3.4.0",
     "esm": "^3.2.25",
-    "jest": "^27.0.1",
+    "jest": "^27.0.6",
     "jest-matcher-deep-close-to": "^2.0.1",
-    "prettier": "^2.3.0",
-    "rollup": "^2.50.2"
+    "prettier": "^2.3.2",
+    "rollup": "^2.52.3"
   },
   "dependencies": {
     "ensure-string": "^0.1.1",
