@@ -16,6 +16,7 @@ Parse and convert JCAMP data
 [![build status][ci-image]][ci-url]
 [![Test coverage][codecov-image]][codecov-url]
 [![npm download][download-image]][download-url]
+[![DOI](https://www.zenodo.org/badge/22728620.svg)](https://www.zenodo.org/badge/latestdoi/22728620)
 
 </h3>
 
