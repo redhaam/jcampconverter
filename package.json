@@ -62,6 +62,7 @@
     "rollup": "^2.56.3"
   },
   "dependencies": {
+    "dynamic-typing": "^0.1.1",
     "ensure-string": "^1.0.0",
     "ml-array-median": "^1.1.5",
     "nmr-processing": "^2.5.0"

@@ -1,3 +1,4 @@
+import {parseString} from 'dynamic-typing'
 import { ensureString } from 'ensure-string';
 
 import { isMSField, convertMSFieldToLabel } from './complexChromatogram';
@@ -302,13 +303,7 @@ export default function convert(jcamp, options = {}) {
       }
 
       if (options.dynamicTyping) {
-        if (value === 'true' || value === 'TRUE') {
-          value = true;
-        } else if (value === 'false' || value === 'FALSE') {
-          value = false;
-        } else if (value !== '' && !isNaN(value)) {
-          value = parseFloat(value);
-        }
+	      value=parseString(value)
       }
       if (target[label]) {
         if (!Array.isArray(target[label])) {
