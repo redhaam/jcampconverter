@@ -1,4 +1,4 @@
-import {parseString} from 'dynamic-typing'
+import { parseString } from 'dynamic-typing';
 import { ensureString } from 'ensure-string';
 
 import { isMSField, convertMSFieldToLabel } from './complexChromatogram';
@@ -303,7 +303,7 @@ export default function convert(jcamp, options = {}) {
       }
 
       if (options.dynamicTyping) {
-	      value=parseString(value)
+        value = parseString(value);
       }
       if (target[label]) {
         if (!Array.isArray(target[label])) {
