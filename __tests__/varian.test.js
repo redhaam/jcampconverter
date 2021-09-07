@@ -6,8 +6,8 @@ import { convert } from '../src';
 
 expect.extend({ toBeDeepCloseTo, toMatchCloseTo });
 
-describe('Varian Jcamp', function () {
-  it('NMR 1H spectrum 16384', function () {
+describe('Varian Jcamp', () => {
+  it('NMR 1H spectrum 16384', () => {
     let result = convert(
       readFileSync(`${__dirname}/data/misc/varian.jdx`, 'utf8'),
     );

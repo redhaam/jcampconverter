@@ -6,8 +6,8 @@ import { convert } from '../src';
 
 expect.extend({ toBeDeepCloseTo, toMatchCloseTo });
 
-describe('Test from Mestrec Jcamp generator', function () {
-  it('NMR 1H spectrum 256', function () {
+describe('Test from Mestrec Jcamp generator', () => {
+  it('NMR 1H spectrum 256', () => {
     let result = convert(
       readFileSync(`${__dirname}/data/mestrec/jcamp-256.jdx`).toString(),
     );
@@ -16,7 +16,7 @@ describe('Test from Mestrec Jcamp generator', function () {
     expect(data.y).toHaveLength(256);
   });
 
-  it('NMR 1H spectrum 1024', function () {
+  it('NMR 1H spectrum 1024', () => {
     let result = convert(
       readFileSync(`${__dirname}/data/mestrec/jcamp-1024.jdx`).toString(),
     );
@@ -25,7 +25,7 @@ describe('Test from Mestrec Jcamp generator', function () {
     expect(data.y).toHaveLength(1024);
   });
 
-  it('NMR 1H spectrum difdup', function () {
+  it('NMR 1H spectrum difdup', () => {
     let result = convert(
       readFileSync(`${__dirname}/data/mestrec/jcamp-difdup.jdx`).toString(),
     );
@@ -36,7 +36,7 @@ describe('Test from Mestrec Jcamp generator', function () {
     // console.log(data.y.length, Math.max(...data.y), Math.min(...data.y));
   });
 
-  it('clean cosy', function () {
+  it('clean cosy', () => {
     let result = convert(
       readFileSync(`${__dirname}/data/mestrec/clean/cosy.jcamp`).toString(),
     );
@@ -55,7 +55,7 @@ describe('Test from Mestrec Jcamp generator', function () {
     );
   });
 
-  it('clean hsqc', function () {
+  it('clean hsqc', () => {
     let result = convert(
       readFileSync(`${__dirname}/data/mestrec/clean/hsqc.jcamp`).toString(),
     );
