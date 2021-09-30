@@ -64,6 +64,6 @@
     "dynamic-typing": "^0.1.3",
     "ensure-string": "^1.1.0",
     "ml-array-median": "^1.1.5",
-    "nmr-processing": "^3.0.1"
+    "nmr-processing": "^3.0.2"
   }
 }
