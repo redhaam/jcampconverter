@@ -1,5 +1,13 @@
 # Changelog
 
+### [8.2.1](https://www.github.com/cheminfo/jcampconverter/compare/v8.2.0...v8.2.1) (2021-09-30)
+
+
+### Bug Fixes
+
+* ensure compatibility with node 12 ([c5c68cc](https://www.github.com/cheminfo/jcampconverter/commit/c5c68cc9de6330088f7c838573369c280ba68ff6))
+* update nmr-processing library ([0732b3a](https://www.github.com/cheminfo/jcampconverter/commit/0732b3a44fd9bd92a721f6694bb98e46d12ea7bd))
+
 ## [8.2.0](https://www.github.com/cheminfo/jcampconverter/compare/v8.1.5...v8.2.0) (2021-09-07)
 
 
