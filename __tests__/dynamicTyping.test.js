@@ -8,8 +8,8 @@ describe('camelLabelsl', () => {
       readFileSync(`${__dirname}/data/misc/dynamicTyping.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/ },
     );
-    expect(result.entries[0].meta.STRING).toStrictEqual('abc');
-    expect(result.entries[0].meta.NUMBER).toStrictEqual(123);
+    expect(result.entries[0].meta.STRING).toBe('abc');
+    expect(result.entries[0].meta.NUMBER).toBe(123);
   });
 
   it('canonized data labels true', () => {
@@ -17,8 +17,8 @@ describe('camelLabelsl', () => {
       readFileSync(`${__dirname}/data/misc/dynamicTyping.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/, dynamicTyping: true },
     );
-    expect(result.entries[0].meta.STRING).toStrictEqual('abc');
-    expect(result.entries[0].meta.NUMBER).toStrictEqual(123);
+    expect(result.entries[0].meta.STRING).toBe('abc');
+    expect(result.entries[0].meta.NUMBER).toBe(123);
   });
 
   it('canonized data labels false', () => {
@@ -26,7 +26,7 @@ describe('camelLabelsl', () => {
       readFileSync(`${__dirname}/data/misc/dynamicTyping.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/, dynamicTyping: false },
     );
-    expect(result.entries[0].meta.STRING).toStrictEqual('abc');
-    expect(result.entries[0].meta.NUMBER).toStrictEqual('123');
+    expect(result.entries[0].meta.STRING).toBe('abc');
+    expect(result.entries[0].meta.NUMBER).toBe('123');
   });
 });

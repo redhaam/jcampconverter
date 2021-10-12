@@ -46,12 +46,12 @@ test('dynamicTyping', () => {
     dynamicTyping: false,
     keepRecordsRegExp: /.*/,
   }).flatten[0];
-  expect(result.meta.O4).toStrictEqual('100020000');
+  expect(result.meta.O4).toBe('100020000');
   result = convert(arrayBuffer, {
     dynamicTyping: true,
     keepRecordsRegExp: /.*/,
   }).flatten[0];
-  expect(result.meta.O4).toStrictEqual(100020000);
+  expect(result.meta.O4).toBe(100020000);
 });
 
 describe('Test JCAMP converter', () => {

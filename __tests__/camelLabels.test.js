@@ -8,8 +8,8 @@ describe('camelLabels', () => {
       readFileSync(`${__dirname}/data/misc/camelLabels.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/ },
     );
-    expect(result.entries[0].info.FIRSTX).toStrictEqual(0.905);
-    expect(result.entries[0].meta.test).toStrictEqual('abc');
+    expect(result.entries[0].info.FIRSTX).toBe(0.905);
+    expect(result.entries[0].meta.test).toBe('abc');
   });
 
   it('non-canonized data labels', () => {
@@ -17,8 +17,8 @@ describe('camelLabels', () => {
       readFileSync(`${__dirname}/data/misc/camelLabels.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/, canonicDataLabels: false },
     );
-    expect(result.entries[0].info['first X']).toStrictEqual(0.905);
-    expect(result.entries[0].meta.test).toStrictEqual('abc');
+    expect(result.entries[0].info['first X']).toBe(0.905);
+    expect(result.entries[0].meta.test).toBe('abc');
   });
 
   it('canonized metadata labels', () => {
@@ -26,8 +26,8 @@ describe('camelLabels', () => {
       readFileSync(`${__dirname}/data/misc/camelLabels.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/ },
     );
-    expect(result.entries[0].info.FIRSTX).toStrictEqual(0.905);
-    expect(result.entries[0].meta.test).toStrictEqual('abc');
+    expect(result.entries[0].info.FIRSTX).toBe(0.905);
+    expect(result.entries[0].meta.test).toBe('abc');
   });
 
   it('non-canonized metadata labels', () => {
@@ -35,7 +35,7 @@ describe('camelLabels', () => {
       readFileSync(`${__dirname}/data/misc/camelLabels.jdx`, 'utf8'),
       { keepRecordsRegExp: /.*/, canonicMetadataLabels: true },
     );
-    expect(result.entries[0].info.FIRSTX).toStrictEqual(0.905);
-    expect(result.entries[0].meta.TEST).toStrictEqual('abc');
+    expect(result.entries[0].info.FIRSTX).toBe(0.905);
+    expect(result.entries[0].meta.TEST).toBe('abc');
   });
 });
