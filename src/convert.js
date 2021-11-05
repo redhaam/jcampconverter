@@ -31,22 +31,66 @@ const defaultOptions = {
 };
 
 /**
+ *
+ * @typedef {object} ConvertOptions
+ * @property {number} [options.keepRecordsRegExp=/^$/] - By default we don't keep meta information.
+ * @property {number} [options.canonicDataLabels=true] - Canonize the Labels (uppercase without symbol).
+ * @property {number} [options.canonicMetadataLabels=false] - Canonize the metadata Labels (uppercase without symbol).
+ * @property {number} [options.dynamicTyping=false] - Convert numbers to Number.
+ * @property {number} [options.withoutXY=false] - Remove the XY data.
+ * @property {number} [options.chromatogram=false] - Special post-processing for GC / HPLC / MS.
+ * @property {number} [options.keepSpectra=false] - Force to keep the spectra in case of 2D.
+ * @property {number} [options.noContour=false] - Don't calculate countour in case of 2D.
+ * @property {number} [options.nbContourLevels=7] - Number of positive / negative contour levels to calculate.
+ * @property {number} [options.noiseMultiplier=5] - Define for 2D the level as 5 times the median as default.
+ * @property {number} [options.profiling=false] - Add profiling information.
+ */
+
+/**
+ *
+ * @typedef {object} Ntuples
+ * @property {string[]} [varname]
+ * @property {string[]} [symbol]
+ * @property {string[]} [vartype]
+ * @property {string[]} [varform]
+ * @property {number[]} [vardim]
+ * @property {string[]} [units]
+ * @property {number[]} [factor]
+ * @property {number[]} [first]
+ * @property {number[]} [last]
+ * @property {number[]} [min]
+ * @property {number[]} [max]
+ * @property {string[]} [nucleus]
+ */
+
+/**
+ *
+ * @typedef { object } Entry
+ * @property {Spectrum[]} spectra
+ * @property {Ntuples} ntuples
+ * @property {object} meta
+ * @property {object} tmp
+ * @property {string} [title]
+ * @property {string} [dataType]
+ * @property {string} [dataClass]
+ * @property {boolean} [twoD]
+ */
+
+/**
+ *
+ * @typedef { object } ConvertResult
+ * @property { array | boolean } profiling
+ * @property { array } logs
+ * @property { object[] } entries
+ * @property { Entry[] } flatten
+ */
+
+/**
  * Parse a jcamp.
  *
  * @param {string|ArrayBuffer|Uint8Array} jcamp
- * @param {object} [options]
- * @param {number} [options.keepRecordsRegExp=/^$/] - By default we don't keep meta information.
- * @param {number} [options.canonicDataLabels=true] - Canonize the Labels (uppercase without symbol).
- * @param {number} [options.canonicMetadataLabels=false] - Canonize the metadata Labels (uppercase without symbol).
- * @param {number} [options.dynamicTyping=false] - Convert numbers to Number.
- * @param {number} [options.withoutXY=false] - Remove the XY data.
- * @param {number} [options.chromatogram=false] - Special post-processing for GC / HPLC / MS.
- * @param {number} [options.keepSpectra=false] - Force to keep the spectra in case of 2D.
- * @param {number} [options.noContour=false] - Don't calculate countour in case of 2D.
- * @param {number} [options.nbContourLevels=7] - Number of positive / negative contour levels to calculate.
- * @param {number} [options.noiseMultiplier=5] - Define for 2D the level as 5 times the median as default.
- * @param {number} [options.profiling=false] - Add profiling information.
- * @returns {object}
+ * @param {ConvertOptions} [options]
+ * @returns {ConvertResult}
  */
 
 export function convert(jcamp, options = {}) {

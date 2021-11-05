@@ -1,12 +1,25 @@
 import { ensureString } from 'ensure-string';
 
 /**
+ *
+ * @typedef {object} CreateTreeOptions
+ * @property {boolean} [flatten=false]
+ */
+
+/**
+ *
+ * @typedef {object} Tree
+ * @property {string} title
+ * @property {string} jcamp
+ * @property {Tree[]} [children]
+ */
+
+/**
  * Parse the jcamp to extract the structure as a tree.
  *
  * @param {string|ArrayBuffer|Uint8Array} jcamp
- * @param {object} [options={}]
- * @param {boolean} [options.flatten=false]
- * @returns
+ * @param {CreateTreeOptions} [options={}]
+ * @returns {Tree[]}
  */
 export function createTree(jcamp, options = {}) {
   jcamp = ensureString(jcamp);
