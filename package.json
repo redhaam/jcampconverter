@@ -3,10 +3,12 @@
   "version": "8.2.2",
   "description": "Parse and convert JCAMP data",
   "main": "lib/index.js",
-  "module": "src/index.js",
+  "module": "lib-esm/index.js",
+  "types": "lib/index.d.ts",
   "files": [
     "lib",
-    "src"
+    "src",
+    "lib-esm"
   ],
   "prettier": {
     "arrowParens": "always",
@@ -17,15 +19,20 @@
   },
   "scripts": {
     "build": "cheminfo-build --entry src/index.js --root JcampConverter",
+    "check-types": "tsc --noEmit",
+    "clean": "rimraf lib lib-esm",
     "eslint": "eslint src __tests__",
     "eslint-fix": "npm run eslint -- --fix",
     "jscpd": "jscpd -l 10 -i \"**/__tests__/**\" -t 1 src",
-    "prepack": "rollup -c",
+    "prepack": "npm run tsc",
     "prettier": "prettier --check src",
     "prettier-write": "prettier --write src",
-    "test": "npm run test-coverage && npm run eslint && npm run prettier",
+    "test": "npm run test-coverage && npm run eslint && npm run prettier && npm run check-types",
     "test-coverage": "jest --coverage",
     "test-only": "jest",
+    "tsc": "npm run clean && npm run tsc-cjs && npm run tsc-esm",
+    "tsc-cjs": "tsc --project tsconfig.cjs.json",
+    "tsc-esm": "tsc --project tsconfig.esm.json",
     "benchmark": "node benchmark/benchmark.js",
     "deopt": "node --trace-opt --trace-deopt --code-comments debug/deoptimize.js > deopt.log",
     "hydra": "node --trace-hydrogen --trace-phase=Z --trace-deopt --code-comments --hydrogen-track-positions --redirect-code-traces --redirect-code-traces-to=code.asm debug/deoptimize.js"
@@ -44,22 +51,20 @@
     "url": "https://github.com/cheminfo/jcampconverter/issues"
   },
   "homepage": "https://github.com/cheminfo/jcampconverter#readme",
-  "jest": {
-    "testEnvironment": "node"
-  },
   "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.16.0",
     "@types/jest": "^27.0.2",
     "benchmark": "^2.1.4",
     "cheminfo-build": "^1.1.11",
     "eslint": "^8.1.0",
-    "eslint-config-cheminfo": "^7.2.0",
+    "eslint-config-cheminfo-typescript": "^10.2.2",
     "esm": "^3.2.25",
     "jest": "^27.3.1",
     "jest-matcher-deep-close-to": "^3.0.2",
     "jscpd": "^3.3.26",
     "prettier": "^2.4.1",
-    "rollup": "^2.59.0"
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.0.7",
+    "typescript": "^4.4.4"
   },
   "dependencies": {
     "dynamic-typing": "^0.1.3",

@@ -6,4 +6,5 @@ npm-debug.log*
 coverage
 .DS_Store
 lib
+lib-esm
 dist
