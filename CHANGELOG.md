@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.3.0](https://www.github.com/cheminfo/jcampconverter/compare/v8.2.1...v8.3.0) (2021-11-05)
+
+
+### Features
+
+* improve speed by replacing parseFloat by Number ([c4af41f](https://www.github.com/cheminfo/jcampconverter/commit/c4af41f0fa42d42e6fd3356b8555d3c938a88a1b))
+
 ### [8.2.1](https://www.github.com/cheminfo/jcampconverter/compare/v8.2.0...v8.2.1) (2021-09-30)
 
 
