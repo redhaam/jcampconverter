@@ -10,7 +10,7 @@ export default function parseXYA(spectrum, value) {
 
   for (let i = 1; i < lines.length; i++) {
     values = lines[i].trim().replace(removeSymbolRegExp, '').split(',');
-    currentData.x.push(parseFloat(values[0]));
-    currentData.y.push(parseFloat(values[1]));
+    currentData.x.push(Number(values[0]));
+    currentData.y.push(Number(values[1]));
   }
 }

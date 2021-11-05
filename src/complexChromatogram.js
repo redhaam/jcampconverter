@@ -29,7 +29,7 @@ export function complexChromatogram(result) {
     let spectrum = spectra[i];
     chromatogram.times[i] = spectrum.pageValue;
     for (let j = 0; j < existingGCMSFields.length; j++) {
-      chromatogram.series[existingGCMSFields[j]].data[i] = parseFloat(
+      chromatogram.series[existingGCMSFields[j]].data[i] = Number(
         spectrum[existingGCMSFields[j]],
       );
     }

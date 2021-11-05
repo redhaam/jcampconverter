@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 
-import createTree from '../src/createTree';
+import { createTree } from '../src/createTree';
 
 const route = `${__dirname}/data/mestrec/`;
 
