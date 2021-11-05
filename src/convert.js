@@ -31,23 +31,25 @@ const defaultOptions = {
 };
 
 /**
+ * Parse a jcamp.
  *
- * @param {string|ArrayBuffer} jcamp
+ * @param {string|ArrayBuffer|Uint8Array} jcamp
  * @param {object} [options]
- * @param {number} [options.keepRecordsRegExp=/^$/] By default we don't keep meta information
- * @param {number} [options.canonicDataLabels=true] Canonize the Labels (uppercase without symbol)
- * @param {number} [options.canonicMetadataLabels=false] Canonize the metadata Labels (uppercase without symbol)
- * @param {number} [options.dynamicTyping=false] Convert numbers to Number
- * @param {number} [options.withoutXY=false] Remove the XY data
- * @param {number} [options.chromatogram=false] Special post-processing for GC / HPLC / MS
- * @param {number} [options.keepSpectra=false] Force to keep the spectra in case of 2D
- * @param {number} [options.noContour=false] Don't calculate countour in case of 2D
- * @param {number} [options.nbContourLevels=7] Number of positive / negative contour levels to calculate
- * @param {number} [options.noiseMultiplier=5] Define for 2D the level as 5 times the median as default
- * @param {number} [options.profiling=false] Add profiling information
+ * @param {number} [options.keepRecordsRegExp=/^$/] - By default we don't keep meta information.
+ * @param {number} [options.canonicDataLabels=true] - Canonize the Labels (uppercase without symbol).
+ * @param {number} [options.canonicMetadataLabels=false] - Canonize the metadata Labels (uppercase without symbol).
+ * @param {number} [options.dynamicTyping=false] - Convert numbers to Number.
+ * @param {number} [options.withoutXY=false] - Remove the XY data.
+ * @param {number} [options.chromatogram=false] - Special post-processing for GC / HPLC / MS.
+ * @param {number} [options.keepSpectra=false] - Force to keep the spectra in case of 2D.
+ * @param {number} [options.noContour=false] - Don't calculate countour in case of 2D.
+ * @param {number} [options.nbContourLevels=7] - Number of positive / negative contour levels to calculate.
+ * @param {number} [options.noiseMultiplier=5] - Define for 2D the level as 5 times the median as default.
+ * @param {number} [options.profiling=false] - Add profiling information.
+ * @returns {object}
  */
 
-export default function convert(jcamp, options = {}) {
+export function convert(jcamp, options = {}) {
   jcamp = ensureString(jcamp);
   options = { ...defaultOptions, ...options };
   options.wantXY = !options.withoutXY;
@@ -181,35 +183,35 @@ export default function convert(jcamp, options = {}) {
     } else if (canonicDataLabel === 'YUNITS') {
       spectrum.yUnits = dataValue;
     } else if (canonicDataLabel === 'FIRSTX') {
-      spectrum.firstX = parseFloat(dataValue);
+      spectrum.firstX = Number(dataValue);
     } else if (canonicDataLabel === 'LASTX') {
-      spectrum.lastX = parseFloat(dataValue);
+      spectrum.lastX = Number(dataValue);
     } else if (canonicDataLabel === 'FIRSTY') {
-      spectrum.firstY = parseFloat(dataValue);
+      spectrum.firstY = Number(dataValue);
     } else if (canonicDataLabel === 'LASTY') {
-      spectrum.lastY = parseFloat(dataValue);
+      spectrum.lastY = Number(dataValue);
     } else if (canonicDataLabel === 'NPOINTS') {
-      spectrum.nbPoints = parseFloat(dataValue);
+      spectrum.nbPoints = Number(dataValue);
     } else if (canonicDataLabel === 'XFACTOR') {
-      spectrum.xFactor = parseFloat(dataValue);
+      spectrum.xFactor = Number(dataValue);
     } else if (canonicDataLabel === 'YFACTOR') {
-      spectrum.yFactor = parseFloat(dataValue);
+      spectrum.yFactor = Number(dataValue);
     } else if (canonicDataLabel === 'MAXX') {
-      spectrum.maxX = parseFloat(dataValue);
+      spectrum.maxX = Number(dataValue);
     } else if (canonicDataLabel === 'MINX') {
-      spectrum.minX = parseFloat(dataValue);
+      spectrum.minX = Number(dataValue);
     } else if (canonicDataLabel === 'MAXY') {
-      spectrum.maxY = parseFloat(dataValue);
+      spectrum.maxY = Number(dataValue);
     } else if (canonicDataLabel === 'MINY') {
-      spectrum.minY = parseFloat(dataValue);
+      spectrum.minY = Number(dataValue);
     } else if (canonicDataLabel === 'DELTAX') {
-      spectrum.deltaX = parseFloat(dataValue);
+      spectrum.deltaX = Number(dataValue);
     } else if (
       canonicDataLabel === '.OBSERVEFREQUENCY' ||
       canonicDataLabel === '$SFO1'
     ) {
       if (!spectrum.observeFrequency) {
-        spectrum.observeFrequency = parseFloat(dataValue);
+        spectrum.observeFrequency = Number(dataValue);
       }
     } else if (canonicDataLabel === '.OBSERVENUCLEUS') {
       if (!spectrum.xType) {
@@ -219,7 +221,7 @@ export default function convert(jcamp, options = {}) {
       // OFFSET for Bruker spectra
       currentEntry.shiftOffsetNum = 0;
       if (!spectrum.shiftOffsetVal) {
-        spectrum.shiftOffsetVal = parseFloat(dataValue);
+        spectrum.shiftOffsetVal = Number(dataValue);
       }
     } else if (canonicDataLabel === '$REFERENCEPOINT') {
       // OFFSET for Varian spectra
@@ -227,7 +229,7 @@ export default function convert(jcamp, options = {}) {
       //         } else if (canonicDataLabel=='.SHIFTREFERENCE') {   // OFFSET FOR Bruker Spectra
       //                 var parts = dataValue.split(/ *, */);
       //                 currentEntry.shiftOffsetNum = parseInt(parts[2].trim());
-      //                 spectrum.shiftOffsetVal = parseFloat(parts[3].trim());
+      //                 spectrum.shiftOffsetVal = Number(parts[3].trim());
     } else if (canonicDataLabel === 'VARNAME') {
       currentEntry.ntuples.varname = dataValue.split(ntuplesSeparatorRegExp);
     } else if (canonicDataLabel === 'SYMBOL') {
@@ -268,10 +270,10 @@ export default function convert(jcamp, options = {}) {
       }
     } else if (canonicDataLabel === 'PAGE') {
       spectrum.page = dataValue.trim();
-      spectrum.pageValue = parseFloat(dataValue.replace(/^.*=/, ''));
+      spectrum.pageValue = Number(dataValue.replace(/^.*=/, ''));
       spectrum.pageSymbol = spectrum.page.replace(/[=].*/, '');
     } else if (canonicDataLabel === 'RETENTIONTIME') {
-      spectrum.pageValue = parseFloat(dataValue);
+      spectrum.pageValue = Number(dataValue);
     } else if (isMSField(canonicDataLabel)) {
       spectrum[convertMSFieldToLabel(canonicDataLabel)] = dataValue;
     } else if (canonicDataLabel === 'SAMPLEDESCRIPTION') {

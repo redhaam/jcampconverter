@@ -1,5 +1,8 @@
 import { gyromagneticRatio } from 'nmr-processing';
 
+/**
+ * @param entriesFlat
+ */
 export default function postProcessingNMR(entriesFlat) {
   // specific NMR functions
 

@@ -1,5 +1,8 @@
 import getMedian from 'ml-array-median';
 
+/**
+ * @param spectra
+ */
 export default function convertTo3DZ(spectra) {
   let minZ = spectra[0].data.y[0];
   let maxZ = minZ;

@@ -4,6 +4,11 @@ import postProcessingNMR from './postProcessingNMR';
 import profiling from './profiling';
 import simpleChromatogram from './simpleChromatogram';
 
+/**
+ * @param entriesFlat
+ * @param result
+ * @param options
+ */
 export default function postProcessing(entriesFlat, result, options) {
   // converting Hz to ppm
   postProcessingNMR(entriesFlat);

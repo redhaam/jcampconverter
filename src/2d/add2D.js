@@ -1,6 +1,10 @@
 import convertTo3DZ from './convertTo3DZ';
 import generateContourLines from './generateContourLines';
 
+/**
+ * @param result
+ * @param options
+ */
 export default function add2D(result, options) {
   let zData = convertTo3DZ(result.spectra);
   if (!options.noContour) {

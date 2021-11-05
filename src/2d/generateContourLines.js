@@ -1,3 +1,7 @@
+/**
+ * @param zData
+ * @param options
+ */
 export default function generateContourLines(zData, options) {
   let noise = zData.noise;
   let z = zData.z;

@@ -1,3 +1,6 @@
+/**
+ * @param result
+ */
 export default function simpleChromatogram(result) {
   let data = result.spectra[0].data;
   result.chromatogram = {

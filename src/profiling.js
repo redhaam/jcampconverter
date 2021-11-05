@@ -1,3 +1,8 @@
+/**
+ * @param result
+ * @param action
+ * @param options
+ */
 export default function profiling(result, action, options) {
   if (result.profiling) {
     result.profiling.push({

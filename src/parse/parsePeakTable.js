@@ -1,6 +1,11 @@
 const removeCommentRegExp = /\$\$.*/;
 const peakTableSplitRegExp = /[,\t ]+/;
 
+/**
+ * @param spectrum
+ * @param value
+ * @param result
+ */
 export default function parsePeakTable(spectrum, value, result) {
   spectrum.isPeaktable = true;
 
@@ -32,9 +37,9 @@ function parseXY(spectrum, value, result) {
       .split(peakTableSplitRegExp);
     if (values.length % 2 === 0) {
       for (let j = 0; j < values.length; j = j + 2) {
-        // takes around 40% of the time to add and parse the 2 values nearly exclusively because of parseFloat
-        currentData.x.push(parseFloat(values[j]) * spectrum.xFactor);
-        currentData.y.push(parseFloat(values[j + 1]) * spectrum.yFactor);
+        // takes around 40% of the time to add and parse the 2 values nearly exclusively because of Number
+        currentData.x.push(Number(values[j]) * spectrum.xFactor);
+        currentData.y.push(Number(values[j + 1]) * spectrum.yFactor);
       }
     } else {
       result.logs.push(`Format error: ${values}`);
@@ -60,9 +65,7 @@ function parseXYZ(spectrum, value, result) {
     if (values.length % numberOfVariables === 0) {
       for (let j = 0; j < values.length; j++) {
         // todo should try to find a xFactor (y, ...)
-        currentData[variables[j % numberOfVariables]].push(
-          parseFloat(values[j]),
-        );
+        currentData[variables[j % numberOfVariables]].push(Number(values[j]));
       }
     } else {
       result.logs.push(`Format error: ${values}`);

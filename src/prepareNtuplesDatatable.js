@@ -1,3 +1,8 @@
+/**
+ * @param currentEntry
+ * @param spectrum
+ * @param kind
+ */
 export default function prepareNtuplesDatatable(currentEntry, spectrum, kind) {
   let xIndex = -1;
   let yIndex = -1;

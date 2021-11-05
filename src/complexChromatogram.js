@@ -1,5 +1,8 @@
 const GC_MS_FIELDS = ['TIC', '.RIC', 'SCANNUMBER'];
 
+/**
+ * @param result
+ */
 export function complexChromatogram(result) {
   let spectra = result.spectra;
   let length = spectra.length;
@@ -29,7 +32,7 @@ export function complexChromatogram(result) {
     let spectrum = spectra[i];
     chromatogram.times[i] = spectrum.pageValue;
     for (let j = 0; j < existingGCMSFields.length; j++) {
-      chromatogram.series[existingGCMSFields[j]].data[i] = parseFloat(
+      chromatogram.series[existingGCMSFields[j]].data[i] = Number(
         spectrum[existingGCMSFields[j]],
       );
     }
@@ -40,10 +43,16 @@ export function complexChromatogram(result) {
   result.chromatogram = chromatogram;
 }
 
+/**
+ * @param canonicDataLabel
+ */
 export function isMSField(canonicDataLabel) {
   return GC_MS_FIELDS.indexOf(canonicDataLabel) !== -1;
 }
 
+/**
+ * @param value
+ */
 export function convertMSFieldToLabel(value) {
   return value.toLowerCase().replace(/[^a-z0-9]/g, '');
 }

@@ -1,3 +1,7 @@
+/**
+ * @param spectrum
+ * @param value
+ */
 export default function fastParseXYData(spectrum, value) {
   // TODO need to deal with result
   //  console.log(value);
